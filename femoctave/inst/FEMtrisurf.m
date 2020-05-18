@@ -15,7 +15,7 @@
 ## <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*- 
-## @deftypefn {} {FEMtrisurf (@var{tri}, @var{x}, @var{y}, @var{u})
+## @deftypefn {} {FEMtrisurf (@var{tri}, @var{x}, @var{y}, @var{u})}
 ##
 ##   display a solution @var{u} as surface on a triangular mesh
 ##
