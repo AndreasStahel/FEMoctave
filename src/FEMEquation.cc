@@ -63,7 +63,7 @@ return values:\n\
 @* n2d(k)=nn indicates that the value of the solution at node k is given by u(nn)\n\
 @end itemize\n\
 @c BEGIN_CUT_TEXINFO\n\
-@seealso{FEMEqiationQuad, BVP2D, BVP2Dsym, BVP2eig, IBVP2D, I2BVP2D, CreateMeshRect, CreateMeshTriangle}\n\
+@seealso{FEMEquationQuad, BVP2D, BVP2Dsym, BVP2eig, IBVP2D, I2BVP2D, CreateMeshRect, CreateMeshTriangle}\n\
 @c END_CUT_TEXINFO\n\
 @end deftypefn")
 
