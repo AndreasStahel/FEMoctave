@@ -14,7 +14,7 @@ In 2020 a new version was generated.
 ## 2. INSTALLATION INSTRUCTIONS
 
 ## 3. DEMOS AND EXAMPLES
-The subdirectory doc contains amny sample codes
+The subdirectory doc contains many sample codes
 
 With bests regards
 Andreas Stahel
