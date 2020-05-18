@@ -1,0 +1,24 @@
+FEMoctave >> FEM Package.
+Solving Equations
+  BVP2D
+  BVP2Dsym
+  BVP2deig
+  IBVP2D
+  IBVP2Dsym
+  I2BVP2D
+Manipulating meshes
+  CreateMeshRect
+  CreateMeshTriangle
+  ReadMeshTriangle
+  MeshUpgrade
+  MeshQuad2Linear
+  Delaunay2Mesh
+  FEMtrimesh
+  FEMtrisurf
+  FEMEvaluateGradient
+  FEMEvaluateGP
+  FEMgriddata
+  FEMIntgerate
+Creating equations
+  FEMEquationM
+  FEMEquationQuadM
