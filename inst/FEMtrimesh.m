@@ -15,7 +15,7 @@
 ## <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*- 
-## @deftypefn {} {FEMtrimesh (@var{tri}, @var{x}, @var{y}, @var{u})
+## @deftypefn {} {FEMtrimesh (@var{tri}, @var{x}, @var{y}, @var{u})}
 ##
 ##   display a solution @var{u} on a triangular mesh
 ##
