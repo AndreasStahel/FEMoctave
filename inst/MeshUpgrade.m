@@ -33,6 +33,7 @@
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
 ## Created: 2020-03-30
+## modified for Octave 7.1.0: 2022-04-14
 
 function MeshQuad = MeshUpgrade(Mesh)
   %% MeshQuad = MeshUpgrade(Mesh)
@@ -57,7 +58,7 @@ function MeshQuad = MeshUpgrade(Mesh)
     ee = [elem(ii,2),elem(ii,3)];
     number =  full(ConnMat(min(ee),max(ee)));
     if number==0  % add a new node
-      nNodes +=1;
+      nNodes = nNodes + 1;
       nodes(nNodes,1:2) = newnode;
       nodesT(nNodes) = Mesh.elemT(ii);
       ConnMat(min(ee),max(ee)) = nNodes;
@@ -70,7 +71,7 @@ function MeshQuad = MeshUpgrade(Mesh)
     ee = [elem(ii,1),elem(ii,3)];
     number =  full(ConnMat(min(ee),max(ee))); 
     if number==0  % add a new node
-      nNodes +=1;
+      nNodes = nNodes + 1;
       nodes(nNodes,1:2) = newnode;
       nodesT(nNodes) = Mesh.elemT(ii);
       ConnMat(min(ee),max(ee)) = nNodes;
@@ -83,7 +84,7 @@ function MeshQuad = MeshUpgrade(Mesh)
     ee = [elem(ii,1),elem(ii,2)];
     number =  full(ConnMat(min(ee),max(ee)));
     if number==0  % add a new node
-      nNodes +=1;
+      nNodes = nNodes + 1;
       nodes(nNodes,1:2) = newnode;
       nodesT(nNodes) = Mesh.elemT(ii);
       ConnMat(min(ee),max(ee)) = nNodes;
