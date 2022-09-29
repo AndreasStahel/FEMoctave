@@ -1,15 +1,15 @@
 ## Copyright (C) 2020 Andreas Stahel
-## 
+##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see
 ## <https://www.gnu.org/licenses/>.
@@ -24,8 +24,9 @@
 ##@item @var{Mesh} is the mesh describing the domain
 ##@* If @var{Mesh} consists of linear elements, piecewise linear interpolation is used.
 ##@* If @var{Mesh} consists of quadratic elements, piecewise quadratic interpolation is used.
+##@* If @var{Mesh} consists of cubic elements, piecewise cubic interpolation is used.
 ##@item @var{u} vector with the values of the function at the nodes
-##@item @var{xi}, @var{yi} coodinates of the points where the function is evaluated
+##@item @var{xi}, @var{yi} coordinates of the points where the function is evaluated
 ##@end itemize
 ##
 ##return values:
@@ -34,7 +35,7 @@
 ##@item @var{uxi} x component of the gradient of u
 ##@item @var{uyi} y component of the gradient of u
 ##@end itemize
-##@*The values of the function and the gradient are determined on each element by a piecewise linear or quadratic interpolation.
+##@*The values of the function and the gradient are determined on each element by a piecewise linear, quadratic or cubic interpolation.
 ##@*If a point is not inside the mesh NaN is returned.
 ##
 ## @c Will be cut out in ??? info file and replaced with the same
@@ -78,28 +79,63 @@ Det = (v2(:,1).*v3(:,2)- v2(:,2).*v3(:,1));
 xi  = (v3(:,2).*xint   - v3(:,1).*yint)./Det;
 nu  = (v2(:,1).*yint   - v2(:,2).*xint)./Det;
 
-ui = nan(nc*nr,1);     %% default value is NaN
-if size(Mesh.elem,2)==3  %% linear elements
+ui = nan(nc*nr,1);       %% default value is NaN
+switch Mesh.type
+case 'linear'  %% linear elements
 %  ui(indOK) = sum([1-xi-nu xi nu].*[u(Mesh.elem(:,1)) u(Mesh.elem(:,2)) u(Mesh.elem(:,3))],2);
   ui(indOK) = sum([1-xi-nu xi nu].*u(Mesh.elem),2);
-else  %% quadratic elements
+case 'quadratic'  %% quadratic elements
   Onexinu = 1-xi-nu;
   ui(indOK) = sum([Onexinu.*(1-2*(xi+nu)) xi.*(2*xi-1) nu.*(2*nu-1) 4*xi.*nu 4*nu.*Onexinu 4*xi.*Onexinu].*u(Mesh.elem),2);
-endif
+case 'cubic'
+  ui(indOK) = sum([1-11/2*xi-11/2*nu+9*xi.^2+18*xi.*nu+9*nu.^2-9/2*xi.^3-27/2*xi.^2.*nu-27/2*xi.*nu.^2-9/2*nu.^3,...
+     xi-9/2*xi.^2+9/2*xi.^3,...
+     nu-9/2*nu.^2+9/2*nu.^3,...
+     -9/2*xi.*nu+27/2*xi.^2.*nu,...
+     -9/2*xi.*nu+27/2*xi.*nu.^2,...
+     -9/2*nu+9/2*xi.*nu+18*nu.^2-27/2*xi.*nu.^2-27/2*nu.^3,...
+     9*nu-45/2*xi.*nu-45/2*nu.^2+27/2*xi.^2.*nu+27*xi.*nu.^2+27/2*nu.^3,...
+     9*xi-45/2*xi.^2-45/2*xi.*nu+27/2*xi.^3+27*xi.^2.*nu+27/2*xi.*nu.^2,...
+     -9/2*xi+18*xi.^2+9/2*xi.*nu-27/2*xi.^3-27/2*xi.^2.*nu,...
+     27*xi.*nu-27*xi.^2.*nu-27*xi.*nu.^2 ].*u(Mesh.elem),2);
+endswitch
 ui = reshape(ui,nr,nc);  %% return in the desired shape
 
 if nargout > 1  %% determine the gradients too
   uxi = nan(nc*nr,1); uyi = uxi;
 
-  if size(Mesh.elem,2)==3  %% linear elements
+  switch Mesh.type
+  case 'linear'  %% linear elements
     %% slopes in xi and nu direction
     g_xi = u(Mesh.elem(:,2)) - u(Mesh.elem(:,1));
     g_nu = u(Mesh.elem(:,3)) - u(Mesh.elem(:,1));
-  else  %% quadratic elements
-    xi4 = 4*xi; nu4 = 4*nu; 
+  case 'quadratic' %% quadratic elements
+    xi4 = 4*xi; nu4 = 4*nu;
     g_xi = sum([-3+xi4+nu4 xi4-1 zeros(size(xi)) nu4 -nu4 4-2*xi4-nu4].*u(Mesh.elem),2);
     g_nu = sum([-3+xi4+nu4 zeros(size(xi)) nu4-1 xi4 4-xi4-2*nu4 -xi4].*u(Mesh.elem),2);
-  endif
+  case 'cubic' %% cubic elements
+    z = zeros(size(xi));
+    g_xi = sum([-11/2+18*xi+18*nu-27/2*xi.^2-27*xi.*nu-27/2*nu.^2,...
+       1-9*xi+27/2*xi.^2,...
+       z,...
+       -9/2*nu+27*xi.*nu,...
+       -9/2*nu+27/2*nu.^2,...
+       9/2*nu-27/2*nu.^2,...
+       -45/2*nu+27*xi.*nu+27*nu.^2,...
+       9-45*xi-45/2*nu+81/2*xi.^2+54*xi.*nu+27/2*nu.^2,...
+       -9/2+36*xi+9/2*nu-81/2*xi.^2-27*xi.*nu,...
+       27*nu-54*xi.*nu-27*nu.^2 ].*u(Mesh.elem),2);
+    g_nu = sum([-11/2+18*xi+18*nu-27/2*xi.^2-27*xi.*nu-27/2*nu.^2,...
+       z,...
+       1-9*nu+27/2*nu.^2,...
+       -9/2*xi+27/2*xi.^2,...
+       -9/2*xi+27*xi.*nu,...
+       -9/2+9/2*xi+36*nu-27*xi.*nu-81/2*nu.^2,...
+       9-45/2*xi-45*nu+27/2*xi.^2+54*xi.*nu+81/2*nu.^2,...
+       -45/2*xi+27*xi.^2+27*xi.*nu,...
+       +9/2*xi-27/2*xi.^2,...
+       27*xi-27*xi.^2-54*xi.*nu ].*u(Mesh.elem),2);
+  endswitch
   %%transform to the xy coordinates
   uxi(indOK) = (v3(:,2).*g_xi - v2(:,2).*g_nu)./Det;
   uyi(indOK) = (v2(:,1).*g_nu - v3(:,1).*g_xi)./Det;

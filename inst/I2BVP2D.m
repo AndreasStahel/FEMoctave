@@ -1,15 +1,15 @@
 ## Copyright (C) 2020 Andreas Stahel
-## 
+##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see
 ## <https://www.gnu.org/licenses/>.
@@ -66,12 +66,15 @@ if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
 else
   u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,0);  %% solve BVP
-endif  
-if size(Mesh.elem,2)==3
-  A   = FEMEquation(Mesh,a,b0,bx,by,0, 0, 0,gN2);  %% compute with compiled code
-else
-  A   = FEMEquationQuad(Mesh,a,b0,bx,by,0, 0, 0,gN2);
 endif
+switch Mesh.type
+case 'linear'
+  A   = FEMEquation(Mesh,a,b0,bx,by,0, 0, 0,gN2);  %% compute with compiled code
+case 'quadratic'
+  A   = FEMEquationQuad(Mesh,a,b0,bx,by,0, 0, 0,gN2);
+case 'cubic'
+  A   = FEMEquationCubic(Mesh,a,b0,bx,by,0, 0, 0,gN2);
+endswitch
 
 Wf  = FEMInterpolWeight(Mesh,1);  %% weight matrix, leading to W*f
 Wu  = FEMInterpolWeight(Mesh,m);  %% weight matrix, leading to W* (d^2/dt^2 u)
@@ -82,7 +85,7 @@ if length(steps)==1
   steps = [steps,1];
 else
   dt = (tend-t0)/(steps(1)*steps(2));
-endif		  
+endif
 
 if ischar(u0)
   u0 = feval(u0,Mesh.nodes);
@@ -119,7 +122,7 @@ Mmiddle  = 2*W - dt^2/2*A;   %% matrix for u(t)
 Mright   = -Mleft + 2*dt*D;  %% matrix for u(t-dt)
 [L,U,P,Q] = lu(Mleft);  %% P*A*Q = L*U
 t = t0;
-u = zeros(length(u0),steps(1)+1);			      
+u = zeros(length(u0),steps(1)+1);
 
 u_curr = u0-u_B;           %% current time level
 u_curr = u_curr(ind_free); %% u(t-dt)

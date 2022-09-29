@@ -30,8 +30,8 @@
 ##@item yi y-coordinate of node i
 ##@item bi boundary marker for segment from node i to node i+1
 ##@itemize
-##@item   bi=-1  Dirichlet boundary condition
-##@item   bi=-2  Neumann or Robin boundary condition
+##@item   bi = -1  Dirichlet boundary condition
+##@item   bi = -2  Neumann or Robin boundary condition
 ##@end itemize
 ##@end itemize
 ##@item@var{area} the typical area of he individual triangles to be used
@@ -40,13 +40,14 @@
 ##@*to suppress the verbose information use "Q"
 ##@end itemize
 ##
-##The information on the mesh generated is written to files and returned in the structure @var{Mesh}, if specified
+##The information on the mesh generated is written to files and returned in the structure @var{Mesh}, if the return argument is provided.
 ##@itemize
 ##@item  The information can then be read and used by
 ##@*Mesh = ReadMeshTriangle('@var{name}.1');
 ##@item @var{Mesh} is a a structure with the information about the mesh.
 ##@*The mesh consists of n_e elements, n_n nodes and n_ed edges.
 ##@itemize
+##@item@var{Mesh.type} a string with the type of triangle: linear
 ##@item@var{Mesh.elem} n_e by 3 matrix with the numbers of the nodes forming triangular elements
 ##@item@var{Mesh.elemArea} n_e vector with the areas of the elements
 ##@item@var{Mesh.elemT} n_e vector with the type of elements (not used)
@@ -86,7 +87,7 @@ function Mesh = CreateMeshTriangle(name,xy,area,options)
   endif
   
   opt = '-Q';
-  if (nargin==4) opt = options; endif
+  if (nargin == 4) opt = options; endif
   
   n = length(xy);
 
@@ -117,4 +118,5 @@ function Mesh = CreateMeshTriangle(name,xy,area,options)
     Mesh = ReadMeshTriangle([name,'.1']);
     eval(['delete ',name,'.1.*'])
   endif
+  Mesh.type = 'linear';
 endfunction

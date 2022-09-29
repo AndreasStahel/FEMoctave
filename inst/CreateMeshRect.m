@@ -32,6 +32,7 @@
 ##@item @var{Mesh} is a a structure with the information about the mesh.
 ##@*The mesh consists of n_e elements, n_n nodes and n_ed edges.
 ##@itemize
+##@item@var{Mesh.type} a string with the type of triangle: linear
 ##@item@var{Mesh.elem} n_e by 3 matrix with the numbers of the nodes forming triangular elements
 ##@item@var{Mesh.elemArea} n_e vector with the areas of the elements
 ##@item@var{Mesh.elemT} n_e vector with the type of elements (not used)
@@ -140,6 +141,7 @@ for ne = 1:nElem
   elemArea(ne) = abs(det([v1;v2]))/2;
 endfor
 
+mesh.type   = 'linear';
 mesh.elem   = elem(:,[1 2 3]);
 mesh.elemT  = elem(:,4);
 mesh.edges  = edges(:,[1 2]);
@@ -158,7 +160,7 @@ mesh.elemArea = elemArea;
 %%    mesh.node2DOF(k) = mesh.nDOF; 
 %%  endif
 %%endfor
-ind =(mesh.nodesT~=-1);
+ind = (mesh.nodesT~=-1);
 mesh.node2DOF = cumsum(ind).*ind;
 mesh.nDOF = sum(ind);
 endfunction

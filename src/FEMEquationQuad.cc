@@ -387,9 +387,9 @@ return values:\n\
       // 0 if not degree of freedom, else the number
       dofs(iii) = (int)n2d((int)elem(k,iii)-1);	
     }
-    for (int k1=0;k1<6;k1++){ // loop over corners
+    for (int k1=0; k1<6; k1++){ // loop over corners
       if (dofs(k1)>0){ // variable value at this corner
-	for (int k2=0;k2<6;k2++){
+	for (int k2=0; k2<6; k2++){
 	  if (dofs(k2)>0){ // variable value at this corner
 	    // add values to sparse matrix
 	    Si(ptrDOF)   = (int)dofs(k1); 
@@ -455,9 +455,9 @@ return values:\n\
 	if (gDscalar){	g.fill(gDValue);}
 	else{
 	  argin(0) = Ep;
-	  nargout = 1;
-	  res = octave::feval(gDFunc, argin, nargout);
-	  g = res(0).column_vector_value();
+	  nargout  = 1;
+	  res      = octave::feval(gDFunc, argin, nargout);
+	  g        = res(0).column_vector_value();
 	}// if (gDscalar
 
 	// evaluate the values of gN1 at the three Gauss points

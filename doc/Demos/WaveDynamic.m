@@ -7,7 +7,7 @@ if 1  %% linear elements
   FEMmesh = CreateMeshTriangle('Circle',xy,0.03);
 else  %% quadratic elements
   FEMmesh = CreateMeshTriangle('Circle',xy,4*0.03);
-  FEMmesh = MeshUpgrade(FEMmesh);
+  FEMmesh = MeshUpgrade(FEMmesh,'quadratic');
 endif
 
 x = FEMmesh.nodes(:,1); y = FEMmesh.nodes(:,2);
@@ -23,7 +23,7 @@ toc()
 %% show the animation on screen
 figure(1)
 for t_ii = 1:length(t)
-  FEMtrimesh(FEMmesh.elem,x,y,u_dyn(:,t_ii))
+  FEMtrimesh(FEMmesh,u_dyn(:,t_ii))
   xlabel('x'); ylabel('y')
   caxis([-0.05 0.05]);
   axis([-R R -R R -0.05 0.05])

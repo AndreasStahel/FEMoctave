@@ -60,7 +60,8 @@ else
   wV = reshape(wFunc,nGP/nElem,nElem);
 endif
 
-if size(FEMmesh.elem,2)==3  %% linear elements
+switch FEMmesh.type
+  case 'linear'  %% linear elements
   %% create memory for the sparse matrix 
   Si = zeros(9*nElem+9,1); Sj = Si; Sval = Si;%% maximal number of contributions
 
@@ -79,7 +80,7 @@ if size(FEMmesh.elem,2)==3  %% linear elements
     Sval(ptrDOF:ptrDOF+8) = mat(:);
     ptrDOF += 9;
   endfor % k (elements)
-else  %% quadratic elements
+case 'quadratic' %% quadratic elements
   Si = zeros(36*nElem+36,1); Sj=Si; Sval=Si;%% maximal number of contributions
 
   l1 = (12 - 2*sqrt(15))/21;   l2 = (12 + 2*sqrt(15))/21;
@@ -101,7 +102,39 @@ else  %% quadratic elements
     Sval(ptrDOF:ptrDOF+35) = mat(:);
     ptrDOF += 36;
   endfor %% k (elements)
-endif
+case 'cubic' %% cubic elements
+  Si  = zeros(100*nElem,1); Sj = Si; Sval = Si; %% maximal number of contributions
+l1 = (12 - 2*sqrt(15))/21;   l2 = (12 + 2*sqrt(15))/21;
+w1 = (155 - sqrt(15))/2400;  w2 = (155 + sqrt(15))/2400;
+w3 = 0.1125;         w = [w1,w1,w1,w2,w2,w2,w3]';
+
+xi = [l1/2, 1-l1, l1/2, l2/2, 1-l2, l2/2, 1/3]';
+nu = [l1/2, l1/2, 1-l1, l2/2, l2/2, 1-l2, 1/3]';
+
+%% the interpolation matrices for the function
+M = [1-11/2*xi-11/2*nu+9*xi.^2+18*xi.*nu+9*nu.^2-9/2*xi.^3-27/2*xi.^2.*nu-27/2*xi.*nu.^2-9/2*nu.^3,...
+     xi-9/2*xi.^2+9/2*xi.^3,...
+     nu-9/2*nu.^2+9/2*nu.^3,...
+     -9/2*xi.*nu+27/2*xi.^2.*nu,...
+     -9/2*xi.*nu+27/2*xi.*nu.^2,...
+     -9/2*nu+9/2*xi.*nu+18*nu.^2-27/2*xi.*nu.^2-27/2*nu.^3,...
+     9*nu-45/2*xi.*nu-45/2*nu.^2+27/2*xi.^2.*nu+27*xi.*nu.^2+27/2*nu.^3,...
+     9*xi-45/2*xi.^2-45/2*xi.*nu+27/2*xi.^3+27*xi.^2.*nu+27/2*xi.*nu.^2,...
+     -9/2*xi+18*xi.^2+9/2*xi.*nu-27/2*xi.^3-27/2*xi.^2.*nu,...
+     27*xi.*nu-27*xi.^2.*nu-27*xi.*nu.^2 ];
+
+  ptrDOF = 1;  %% counter for the DOF we are working on
+  k1 = [1:10]'*ones(1,10);
+  for k = 1:nElem   %%for each element
+    mat  = FEMmesh.elemArea(k)*2*M'*diag(w.*wV(:,k))*M;
+    NoNodes = FEMmesh.elem(k,:);
+    dofs = FEMmesh.node2DOF(NoNodes);
+    Si(ptrDOF:ptrDOF+99)   = dofs(k1(:));
+    Sj(ptrDOF:ptrDOF+99)   = (ones(10,1)*NoNodes)(:);
+    Sval(ptrDOF:ptrDOF+99) = mat(:);
+    ptrDOF += 100;
+  endfor
+endswitch
 
 IND = find((Si.*Sj)>0);
 Si = Si(IND); Sj = Sj(IND); Sval = Sval(IND);

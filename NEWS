@@ -1,3 +1,15 @@
+FEMoctave 2.0.5
+---------------------
+* new triangular elements of order 3 with 10 nodes, code and documentation
+* syntax of FEMtrimesh(), FEMtrisurf() and FEMtricontour() simplified
+* new function MeshDeform()
+* new version of tricontour.m
+* considerably improved documentation in FEMdoc.pdf
+* comparison of linear, quadratic and cubic elements added
+* description of the effect on dynamic problems of eigenvalues added
+* MeshUpgrade(), MeshQuad2Linear() and MeshCubic2Linear() improved or new
+* a few small bugs removed
+
 FEMoctave 2.0.4
 ---------------------
 * updated for Octave 7.1

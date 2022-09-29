@@ -15,7 +15,7 @@
 
 
 
-CCFILES=FEMEquation.cc	FEMEquationQuad.cc
+CCFILES=FEMEquation.cc	FEMEquationQuad.cc FEMEquationCubic.cc
 OCTFILES=$(CCFILES:.cc=.oct)
 
 MKOCTFILE ?= mkoctfile

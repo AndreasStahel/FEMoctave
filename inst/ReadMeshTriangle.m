@@ -112,22 +112,23 @@ for ne = 1:nElem
   elemArea(ne) = abs(det([v1;v2]))/2;
 endfor
 
-Mesh.elem    = elem(:,[1 2 3]);
-Mesh.elemT   = elem(:,4);
-Mesh.edges   = edges(:,[1 2]);
-Mesh.edgesT  = edges(:,3);
-Mesh.nodes   = nodes(:,[1 2]);
-Mesh.nodesT  = nodes(:,3);
-Mesh.GP      = GP;
-Mesh.elemArea=elemArea;
+Mesh.type     = 'linear';
+Mesh.elem     = elem(:,[1 2 3]);
+Mesh.elemT    = elem(:,4);
+Mesh.edges    = edges(:,[1 2]);
+Mesh.edgesT   = edges(:,3);
+Mesh.nodes    = nodes(:,[1 2]);
+Mesh.nodesT   = nodes(:,3);
+Mesh.GP       = GP;
+Mesh.elemArea = elemArea;
 
-Mesh.nDOF=0;
-ln=size(Mesh.nodes)(1);
-Mesh.node2DOF=zeros(ln,1);
-for k=1:ln
-  if (Mesh.nodesT(k)~=-1)
+Mesh.nDOF = 0;
+ln = size(Mesh.nodes)(1);
+Mesh.node2DOF = zeros(ln,1);
+for k = 1:ln
+  if (Mesh.nodesT(k) ~= -1)
     Mesh.nDOF++;
-    Mesh.node2DOF(k)=Mesh.nDOF; 
+    Mesh.node2DOF(k) = Mesh.nDOF; 
   endif
 endfor
 endfunction

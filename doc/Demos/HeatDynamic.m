@@ -5,7 +5,7 @@ if 0  %% first order elements
   FEMmesh = CreateMeshRect(linspace(0,2,2*N+1),linspace(0,2,2*N+1),-1,-1,-1,-1);
 else  %% second order elements
   FEMmesh = CreateMeshRect(linspace(0,2,N+1),linspace(0,2,N+1),-1,-1,-1,-1);
-  FEMmesh = MeshUpgrade(FEMmesh);
+  FEMmesh = MeshUpgrade(FEMmesh,'quadratic');
 endif
 x = FEMmesh.nodes(:,1);y = FEMmesh.nodes(:,2);
 %% setup and solve the initial boundary value problem
@@ -16,25 +16,20 @@ u0 = 0.005*(2-x).^2.*x.*y.*(2-y);
 tic()
 [u_dyn,t] = IBVP2D(FEMmesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps);
 toc()
-if size(FEMmesh.elem,2)==6  %% transform mesh, such that tricontour works
-  FEMmesh = MeshQuad2Linear(FEMmesh);
-endif
 
-figure(1)
-FEMtrimesh(FEMmesh.elem,x,y,u_dyn(:,end))
-xlabel('x'); ylabel('y')
-%%drawnow()
+figure(1); FEMtrimesh(FEMmesh,u_dyn(:,end))
+           xlabel('x'); ylabel('y')
 %% show the animation on screen
 u_max = max(u_dyn(:));
 for t_ii = 1:length(t)
   figure(2);clf
-  FEMtrimesh(FEMmesh.elem,x,y,u_dyn(:,t_ii))
+  FEMtrimesh(FEMmesh,u_dyn(:,t_ii))
   xlabel('x'); ylabel('y')
   caxis([0,u_max]);
   axis([0 2 0 2 0 u_max])
   drawnow();
   figure(3);clf
-  tricontour(FEMmesh.elem,x,y,u_dyn(:,t_ii),linspace(0,0.99*u_max,11))
+  tricontour(FEMmesh,u_dyn(:,t_ii),linspace(0,0.99*u_max,11))
   xlabel('x'); ylabel('y')
   caxis([0,u_max]);
   drawnow(); 

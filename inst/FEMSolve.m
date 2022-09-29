@@ -1,5 +1,4 @@
 function u = FEMSolve(FEMmesh,A,b,gD)
-
 %[...] = FEMSolve (...)
 %  solves the system of linear equations for a numerical solution of a PDE
 %
@@ -31,7 +30,7 @@ endif
   %% [L,U,P,Q] = lu(A);  %% P*A*Q = L*U
   %% ug2 = -Q*(U\(L\(P*b)));  
   %% difference = norm(ug-ug2)
-n  = size(FEMmesh.node2DOF)(1);
+n  = size(FEMmesh.node2DOF,1);
 u  = zeros(n,1);
 
 %% evaluate the function on the Dirichlet section of the boundary and

@@ -5,10 +5,10 @@ function [eigval,evec,errorbound] = eigSmall(A,B,V,tol)
 %  [Lambda,{Ev,err}] = eigSmall(A,B,V,tol)   
 %        solve A*Ev = B*Ev*diag(Lambda) generalized eigenvalue problem
 %
-%   A   is mxt, where t-1 is number of non-zero superdiagonals
-%   B   is mxs, where s-1 is number of non-zero superdiagonals
-%   V   is mxn, where n is the number of eigenvalues desired
-%       contains the initial eigenvectors for the iteration
+%   A   is a (sparse) mxm matrix
+%   B   is a (sparse) mxm matrix
+%   V   is a mxn matrix, where n is the number of eigenvalues desired
+%       it contains the initial eigenvectors for the iteration
 %   tol is the relative error, used as the stopping criterion
 %
 %   X   is a column vector with the eigenvalues
@@ -16,36 +16,41 @@ function [eigval,evec,errorbound] = eigSmall(A,B,V,tol)
 %   err is a vector with the aposteriori error estimates for the eigenvalues
 %
 %   this implementation is based on using eigs()
-
 clear opts
-if nargin == 4
-  opts.tol=tol;
-else
-  opts.dummy=1;
-endif
 
-if nargout() == 1
-  eigval = eigs(A,B,V,'sm',opts);
-endif
+switch nargin()
+  case 1
+    B = speye(size(A,1));
+    opts.tol = 1e-5;
+    V = 5;
+  case 2
+    V = B;  %% second argument is the number of eigenvalues
+    B = speye(size(A,1));  % default id
+    opts.tol = 1e-5;
+  case 3
+    opts.tol = 1e-5;
+endswitch
 
-if nargout() == 2
-  [evec,eigval] = eigs(A,B,V,'sm',opts);
-  eigval = diag(eigval)
-endif
-
-if nargout() == 3
+switch nargout()
+  case 1
+    eigval = eigs(A,B,V,'sm',opts);
+  case 2
+    [evec,eigval] = eigs(A,B,V,'sm',opts);
+    eigval = diag(eigval);
+  case 3
   [evec,eigval] = eigs(A,B,V,'sm',opts);
   eigval = diag(eigval);
   errorbound = zeros(length(eigval),2);
   R = A*evec-B*evec*diag(eigval);
   R2 = B\R;
+  if ~isscalar(V) V = size(V,2); endif
   for i = 1:V; %%length(errorbound)
     cc = R(:,i)'*R2(:,i);
     errorbound(i,1) = sqrt(cc);
     gap = min(abs(eigval(i)-eigval([1:i-1,i+1:end])));
     errorbound(i,2) = cc/gap;
-  endfor
-endif
+  endfor    
+endswitch
 
 %% assure that the eigenvalues are sorted
 [eigval,perm] = sort(eigval);

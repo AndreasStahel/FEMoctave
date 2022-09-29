@@ -4,6 +4,5 @@ FEMmesh = CreateMeshTriangle('Ldomain',nodes,0.02);
 
 u = BVP2Dsym(FEMmesh,1,0,1,0,0,-2);
 
-figure(1);
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),u);
-xlabel('x'); ylabel('y'); view(-30,30); grid on
+figure(1);  FEMtrimesh(FEMmesh,u);
+            xlabel('x'); ylabel('y'); view(-30,30); grid on

@@ -32,9 +32,11 @@
 ##parameters:
 ##@itemize
 ##@item @var{Mesh} is the mesh describing the domain and the boundary types
-##@item @var{a},@var{b0},@var{w},@var{gN2} are the coefficients and functions describing the PDE.
+##@item @var{a},@var{b0},@var{w},@var{gN2}
+##are the coefficients and functions describing the PDE.
 ##@*Any constant function can be given by its scalar value.
-##@*The functions @var{a},@var{b0} and @var{w} may also be given as vectors with the values of the function at the Gauss points.
+##@*The functions @var{a},@var{b0} and @var{w} may also be given as vectors
+##with the values of the function at the Gauss points.
 ##@item@var{nVec} is the number of smallest eigenvalues to be computed
 ##@end itemize
 ##
@@ -54,6 +56,29 @@
 ## @end deftypefn
 
 function [la,resVec,errorbound] = BVP2Deig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,tol)
+%  [la,ev] = BVP2Deig(Mesh,a,b0,w,gN2,nVec,tol)
+%
+%  determine the smallest eigenvalues la and eigenfunctions ev for the BVP
+%
+%  -div(a*grad u) + b0*u = la*w*u  in domain
+%                      u = 0       on Dirichlet boundary
+%           n*(a*grad u) = gN2*u   on Neumann boundary
+%
+%  la      = FEMEig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,tol)
+%  [la,ev] = FEMEig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,tol)
+%
+% nodes elem, edges contains information about the mesh
+%         see ReadMesh() for the description of the format
+% a, b0, w, gN2 are function files for the coefficient functions
+%         may also be given as vectors or scalar values
+% nVec    is the number of eigenvalues to be computed
+% tol     is the tolerance for error of the eigenvalues
+%         if not given tol = 1e-5 is used as default
+%
+% la  is the vector containing the eigenvalues
+% ev  is the matrix with the eigenvectors as columns
+%
+%see also ????
 
 if ((nargin<6)|(nargin>7)) 
   help("BVP2Deig");
@@ -62,13 +87,17 @@ endif
 
 if (nargin==6) tol = 1e-5;endif
 
-if size(Mesh.elem,2)==3 %% first order elements
-  [aMat,~] = FEMEquation(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
-  [wMat,~] = FEMEquation(Mesh,0    ,wFunc,0,0,0,0,0,0);
-else   %% second order elements
-  [aMat,~] = FEMEquationQuad(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
-  [wMat,~] = FEMEquationQuad(Mesh,0    ,wFunc,0,0,0,0,0,0);
-endif
+switch Mesh.type
+  case 'linear'  %% first order elements
+    [aMat,~] = FEMEquation(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+    [wMat,~] = FEMEquation(Mesh,0    ,wFunc,0,0,0,0,0,0);
+  case 'quadratic' %% second order elements
+    [aMat,~] = FEMEquationQuad(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+    [wMat,~] = FEMEquationQuad(Mesh,0    ,wFunc,0,0,0,0,0,0);
+  case 'cubic' %% third order elements
+    [aMat,~] = FEMEquationCubic(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+    [wMat,~] = FEMEquationCubic(Mesh,0    ,wFunc,0,0,0,0,0,0);
+endswitch
 
 if (nargout==1)
   la = eigSmall(aMat,wMat,nVec,tol);

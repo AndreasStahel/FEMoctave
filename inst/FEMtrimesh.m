@@ -15,16 +15,13 @@
 ## <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*- 
-## @deftypefn {} {FEMtrimesh (@var{tri}, @var{x}, @var{y}, @var{u})}
+## @deftypefn {} FEMtrimesh (@var{mesh}, @var{u})
 ##
-##   display a solution @var{u} on a triangular mesh
+##   display a solution @var{u} on a triangular @var{mesh}
 ##
 ##parameters:
 ##@itemize
-##@item @var{tri} is the triangulation of the domain
-##@*if @var{tri} has three columns a mesh with linear elements is used
-##@*if @var{tri} has six columns a mesh with quadratic elements is used
-##@item @var{x}, @var{y} coordinates of the nodes in the mesh
+##@item @var{mesh} is the mesh
 ##@item @var{u} values of the function to be displayed
 ##@* if @var{u} is not given, then the mesh is displayed in 2D
 ##@end itemize
@@ -33,29 +30,40 @@
 ## @c references explicitly there, since references to core Octave
 ## @c functions are not automatically transformed from here to there.
 ## @c BEGIN_CUT_TEXINFO
-## @seealso{FEMtrisurf}
+## @seealso{FEMtrisurf, FEMtricontour}
 ## @end deftypefn
 
-## Author: Andreas Stahel <sha1@BiLi>
+## Author: Andreas Stahel <andreas.stahel@gmx.com>
 ## Created: 2020-04-15
 ## the function is a simple wrapper around the standard trimesh
 
-function FEMtrimesh (tri,x,y,z)
-  if size(tri,2)==6  % quadartic elements
-    tri4 = zeros(4*size(tri)(1),3);
-    for ii = 1:size(tri)(1)
-      tri4(ii*4-3,1:3) = tri(ii,[1 6 5]);
-      tri4(ii*4-2,1:3) = tri(ii,[6 2 4]);
-      tri4(ii*4-1,1:3) = tri(ii,[5 4 3]);
-      tri4(ii*4  ,1:3) = tri(ii,[4 5 6]);
-    endfor
-  else
-    tri4 = tri;
-  endif
+function FEMtrimesh (mesh,u)
+  x = mesh.nodes(:,1);
+  y = mesh.nodes(:,2);
+  tri = mesh.elem;
+switch mesh.type
+  case 'linear'    %% linear elements
+    triN = tri;
+  case 'quadratic' %% quadratic elements
+    triN = [tri(:,1),tri(:,6),tri(:,5);
+	    tri(:,6),tri(:,2),tri(:,4);
+	    tri(:,5),tri(:,4),tri(:,3);
+	    tri(:,4),tri(:,5),tri(:,6)];
+  case 'cubic'     %% cubic elements
+    triN = [tri(:,1),tri(:,8),tri(:,7);
+	    tri(:,8),tri(:,10),tri(:,7);
+	    tri(:,8),tri(:,9),tri(:,10);
+	    tri(:,9),tri(:,4),tri(:,10);
+	    tri(:,9),tri(:,2),tri(:,4);
+	    tri(:,7),tri(:,10),tri(:,6);
+	    tri(:,10),tri(:,5),tri(:,6);
+	    tri(:,10),tri(:,4),tri(:,5);
+	    tri(:,6),tri(:,5),tri(:,3)];
+  endswitch
 
-  if nargin ==4
-    trimesh(tri4,x,y,z)
+  if nargin == 2
+    trimesh(triN,mesh.nodes(:,1),mesh.nodes(:,2),u)
   else
-    trimesh(tri4,x,y)
+    trimesh(triN,mesh.nodes(:,1),mesh.nodes(:,2))
   endif
 endfunction

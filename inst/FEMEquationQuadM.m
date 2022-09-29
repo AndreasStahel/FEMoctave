@@ -2,7 +2,7 @@ function [gMat,gVec,n2d] = FEMEquationQuadM(Mesh,aFunc,bFunc,fFunc,gDFunc,gN1Fun
 %[...] = FEMEquationQuadM (...)
 %  sets up the system of linear equations for a numerical solution of a PDE
 %
-%  [A,b,n2d] = FEMEquationQadM(Mesh,'a','b','f','gD','gN1','gN2')
+%  [A,b,n2d] = FEMEquationQuadM(Mesh,'a','b','f','gD','gN1','gN2')
 %    Mesh is the mesh describing the domain\n\
 %         see ReadMesh() for the description of the format
 %   'a','b','f','gD','gN1','gN2' are the functions and coefficients 
@@ -25,8 +25,8 @@ function [gMat,gVec,n2d] = FEMEquationQuadM(Mesh,aFunc,bFunc,fFunc,gDFunc,gN1Fun
 
 %% evaluate the functions a b and f
 
-nElem = size(Mesh.elem)(1);
-nGP   = size(Mesh.GP)(1)  ;
+nElem = size(Mesh.elem,1);
+nGP   = size(Mesh.GP,1)  ;
 
 if ischar(aFunc)
   aV = reshape(feval(aFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
@@ -144,19 +144,17 @@ for k = 1:size(Mesh.edges)(1)
       B = zeros(3,3);
     else
       if ischar(gN2Func)
-	g = feval(gN2Func,[p1;p2;p3]);
-	B = L*MBtr*diag(g.*[5;8;5])*MBtr';
+	gN2 = feval(gN2Func,[p1;p2;p3]);
+	B   = L*MBtr*diag(gN2.*[5;8;5])*MBtr';
       else
 	B = L*MBtr*diag(gN2Func.*[5;8;5])*MBtr';
       endif
     endif% gN2func
     
     if gDFunc == 0  %% evaluate Dirichlet values
-      g = zeros(3,1);
-      else
-	if ischar(gDFunc) g = feval(gDFunc,cor);
-	else              g = gDFunc*ones(3,1);
-	endif
+      gD = zeros(3,1);
+    elseif ischar(gDFunc) gD = feval(gDFunc,cor);
+    else                  gD = gDFunc*ones(3,1);
     endif% gDFunc
 
     dofs = Mesh.node2DOF(Mesh.edges(k,:)); %% mid point is certainly free
@@ -165,11 +163,11 @@ for k = 1:size(Mesh.edges)(1)
 	gVec(dofs) -= edgeVec;
         gMat(dofs,dofs) -= B;
       else  % node 1 free, node 3 Dirichlet
-	gVec(dofs(1:2)) -= edgeVec(1:2) + B(1:2,3)*g(3);
+	gVec(dofs(1:2)) -= edgeVec(1:2) + B(1:2,3)*gD(3);
 	gMat(dofs(1:2),dofs(1:2)) -= B(1:2,1:2);
       endif% dofs(3)>0
-    else  %% node 1 Dirichlet, node 3 free
-      gVec(dofs(2:3)) -= edgeVec(2:3) + B(2:3,1)*g(1);
+    elseif dofs(3)>0  %% node 1 Dirichlet, node 3 free
+      gVec(dofs(2:3)) -= edgeVec(2:3) + B(2:3,1)*gD(1);
       gMat(dofs(2:3),dofs(2:3)) -= B(2:3,2:3);
     endif % dofs(1)>0
   endif % Neumann edge

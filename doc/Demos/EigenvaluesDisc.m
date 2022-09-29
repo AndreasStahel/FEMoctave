@@ -5,7 +5,7 @@ alpha = linspace(0,N/(N+1)*2*pi,N)';
 xy = [xM+R*cos(alpha),yM+R*sin(alpha),-ones(size(alpha))];
 
 FEMmesh = CreateMeshTriangle("circle",xy,0.001);
-%%FEMmesh = MeshUpgrade(FEMmesh);
+%%FEMmesh = MeshUpgrade(FEMmesh,'quadratic');
 
 %%%%%%% solve the eigenvalue problem, show the eigenvalues
 if 1
@@ -13,7 +13,7 @@ if 1
   eigenvalues = la
   errorbound
   figure(1);
-  FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),ve(:,4));
+  FEMtrimesh(FEMmesh,ve(:,4));
   xlabel("x"); ylabel("y");
 else
   la = BVP2Deig(FEMmesh,1,0,1,0,4,1e-8)

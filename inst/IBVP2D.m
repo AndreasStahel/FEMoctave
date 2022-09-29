@@ -101,11 +101,14 @@ if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
 else
   u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,0);  %% solve BVP
 endif  
-if size(Mesh.elem,2)==3 %% linear elements
+switch Mesh.type
+case 'linear'    %% linear elements
   A = FEMEquation(Mesh,a,b0,bx,by,0, 0, 0,gN2);
-else %% quadratic elements
+case 'quadratic' %% quadratic elements
   A = FEMEquationQuad(Mesh,a,b0,bx,by,0, 0, 0,gN2);
-endif
+case 'cubic'     %% cubic elements
+  A = FEMEquationCubic(Mesh,a,b0,bx,by,0, 0, 0,gN2);
+endswitch
 
 Wu  = FEMInterpolWeight(Mesh,m);  %% weight matrix, leading to W* (d/dt u)
 Wf  = FEMInterpolWeight(Mesh,1);  %% weight matrix, leading to W*f
@@ -154,7 +157,7 @@ for ii_t = 1:steps(1)
     endif %% f_dep_t
     u_temp = Q*(U\(L\(P*(Mright*u_new(ind_free) + dt*(Wf*fVec)))));
     u_new(ind_free) = u_temp;
-    t+= dt;
+    t += dt;
   endfor % ii_2
   u(:,ii_t+1) = u_new + u_B;
 endfor
