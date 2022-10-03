@@ -1,15 +1,15 @@
 ## Copyright (C) 2020 Andreas Stahel
-## 
+##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see
 ## <https://www.gnu.org/licenses/>.
@@ -18,7 +18,7 @@
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
 ## Created: 2020-03-30
 
-function [u,t] = IBVP2Dsym(mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps)
+function [u,t] = IBVP2Dsym(Mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps)
   ## -*- texinfo -*-
   ## @deftypefn{function file}{}[@var{u},@var{t}] = IBVP2Dsym(@var{mesh},@var{m},@var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2},@var{u0},@var{t0},@var{tend},@var{steps})
   ##
@@ -65,8 +65,8 @@ function [u,t] = IBVP2Dsym(mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps)
 if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
 else
-  u_B = BVP2D(mesh,a,b0,0,0,0,gD,gN1,0);  %% solve BVP
-endif  
+  u_B = BVP2D(Mesh,a,b0,0,0,0,gD,gN1,0);  %% solve BVP
+endif
 switch Mesh.type
 case 'linear'    %% linear elements
   A = FEMEquation(Mesh,a,b0,0,0,0, 0, 0,gN2);
@@ -76,34 +76,34 @@ case 'cubic'     %% cubic elements
   A = FEMEquationCubic(Mesh,a,b0,0,0,0, 0, 0,gN2);
 endswitch
 
-Wu  = FEMInterpolWeight(mesh,m);  %% weight matrix, leading to W* (d/dt u)
-Wf  = FEMInterpolWeight(mesh,1);  %% weight matrix, leading to W*f
+Wu  = FEMInterpolWeight(Mesh,m);  %% weight matrix, leading to W* (d/dt u)
+Wf  = FEMInterpolWeight(Mesh,1);  %% weight matrix, leading to W*f
 
 if length(steps)==1
   dt = (tend-t0)/steps;
   steps = [steps,1];
 else
   dt = (tend-t0)/(steps(1)*steps(2));
-endif		  
+endif
 
 if ischar(u0)
-  u0 = feval(u0,mesh.nodes);
+  u0 = feval(u0,Mesh.nodes);
 elseif isscalar(u0)
-  u0 = u0*ones(length(mesh.nodesT),1);
+  u0 = u0*ones(length(Mesh.nodesT),1);
 else
   u0 = u0(:);
 endif
 
-ind_free = find(mesh.node2DOF>0);       %% which nodes lead to DOF
-ind_Dirichlet = find(mesh.node2DOF==0); %% Dirichlet nodes
+ind_free = find(Mesh.node2DOF>0);       %% which nodes lead to DOF
+ind_Dirichlet = find(Mesh.node2DOF==0); %% Dirichlet nodes
 W = Wu(:,ind_free);
 
 t = t0;  f_dep_t = false;
 if ischar(f)
-  fVec = feval(f,mesh.nodes,t+dt/2);
+  fVec = feval(f,Mesh.nodes,t+dt/2);
   f_dep_t = true;  % has to be evaluated at each timestep
 elseif isscalar(f)
-  fVec = f*ones(length(mesh.nodesT),1);
+  fVec = f*ones(length(Mesh.nodesT),1);
 else
   fVec = f;
 endif
@@ -112,14 +112,14 @@ Mleft = W+dt/2*A;  Mright = W-dt/2*A;
 [L,m,Q] = chol(Mleft,'lower');    %% Q'*A*Q = L*L'
 Qt = Q'; Lt = L';
 t = t0;
-u = zeros(length(u0),steps(1)+1);			      
+u = zeros(length(u0),steps(1)+1);
 u_new = u0-u_B;  u_new(ind_Dirichlet) = 0;
 
 u(:,1) = u0;
 for ii_t = 1:steps(1)
   for ii_2 = 1:steps(2)
     if f_dep_t
-      fVec = feval(u0,mesh.nodes,t+dt/2);
+      fVec = feval(u0,Mesh.nodes,t+dt/2);
     endif %% f_dep_t
     u_temp = Q*(Lt\(L\(Qt*(Mright*u_new(ind_free) + dt*(Wf*fVec)))));
     u_new(ind_free) = u_temp;

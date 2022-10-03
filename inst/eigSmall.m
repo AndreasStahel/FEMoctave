@@ -1,8 +1,8 @@
 function [eigval,evec,errorbound] = eigSmall(A,B,V,tol)
-%  [Lambda,{Ev,err}] = eigSmall(A,V,tol)     
+%  [Lambda,{Ev,err}] = eigSmall(A,V,tol)
 %        solve A*Ev = Ev*diag(Lambda) standard eigenvalue problem
 %
-%  [Lambda,{Ev,err}] = eigSmall(A,B,V,tol)   
+%  [Lambda,{Ev,err}] = eigSmall(A,B,V,tol)
 %        solve A*Ev = B*Ev*diag(Lambda) generalized eigenvalue problem
 %
 %   A   is a (sparse) mxm matrix
@@ -29,6 +29,8 @@ switch nargin()
     opts.tol = 1e-5;
   case 3
     opts.tol = 1e-5;
+  case 4
+    opts.tol = tol;
 endswitch
 
 switch nargout()
@@ -49,7 +51,7 @@ switch nargout()
     errorbound(i,1) = sqrt(cc);
     gap = min(abs(eigval(i)-eigval([1:i-1,i+1:end])));
     errorbound(i,2) = cc/gap;
-  endfor    
+  endfor
 endswitch
 
 %% assure that the eigenvalues are sorted
