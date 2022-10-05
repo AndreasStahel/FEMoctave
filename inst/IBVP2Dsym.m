@@ -119,7 +119,7 @@ u(:,1) = u0;
 for ii_t = 1:steps(1)
   for ii_2 = 1:steps(2)
     if f_dep_t
-      fVec = feval(u0,Mesh.nodes,t+dt/2);
+      fVec = feval(f,Mesh.nodes,t+dt/2);
     endif %% f_dep_t
     u_temp = Q*(Lt\(L\(Qt*(Mright*u_new(ind_free) + dt*(Wf*fVec)))));
     u_new(ind_free) = u_temp;

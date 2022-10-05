@@ -133,7 +133,7 @@ u_new(ind_free) = W\( (W-dt*D)*dt*v0(ind_free) + W*u_curr + dt^2/2*(Wf*fVec-A*u_
 for ii_t = 1:steps(1)
   for ii_2 = 1:steps(2)
     if f_dep_t
-      fVec = feval(u0,Mesh.nodes,t);
+      fVec = feval(f,Mesh.nodes,t);
     endif %% f_dep_t
     u_temp = Q*(U\(L\(P*(Mmiddle*u_new(ind_free) + Mright*u_curr + dt^2*(Wf*fVec)))));
     u_curr = u_new(ind_free);

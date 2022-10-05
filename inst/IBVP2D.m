@@ -1,15 +1,15 @@
 ## Copyright (C) 2020 Andreas Stahel
-## 
+##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see
 ## <https://www.gnu.org/licenses/>.
@@ -61,7 +61,7 @@ function [u,t] = IBVP2D(Mesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps)
   ## @c END_CUT_TEXINFO
   ## @end deftypefn
 
-  
+
 %  [u,t] = IBVP2D(Mesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps)
 %  Solve an initial boundary value problem
 %
@@ -100,7 +100,7 @@ if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
 else
   u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,0);  %% solve BVP
-endif  
+endif
 switch Mesh.type
 case 'linear'    %% linear elements
   A = FEMEquation(Mesh,a,b0,bx,by,0, 0, 0,gN2);
@@ -118,7 +118,7 @@ if length(steps)==1
   steps = [steps,1];
 else
   dt = (tend-t0)/(steps(1)*steps(2));
-endif		  
+endif
 
 if ischar(u0)
   u0 = feval(u0,Mesh.nodes);
@@ -146,14 +146,14 @@ endif
 Mleft = W+dt/2*A;  Mright = W-dt/2*A;
 [L,U,P,Q] = lu(Mleft);  %% P*A*Q = L*U
 t = t0;
-u = zeros(length(u0),steps(1)+1);			      
+u = zeros(length(u0),steps(1)+1);
 
 u_new = u0-u_B; u_new(ind_Dirichlet) = 0;
 u(:,1) = u0;
 for ii_t = 1:steps(1)
   for ii_2 = 1:steps(2)
     if f_dep_t
-      fVec = feval(u0,Mesh.nodes,t+dt/2);
+      fVec = feval(f,Mesh.nodes,t+dt/2);
     endif %% f_dep_t
     u_temp = Q*(U\(L\(P*(Mright*u_new(ind_free) + dt*(Wf*fVec)))));
     u_new(ind_free) = u_temp;
