@@ -23,20 +23,20 @@
 ##@item @var{Mesh} the initial mesh with linear elements
 ##@* this has to be a mesh with linear elements
 ##@item@var{Deform} the transformation formula
-##@* the function @var{Deform} takes one argument @var{xy}, a n by 2 matrix with the x and y components in colums
+##@* the function @var{Deform} takes one argument @var{xy}, a n by 2 matrix with the x and y components in columns
 ## and returns the result in a n by 2 matrix.
 ##@end itemize
 ##
-##return value
+##return value:
 ##@itemize
 ##@item @var{DeformedMesh} the deformed mesh consistes of linear elements
 ##@*use @var{MeshUpgrade} to generate quadratic or cubic elements
 ##@end itemize
-##@end itemize
 ##
 ## Sample call:
 ##@verbatim
-## to generate a mesh in polar coordinates:
+##to generate a mesh in polar coordinates:
+##
 ##function xy_new = Deform(xy)
 ##  xy_new = [xy(:,1).*cos(xy(:,2)), xy(:,1).*sin(xy(:,2))];
 ##endfunction
@@ -47,12 +47,12 @@
 ## @c references explicitly there, since references to core Octave
 ## @c functions are not automatically transformed from here to there.
 ## @c BEGIN_CUT_TEXINFO
-## @seealso{CreateMeshRect, CreateMeshTriangle, MeshUpgrade, MeshUpgradeCubic}
+## @seealso{CreateMeshRect, CreateMeshTriangle, MeshUpgrade}
 ## @c END_CUT_TEXINFO
 ## @end deftypefn
 
 
-## Author: Andreas Stahel <andrea.stahel@gmx.com>
+## Author: Andreas Stahel <andreas.stahel@gmx.com>
 ## Created: 2022-09-13
 
 function meshDeformed = MeshDeform (mesh,Deform)

@@ -32,7 +32,7 @@
 ##parameters:
 ##@itemize
 ##@item @var{mesh} is the mesh describing the domain and the boundary types
-##@the The element type (linear, qudratic, cubic) is selected by @var{mesh}
+##@item The element type (linear, qudratic, cubic) is selected by @var{mesh}
 ##@item @var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2}
 ##are the coefficients and functions describing the PDE.
 ##@*Any constant function can be given by its scalar value.
