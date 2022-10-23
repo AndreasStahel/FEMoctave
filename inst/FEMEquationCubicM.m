@@ -1,8 +1,8 @@
-function [gMat,gVec,n2d] = FEMEquationCubicM(Mesh,aFunc,bFunc,fFunc,gDFunc,gN1Func,gN2Func)
+function [gMat,gVec] = FEMEquationCubicM(Mesh,aFunc,bFunc,fFunc,gDFunc,gN1Func,gN2Func)
 %[...] = FEMEquationCubicM (...)
 %  sets up the system of linear equations for a numerical solution of a PDE
 %
-%  [A,b,n2d] = FEMEquationCubicM(Mesh,'a','b','f','gD','gN1','gN2')
+%  [A,b] = FEMEquationCubicM(Mesh,'a','b','f','gD','gN1','gN2')
 %    Mesh is the mesh describing the domain\n\
 %         see ReadMesh() for the description of the format
 %   'a','b','f','gD','gN1','gN2' are the functions and coefficients 
@@ -13,15 +13,9 @@ function [gMat,gVec,n2d] = FEMEquationCubicM(Mesh,aFunc,bFunc,fFunc,gDFunc,gN1Fu
 %                     u = gD           on Dirichlet section of the boundary
 %               a*du/dn = gN1+gN2*u    on Neumann section of the boundary 
 %
-%
 % A   is the matrix of the system to be solved.
 % b   is the RHS of the system to be solved.
-% n2d is the renumbering of the nodes to the DOF of the system
-%     n2d(k)=0  indicates that node k is a Dirichlet node
-%     n2d(k)=nn indicates that the value of the solution at node k 
-%               is given by u(nn)
 %
-%see also ReadMesh, ShowMesh, FEMSolve, ShowSolution, FEMValueM
 
 %% evaluate the functions a b and f
 

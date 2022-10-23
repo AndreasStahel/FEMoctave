@@ -1,4 +1,4 @@
-function [gMat,gVec,n2d] = FEMEquationQuadM(Mesh,aFunc,bFunc,fFunc,gDFunc,gN1Func,gN2Func)
+function [gMat,gVec] = FEMEquationQuadM(Mesh,aFunc,bFunc,fFunc,gDFunc,gN1Func,gN2Func)
 %[...] = FEMEquationQuadM (...)
 %  sets up the system of linear equations for a numerical solution of a PDE
 %
@@ -16,12 +16,7 @@ function [gMat,gVec,n2d] = FEMEquationQuadM(Mesh,aFunc,bFunc,fFunc,gDFunc,gN1Fun
 %
 % A   is the matrix of the system to be solved.
 % b   is the RHS of the system to be solved.
-% n2d is the renumbering of the nodes to the DOF of the system
-%     n2d(k)=0  indicates that node k is a Dirichlet node
-%     n2d(k)=nn indicates that the value of the solution at node k 
-%               is given by u(nn)
 %
-%see also ReadMesh, ShowMesh, FEMSolve, ShowSolution, FEMValueM
 
 %% evaluate the functions a b and f
 
