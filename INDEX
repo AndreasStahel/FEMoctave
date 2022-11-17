@@ -6,6 +6,8 @@ Solving Equations
   IBVP2D
   IBVP2Dsym
   I2BVP2D
+  PlaneStress
+  PlaneStrain
 Manipulating meshes
   CreateMeshRect
   CreateMeshTriangle
@@ -23,10 +25,18 @@ Manipulating meshes
   FEMgriddata
   FEMIntgerate
   tricontour
+Evaluation of elasticity
+  EvaluateStress
+  EvaluateStrain
+  EvaluatePrincipalStress
+  EvaluatevonMises
+  EvaluateTresca
 Creating equations
   FEMEquationM
   FEMEquationQuadM
   FEMEquationCubicM
+  PStressEquationM.m
+  PStressEquationQuadM.m
 Demo m-files
   LaplaceRectangle.m
   LaplaceCylindrical.m
@@ -36,6 +46,8 @@ Demo m-files
   HeatDynamic.m
   TestConvergence.m
   WaveDynamic.m
+  BendingBeam.m
+  ShearLocking.m
 Example m-files
   WaveAnimation.m
   BesselSuperconvergence.m
@@ -45,3 +57,6 @@ Example m-files
   Capacitance.m
   capacitance.poly capacitance.1.ele  capacitance.1.node  capacitance.1.poly  
   MinimalSurface.m
+  EITforward.m
+  PipePressure.m
+  Crook.m
