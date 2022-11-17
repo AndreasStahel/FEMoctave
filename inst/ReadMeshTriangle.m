@@ -57,7 +57,6 @@ else
   fclose(fid);
 endif
 
-
 [fid,msg] = fopen(strcat(name,".node"),"r");
 n = fscanf(fid,"%d",1);
 if (nomap==true) map = linspace(1,n,n);endif
@@ -68,7 +67,6 @@ for k = 1:n;
   nodes(map(k),:) = fscanf(fid,"%e",[1,3]);
 endfor
 fclose(fid);
-
 
 [fid,msg] = fopen(strcat(name,".ele"),"r");
 n = fscanf(fid,"%d",1);
@@ -92,12 +90,11 @@ for k = 1:n;
   tmp = fscanf(fid,"%1c",[1,1]);
   edges(k,:) = fscanf(fid,"%e",[1,3]);
   for kk = 1:2 edges(k,kk) = map(edges(k,kk));endfor
-  edges(k,3) = min([nodes(edges(k,1),3),nodes(edges(k,2),3)]);
+ %% edges(k,3) = min([nodes(edges(k,1),3),nodes(edges(k,2),3)]);
 endfor
 fclose(fid);
 
-
-%% determine are of elements and the GP (Gauss integration Points)
+%% determine area of elements and the GP (Gauss integration Points)
 nElem = size(elem)(1);
 elemArea = zeros(nElem,1);
 GP = zeros(3*nElem,2); Mesh.GPT = zeros(3*nElem,1);
@@ -122,17 +119,19 @@ Mesh.nodesT   = nodes(:,3);
 Mesh.GP       = GP;
 Mesh.elemArea = elemArea;
 
-Mesh.nDOF = 0;
-ln = size(Mesh.nodes)(1);
-Mesh.node2DOF = zeros(ln,1);
-for k = 1:ln
-  if (Mesh.nodesT(k) ~= -1)
-    Mesh.nDOF++;
-    Mesh.node2DOF(k) = Mesh.nDOF; 
-  endif
-endfor
+if (Mesh.edgesT(1)<-9);  %% elasticity
+  Mesh.nodesT = [fix(Mesh.nodesT/10), mod(Mesh.nodesT,-10)];
+  BCtype = [fix(Mesh.edgesT/10), mod(Mesh.edgesT,-10)];
+  ind_x = find(BCtype(:,1)==-1);
+  Mesh.nodesT(edges(ind_x,[1,2])(:),1) = -1;
+  ind_y = find(BCtype(:,2)==-1);
+  Mesh.nodesT(edges(ind_y,[1 2])(:),2) = -1;
+endif
+
+ind = (Mesh.nodesT~=-1);
+Mesh.node2DOF = cumsum(ind).*ind;
+Mesh.nDOF = sum(ind);
+
 endfunction
-
-
 
 
