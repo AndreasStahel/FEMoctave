@@ -1,0 +1,55 @@
+---
+layout: "package"
+permalink: "femoctave/"
+description: >-
+  Use FEM for solving boundary value problems in two space dimensions.
+icon:
+links:
+- icon: "far fa-copyright"
+  label: "GPL-3.0-or-later"
+  url: "https://github.com/AndreasStahel/FEMoctave/blob/master/COPYING"
+- icon: "fas fa-rss"
+  label: "news"
+  url: "https://github.com/AndreasStahel/FEMoctave/releases"
+- icon: "fas fa-code-branch"
+  label: "repository"
+  url: "https://github.com/AndreasStahel/FEMoctave/"
+- icon: "fas fa-book"
+  label: "package documentation"
+  url: "https://github.com/AndreasStahel/FEMoctave/blob/master/doc/FEMdoc.pdf"
+- icon: "fas fa-bug"
+  label: "report a problem"
+  url: "https://github.com/AndreasStahel/FEMoctave/issues"
+maintainers:
+- name: "Andreas Stahel"
+  contact:
+versions:
+- id: "2.0.6"
+  date: "2022-10-12"
+  sha256: "???"
+  url: "https://github.com/AndreasStahel/FEMoctave/archive/v2.0.6.tar.gz"
+  depends:
+  - "octave (>= 5.2.0)"
+  - "pkg"
+- id: "2.0.5"
+  date: "2022-09-29"
+  sha256: "7445f2b55a291b65b8af04cb4efb7d50886cd866446b9ba2a3ef542e984eca9c"
+  url: "https://github.com/AndreasStahel/FEMoctave/archive/v2.0.5.tar.gz"
+  depends:
+  - "octave (>= 5.2.0)"
+  - "pkg"
+- id: "2.0.4"
+  date: "2022-04-14"
+  sha256: "1e7a8e5dbd05ad3822538eb27dea0cfaef35431c44ded55f91022f2b5bff8d20"
+  url: "https://github.com/AndreasStahel/FEMoctave/archive/v2.0.4.tar.gz"
+  depends:
+  - "octave (>= 5.2.0)"
+  - "pkg"
+- id: "2.0.3"
+  date: "2020-04-08"
+  sha256: "5dc477d2d7690142e1aeaa0818e796afbbf69f527901a5a86ac6b2dc4779323d"
+  url: "https://github.com/AndreasStahel/FEMoctave/archive/v2.0.3.tar.gz"
+  depends:
+  - "octave (>= 5.2.0)"
+  - "pkg"
+---
