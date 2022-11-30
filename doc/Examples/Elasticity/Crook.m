@@ -18,6 +18,14 @@ E = 200e9; nu = 0.25; %%% steel
 MaximalDisplacement = min(u2)
 
 [~,slope_x,~] = FEMgriddata(FEMmesh,u2,0,-W/2)
+yi = linspace(-0.01,0.1)'; xi =-0.005*ones(size(yi));
+u1i = FEMgriddata(FEMmesh,u1,xi,yi);
+figure(8); plot(yi,u1i)
+           xlabel('y'); ylabel('u_1')
+
+p = LinearRegression([yi.^2,yi,ones(size(yi))],u1i);  %% linear regression of a polynomial of degree 2
+slope = polyval([2*p(1) p(2)],-W/2)                   %% evaluate the derivative of the polynomial
+
 CoarseMesh = CreateMeshRect([-W:W/3:H],[-W:W/3:H],-11,-11,-11,-11);
 x = CoarseMesh.nodes(:,1); y = CoarseMesh.nodes(:,2);
 u1i = FEMgriddata(FEMmesh,u1,x,y); u2i = FEMgriddata(FEMmesh,u2,x,y);
