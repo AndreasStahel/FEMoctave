@@ -37,7 +37,7 @@
 ## @end deftypefn
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2020-03-30
+## Created: 2022-11-03
 
 function MeshNew = MeshUpgrade(Mesh,type)
   %% MeshNew = MeshUpgrade(Mesh,type)
@@ -50,12 +50,16 @@ function MeshNew = MeshUpgrade(Mesh,type)
     type = 'quadratic';
   endif
   
-
+  if ~strcmp(Mesh.type,'linear')
+    error("MeshUpgrade: input mesh must consist of linear elements")
+  endif
+  
   nodes = Mesh.nodes;    nNodes = length(nodes);
   elem  = Mesh.elem;     nElem  = size(elem,1);
   edges = Mesh.edges;
   nodesT= Mesh.nodesT;
 
+  elastic = (Mesh.edgesT(1)<-9);
   ConnMat = zeros(nNodes,nNodes);
 
   switch tolower(type)
@@ -70,7 +74,11 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	if number==0  % add a new node
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode;
-	  nodesT(nNodes) = Mesh.elemT(ii);
+	  if elastic
+	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[0,0];
+	  else
+	    nodesT(nNodes) = Mesh.elemT(ii);
+	  endif
 	  ConnMat(min(ee),max(ee)) = nNodes;
 	  elemN(ii,4) = nNodes;
 	else
@@ -83,7 +91,11 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	if number==0  % add a new node
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode;
-	  nodesT(nNodes) = Mesh.elemT(ii);
+	  if elastic
+	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[0,0];
+	  else
+	    nodesT(nNodes) = Mesh.elemT(ii);
+	  endif
 	  ConnMat(min(ee),max(ee)) = nNodes;
 	  elemN(ii,5) = nNodes;
 	else
@@ -96,7 +108,11 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	if number==0  % add a new node
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode;
-	  nodesT(nNodes) = Mesh.elemT(ii);
+	  if elastic
+	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[0,0];
+	  else
+	    nodesT(nNodes) = Mesh.elemT(ii);
+	  endif
 	  ConnMat(min(ee),max(ee)) = nNodes;
 	  elemN(ii,6) = nNodes;
 	else
@@ -108,7 +124,11 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	ee = [edges(ii,1),edges(ii,2)];
 	number =  ConnMat(min(ee),max(ee));
 	%%    nodesT(number) = min([Mesh.nodesT(edges(ii,1)),Mesh.nodesT(edges(ii,2))]);
-	nodesT(number) = Mesh.edgesT(ii);
+	if elastic
+	  nodesT(number,:) = [fix(Mesh.edgesT(ii)/10),mod(Mesh.edgesT(ii),-10)];
+	else
+	  nodesT(number) = Mesh.edgesT(ii);
+	endif
 	edges(ii,1:3) =  [edges(ii,1),number,edges(ii,2)];
       endfor %% update edges
       
