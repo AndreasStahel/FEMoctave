@@ -2,6 +2,13 @@ TODO for next release:
 * compiled code for the elasticity equations, for speed reasons
 * 3D elasticity with cylindrical symmetry
 
+FEMoctave 2.0.10, ???17.11.2022
+-------------------------------
+* update documentation in FEMdoc.pdf
+* new CreateMeshTriangle.m with options added for mesh adaptation
+* cubic elements for elasticity problems, all codes adapted
+* add the example Wrench
+
 FEMoctave 2.0.9, 17.11.2022
 -------------------------------
 * new codes for linear elasticity, plane stress  and plane strain
