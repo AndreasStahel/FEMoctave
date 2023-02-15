@@ -1,13 +1,37 @@
 TODO for next release:
 * compiled code for the elasticity equations, for speed reasons
-* 3D elasticity with cylindrical symmetry
 
-FEMoctave 2.0.10, ???17.11.2022
+
+FEMoctave 2.0.10, 15.2.2023
 -------------------------------
 * update documentation in FEMdoc.pdf
+* 3D elasticity with cylindrical symmetry
+* an example for axisymetric elasticity problems
 * new CreateMeshTriangle.m with options added for mesh adaptation
 * cubic elements for elasticity problems, all codes adapted
-* add the example Wrench
+* add the examples Wrench, RubberBox and WasherSpring
+* add a test of null spaces TestNullSpace.m
+
+New files
+- PStressEquationCubicM.m
+- AxiStress.m
+- AxiStressEquationM.m
+- AxiStressEquationQuadM.m
+- AxiStressEquationCubicM.m
+- EvaluateStressAxi.m
+- EvaluateStrainAxi.m
+- EvaluateVonMisesAxi.m
+- EvaluateTrescaAxi.m
+- EvaluatePrincipalStressAxi.m
+- doc/Demos/TestNullSpace.m
+- doc/Demos/AxiSymmetricExample.m
+- doc/Examples/Elasticity/PipePressure.m
+- doc/Examples/Elasticity/PipePressureAxi.m
+- doc/Examples/Elasticity/Wrench.m
+- doc/Examples/Elasticity/WrenchData.m
+- doc/Examples/Elasticity/RubberBox.m
+- doc/Examples/Elasticity/WasherSpring.m
+
 
 FEMoctave 2.0.9, 17.11.2022
 -------------------------------

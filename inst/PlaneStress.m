@@ -67,13 +67,10 @@ function [u1,u2] = PlaneStress(Mesh,E,nu,f,gD,gN)
       [A,b] = PStressEquationM (Mesh,E,nu,f,gD,gN);
     case 'quadratic'  %% second order elements
       [A,b] = PStressEquationQuadM (Mesh,E,nu,f,gD,gN);
-    case 'cubic'  %% third order elements
+    case 'cubic'  %% second order elements
       [A,b] = PStressEquationCubicM (Mesh,E,nu,f,gD,gN);
   endswitch
 
-%  [lower,upper] = bandwidth(A)
-%  figure();  spy(A)
-  
   ug = -A\b;
   nDOF = Mesh.nDOF;   n = size(Mesh.nodesT,1);  u1 = zeros(n,1); u2 = u1;
 

@@ -17,17 +17,29 @@
 ## -*- texinfo -*-
 ## @deftypefn{function file}{}Mesh = CreateMeshRect(@var{x},@var{y},@var{Blow},@var{Bup},@var{Bleft},@var{Bright})
 ##
-##   Create a mesh on a rectangle with nodes at (x_i,y_j)
+##   Create a rectangular mesh nodes at (x_i,y_j)
 ##
 ##parameters:
 ##@itemize
-##@item @var{x},@var{y} are the vectors containing the coodinates of the mesh nodes to be generated.
+##@item @var{x},@var{y} are the vectors containing the coodinates of the nodes to be generated.
 ##@item@var{Blow}, @var{Bup}, @var{Bleft}, @var{Bright} indicate the type of boundary condition at lower, upper, left and right edge of the rectangle
-##@* B* = -1: Dirichlet boundary condition
-##@* B* = -2: Neumann or Robin boundary condition
+##@itemize
+##@item for scalar problems
+##@itemize
+##@item B* = -1: Dirichlet boundary condition
+##@item B* = -2: Neumann or Robin boundary condition
+##@end itemize
+##@item for elasticity problems
+##@itemize
+##@item bi = -xy : with two digits for x and y directions
+##@item x/y = 1 : given displacement
+##@item x/y = 2 : force free
+##@item x/y = 3 : given force density
+##@end itemize
+##@end itemize
 ##@end itemize
 ##
-##return value
+##return values
 ##@itemize
 ##@item @var{Mesh} is a a structure with the information about the mesh.
 ##@*The mesh consists of n_e elements, n_n nodes and n_ed edges.
@@ -37,13 +49,13 @@
 ##@item@var{Mesh.elemArea} n_e vector with the areas of the elements
 ##@item@var{Mesh.elemT} n_e vector with the type of elements (not used)
 ##@item@var{Mesh.nodes} n_n by 2 matrix with the coordinates of the nodes
-##@item@var{Mesh.nodesT} n_n vector with the type of nodes (not used)
+##@item@var{Mesh.nodesT} n_n vector with the type of nodes
 ##@item@var{Mesh.edges} n_ed by 2 matrix with the numbers of the nodes forming edges
 ##@item@var{Mesh.edgesT} n_ed vector with the type of edge
 ##@item@var{Mesh.GP} n_e*3 by 2 matrix with the coordinates of the Gauss points
 ##@item@var{Mesh.GPT} n_e*3 vector of integers with the type of Gauss points
 ##@item@var{Mesh.nDOF} number of DOF, degrees of freedom
-##@item@var{Mesh.node2DOF} n_n vector of integer, mapping nodes to DOF
+##@item@var{Mesh.node2DOF} n_n vector or n_n by 2 matrix of integers, mapping nodes to DOF
 ##@end itemize
 ##@end itemize
 ##
@@ -61,34 +73,48 @@
 ## @end deftypefn
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2020-03-30
-
+## Created: 2022-11-02
 
 function mesh = CreateMeshRect(x,y,Blow,Bup,Bleft,Bright)
 
 if (nargin ~=6 ) print_usage(); endif
 n = length(x);   m = length(y);
 
+scalar = (Blow>-10);  %% scalar or elasticity problem
+
 %===================== nodes =======================================
-[xx,yy] = meshgrid(x,y);
-nodes = [xx'(:), yy'(:), ones(n*m,1)];
+[xx,yy] = meshgrid(x,y);  nodes = [xx'(:), yy'(:)];
+if scalar
+  nodesT = ones(n*m,1);
+  nodesT([0:m-1]*n+1) = Bleft;  nodesT([1:m]*n    ) = Bright;
 
-%for im = 1:m
-%  nodes((im-1)*n+1,3) = Bleft;
-%  nodes(  im*n    ,3) = Bright;
-%endfor  
-nodes([0:m-1]*n+1,3) = Bleft;
-nodes([1:m]*n    ,3) = Bright;
+  if (Bleft  == -1)  instart = 2;       else instart = 1; endif 
+  if (Bright == -1)  inend   = (n-1);   else inend   = n; endif
 
-if (Bleft  == -1)  instart = 2;       else instart = 1; endif 
-if (Bright == -1)  inend   = (n-1);   else inend   = n; endif
+  nodesT(unique([instart:inend])        ) = Blow;
+  nodesT(unique([instart:inend])+(m-1)*n) = Bup;
+else %% elasticity
+  %% decode the BC
+  nodesT = ones(n*m,2);
+  Bleft2 = mod(Bleft,-10); Bright2 = mod(Bright,-10);
+  Blow2  = mod(Blow, -10); Bup2    = mod(Bup,-10);
+  Bleft1 = fix(Bleft/10);  Bright1 = fix(Bright/10);
+  Blow1  = fix(Blow/10);   Bup1    = fix(Bup/10);
+  
+  nodesT([0:m-1]*n+1,1) = Bleft1;
+  nodesT([1:m]*n    ,1) = Bright1;
+  if (Bleft1  == -1)  instart = 2;       else instart = 1; endif 
+  if (Bright1 == -1)  inend   = (n-1);   else inend   = n; endif
+  nodesT(unique([instart:inend])        ,1) = Blow1;
+  nodesT(unique([instart:inend])+(m-1)*n,1) = Bup1;
 
-%%for in = instart:inend
-%%  nodes(in,        3) = Blow;
-%%  nodes((m-1)*n+in,3) = Bup;
-%%endfor
-nodes([instart:inend]        ,3) = Blow;
-nodes([instart:inend]+(m-1)*n,3) = Bup;
+  nodesT([0:m-1]*n+1,2) = Bleft2;
+  nodesT([1:m]*n    ,2) = Bright2;
+  if (Bleft2  == -1)  instart = 2;       else instart = 1; endif 
+  if (Bright2 == -1)  inend   = (n-1);   else inend   = n; endif
+  nodesT(unique([instart:inend])        ,2) = Blow2;
+  nodesT(unique([instart:inend])+(m-1)*n,2) = Bup2;
+endif
 
 %======================= elements =====================================
 %% all triangles have a positive orientation
@@ -146,8 +172,8 @@ mesh.elem   = elem(:,[1 2 3]);
 mesh.elemT  = elem(:,4);
 mesh.edges  = edges(:,[1 2]);
 mesh.edgesT = edges(:,3);
-mesh.nodes  = nodes(:,[1 2]);
-mesh.nodesT = nodes(:,3);
+mesh.nodes  = nodes;
+mesh.nodesT = nodesT;
 mesh.GP = GP;
 mesh.elemArea = elemArea;
 

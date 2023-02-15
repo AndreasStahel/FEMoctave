@@ -13,7 +13,12 @@ function new_xy = Deform(xy)
   new_xy = [xy(:,1).*cos(xy(:,2)),xy(:,1).*sin(xy(:,2))];
 endfunction
 FEMmesh = MeshDeform(FEMmesh,'Deform');
-FEMmesh = MeshUpgrade(FEMmesh,'quadratic');
+
+if 1
+  FEMmesh = MeshUpgrade(FEMmesh,'quadratic');
+else
+  FEMmesh = MeshUpgrade(FEMmesh,'cubic');
+endif
 
 %% define the radial pressure to be applied on the inside
 function res = gN1(xy)

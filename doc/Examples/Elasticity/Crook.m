@@ -10,7 +10,11 @@ endif
 
 FEMmesh = CreateMeshTriangle ('Crook1',Domain,(W/Layers)^2);
 figure(1); FEMtrimesh(FEMmesh); xlabel('x'); ylabel('y'); axis([-W 3*gap -W 3*gap])
-FEMmesh = MeshUpgrade(FEMmesh,'quadratic');
+if 1
+  FEMmesh = MeshUpgrade(FEMmesh,'quadratic');
+else
+  FEMmesh = MeshUpgrade(FEMmesh,'cubic');
+endif
 
 E = 200e9; nu = 0.25; %%% steel
 [u1,u2] = PlaneStress(FEMmesh,E,nu,{0,0},{0,0},{0,-Load});

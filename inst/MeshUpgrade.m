@@ -75,7 +75,7 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode;
 	  if elastic
-	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[0,0];
+	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[1,1];
 	  else
 	    nodesT(nNodes) = Mesh.elemT(ii);
 	  endif
@@ -92,7 +92,7 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode;
 	  if elastic
-	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[0,0];
+	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[1,1];
 	  else
 	    nodesT(nNodes) = Mesh.elemT(ii);
 	  endif
@@ -109,7 +109,7 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode;
 	  if elastic
-	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[0,0];
+	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[1,1];
 	  else
 	    nodesT(nNodes) = Mesh.elemT(ii);
 	  endif
@@ -133,6 +133,7 @@ function MeshNew = MeshUpgrade(Mesh,type)
       endfor %% update edges
       
       MeshNew.type   = 'quadratic';
+
     case "cubic"
       elemN = zeros(nElem,10);
       for ii = 1:nElem  %% update the elements
@@ -146,12 +147,16 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	if number==0  % add two new nodes
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode1;
-	  nodesT(nNodes) = Mesh.elemT(ii);
+	  if elastic
+	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[1,1];
+	  else
+	    nodesT(nNodes) = Mesh.elemT(ii);
+	  endif
 	  elemN(ii,4) = nNodes;
 	  ConnMat(min(ee),max(ee)) = nNodes;  %% marked the treated edge
 	  nNodes = nNodes+1;
-	  nodes(nNodes,1:2) = newnode2;
-	  nodesT(nNodes) = Mesh.elemT(ii);
+	  nodes(nNodes,[1,2])  = newnode2;
+	  nodesT(nNodes,[1,2]) = Mesh.elemT(ii);
 	  elemN(ii,5) = nNodes;
 	else
 	  elemN(ii,4) = number+1; elemN(ii,5) = number;  %% swap the order
@@ -165,12 +170,16 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	if number==0  % add two new nodes
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode1;
-	  nodesT(nNodes) = Mesh.elemT(ii);
+	  if elastic
+	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[1,1];
+	  else
+	    nodesT(nNodes) = Mesh.elemT(ii);
+	  endif
 	  elemN(ii,6) = nNodes;
 	  ConnMat(min(ee),max(ee)) = nNodes;  %% marked the treated edge
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode2;
-	  nodesT(nNodes) = Mesh.elemT(ii);
+	  nodesT(nNodes,1:2) = Mesh.elemT(ii);
 	  elemN(ii,7) = nNodes;
 	else
 	  elemN(ii,6) = number+1; elemN(ii,7) = number;  %% swap the order
@@ -184,12 +193,17 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	if number==0  % add two new nodes
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode1;
+	  if elastic
+	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[1,1];
+	  else
+	    nodesT(nNodes) = Mesh.elemT(ii);
+	  endif
 	  nodesT(nNodes) = Mesh.elemT(ii);
 	  elemN(ii,8) = nNodes;
 	  ConnMat(min(ee),max(ee)) = nNodes;  %% marked the treated edge
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode2;
-	  nodesT(nNodes) = Mesh.elemT(ii);
+	  nodesT(nNodes,1:2) = Mesh.elemT(ii);
 	  elemN(ii,9) = nNodes;
 	else
 	  elemN(ii,8) = number+1; elemN(ii,9) = number; %% swap the order
@@ -197,7 +211,7 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	%% node 10
 	nNodes = nNodes+1;
 	nodes(nNodes,:) = sum(Mesh.nodes(Mesh.elem(ii,1:3),:))/3;
-	nodesT(nNodes) = Mesh.elemT(ii);
+	nodesT(nNodes,:) = Mesh.elemT(ii);
 	elemN(ii,10) = nNodes;
       endfor%% update elements
       
@@ -208,7 +222,12 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	direction2 = nodes(number+1,:) - nodes(number,:);
 	samedir = sign(direction1*direction2');
 	%%    nodesT(number) = min([Mesh.nodesT(edges(ii,1)),Mesh.nodesT(edges(ii,2))]);
-	nodesT(number) = Mesh.edgesT(ii); nodesT(number+1) = Mesh.edgesT(ii);
+	if elastic
+	  nodesT(number,:)   = [fix(Mesh.edgesT(ii)/10),mod(Mesh.edgesT(ii),-10)];
+	  nodesT(number+1,:) = [fix(Mesh.edgesT(ii)/10),mod(Mesh.edgesT(ii),-10)];
+	else
+	  nodesT(number) = Mesh.edgesT(ii); nodesT(number+1) = Mesh.edgesT(ii);
+	endif
 	%% one of the two
 	if samedir>0
 	  edges(ii,1:4) =  [edges(ii,1),number,number+1,edges(ii,2)];

@@ -4,12 +4,12 @@
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see
 ## <https://www.gnu.org/licenses/>.
@@ -30,8 +30,17 @@
 ##@item yi y-coordinate of node i
 ##@item bi boundary marker for segment from node i to node i+1
 ##@itemize
+##@item for scalar problems
+##@itemize
 ##@item   bi = -1  Dirichlet boundary condition
 ##@item   bi = -2  Neumann or Robin boundary condition
+##@end itemize
+##@item for elasticity problems
+##@itemize
+##@item B* = -xy : with two digits for x and y directions
+##@item x/y = 1 : given displacement
+##@item x/y = 2 : force free
+##@item x/y = 3 : given force density
 ##@end itemize
 ##@end itemize
 ##@item@var{area} the typical area of he individual triangles to be used
@@ -85,6 +94,7 @@ function Mesh = CreateMeshTriangle(name,xy,area,varargin)
   if ((nargin<3))
     print_usage()
   endif
+
   opt = '-Q';
   CuthillMcKee = 0;
   DeleteFiles = 1;

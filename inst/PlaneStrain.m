@@ -60,14 +60,13 @@ function [u1,u2] = PlaneStrain(Mesh,E,nu,f,gD,gN)
   Estar = EV./(1-nuV.^2);
   nustar = nuV./(1-nuV);
 
-  Mesh.type
   switch Mesh.type
     case 'linear' %% first order elements
       [A,b] = PStressEquationM (Mesh,Estar,nustar,f,gD,gN);
     case 'quadratic'  %% second order elements
       [A,b] = PStressEquationQuadM (Mesh,Estar,nustar,f,gD,gN);
     case 'cubic'      %% third order elements
-      [A,b] = PStressEquationQuadM (Mesh,Estar,nustar,f,gD,gN);
+      [A,b] = PStressEquationCubicM (Mesh,Estar,nustar,f,gD,gN);
   endswitch
 
   

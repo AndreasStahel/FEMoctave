@@ -8,6 +8,7 @@ Solving Equations
   I2BVP2D
   PlaneStress
   PlaneStrain
+  AxiStress
 Manipulating meshes
   CreateMeshRect
   CreateMeshTriangle
@@ -31,12 +32,21 @@ Evaluation of elasticity
   EvaluatePrincipalStress
   EvaluatevonMises
   EvaluateTresca
+  EvaluateStressAxi
+  EvaluateStrainAxi
+  EvaluatePrincipalStressAxi
+  EvaluateVonMisesAxi
+  EvaluateTrescaAxi
 Creating equations
   FEMEquationM
   FEMEquationQuadM
   FEMEquationCubicM
   PStressEquationM.m
   PStressEquationQuadM.m
+  PStressEquationCubicM.m
+  AxiStressEquationM.m
+  AxiStressEquationQuadM.m
+  AxiStressEquationCubicM.m
 Demo m-files
   LaplaceRectangle.m
   LaplaceCylindrical.m
@@ -45,9 +55,11 @@ Demo m-files
   EigenvaluesDisc.m
   HeatDynamic.m
   TestConvergence.m
+  TestNullSpace.m
   WaveDynamic.m
   BendingBeam.m
   ShearLocking.m
+  AxiSymmetricExample.m
 Example m-files
   WaveAnimation.m
   BesselSuperconvergence.m
@@ -60,3 +72,10 @@ Example m-files
   EITforward.m
   PipePressure.m
   Crook.m
+  PipePressure.m
+  PipePressureAxi.m
+  Wrench.m
+  WrenchData.m
+  RubberBox.m
+  WasherSpring.m
+  

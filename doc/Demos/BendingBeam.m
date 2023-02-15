@@ -4,15 +4,19 @@ E = 100e9; nu = 0; Force = 100;
 
 NL = 10;   %% number of elements along length L
 NH =  NL/10;   %% number of elements along height H
-Order = 2; %% order of elements, either 1 or 2
+Order = 1; %% order of elements, either 1, 2 or 3
 FEMmesh = CreateMeshRect([0:L/NL:L],[-H/2:H/NH:+H/2],-22,-22,-11,-33);
 
 figure(1); FEMtrimesh(FEMmesh);%% axis equal;
-if Order==2
-  FEMmesh = MeshUpgrade(FEMmesh);
-endif
            hold on; plot(FEMmesh.GP(:,1),FEMmesh.GP(:,2),'b*'); hold off
            xlabel('x'); ylabel('y')
+switch Order
+  case 2
+    FEMmesh = MeshUpgrade(FEMmesh,'quadratic');
+  case 3
+    FEMmesh = MeshUpgrade(FEMmesh,'cubic');
+endswitch
+
 
 [u1,u2] = PlaneStress(FEMmesh,E,nu,{0,0},{0,0},{0,Force/H});
 figure(2); FEMtrimesh(FEMmesh,u1); xlabel('x'); ylabel('y'); zlabel('u1')
