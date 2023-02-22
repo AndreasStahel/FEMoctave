@@ -44,7 +44,7 @@ function [u,t] = IBVP2D(Mesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps)
   ##@item @var{t0}, @var{tend} are the initial and final times
   ##@item @var{steps} is a vector with one or two positive integers.
   ##@*If @var{steps} = n, then n Crank Nicolson steps are taken and the results returned.
-  ##@*If @var{steps} = [n,nint], then n*nint Crank Nicolson steps are taken and (n+1) results returned.
+  ##@*If @var{steps} = [n,nint], then n*nint steps are taken and (n+1) results returned.
   ##@end itemize
   ##
   ##return values
