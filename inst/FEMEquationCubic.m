@@ -1,17 +1,17 @@
-function [gMat,gVec] = FEMEquationCubicM(Mesh,aFunc,bFunc,fFunc,gDFunc,gN1Func,gN2Func)
-%[...] = FEMEquationCubicM (...)
+function [gMat,gVec] = FEMEquationCubic(Mesh,aFunc,b0Func,bxFunc,byFunc,fFunc,gDFunc,gN1Func,gN2Func)
+%[...] = FEMEquationCubic (...)
 %  sets up the system of linear equations for a numerical solution of a PDE
 %
-%  [A,b] = FEMEquationCubicM(Mesh,'a','b','f','gD','gN1','gN2')
+%  [A,b] = FEMEquationCubicM(Mesh,'a','b0','bx','by','f','gD','gN1','gN2')
 %    Mesh is the mesh describing the domain\n\
 %         see ReadMesh() for the description of the format
-%   'a','b','f','gD','gN1','gN2' are the functions and coefficients 
+%   'a','b0','bx',by','f','gD','gN1','gN2' are the functions and coefficients 
 %         for the boundary value problem. They can be given as a scalar value
-%         or as a sting with the function name 
+%         or as a string with the function name 
 %
-%  -div(a*grad u) + b*u = f            in domain
-%                     u = gD           on Dirichlet section of the boundary
-%               a*du/dn = gN1+gN2*u    on Neumann section of the boundary 
+%  -div(a*grad u-u*(bx,by)) + b0*u = f    in domain%
+%                          u = gD         on Dirichlet section of the boundary
+%         (a*du-u*(bx,by))*n = gN1+gN2*u  on Neumann section of the boundary 
 %
 % A   is the matrix of the system to be solved.
 % b   is the RHS of the system to be solved.
@@ -30,12 +30,28 @@ else
   aV = reshape(aFunc,nGP/nElem,nElem);
 endif
 
-if ischar(bFunc)
-  bV = reshape(feval(bFunc,Mesh.GP,Mesh.nodesT),nGP/nElem,nElem);
-elseif isscalar(bFunc)
-  bV = bFunc*ones(nGP/nElem,nElem);
+if ischar(b0Func)
+  bV = reshape(feval(b0Func,Mesh.GP,Mesh.nodesT),nGP/nElem,nElem);
+elseif isscalar(b0Func)
+  bV = b0Func*ones(nGP/nElem,nElem);
 else
-  bV = reshape(bFunc,nGP/nElem,nElem);
+  bV = reshape(b0Func,nGP/nElem,nElem);
+endif
+
+if ischar(bxFunc)
+  bxV = reshape(feval(bxFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
+elseif isscalar(bxFunc)
+  bxV = bxFunc*ones(nGP/nElem,nElem);
+else
+  bxV = reshape(bxFunc,nGP/nElem,nElem);
+endif
+
+if ischar(byFunc)
+  byV = reshape(feval(byFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
+elseif isscalar(byFunc)
+  byV = byFunc*ones(nGP/nElem,nElem);
+else
+  byV = reshape(byFunc,nGP/nElem,nElem);
 endif
 
 if ischar(fFunc)
@@ -105,7 +121,9 @@ for k = 1:nElem   %%for each element
   Ax = Mtemp'*diag(w.*aV(:,k))*Mtemp;
   Mtemp = -G(2,2)*Mxi-G(2,3)*Mnu;
   Ay = Mtemp'*diag(w.*aV(:,k))*Mtemp;
-  mat = 0.5/area*(Ax+Ay) + 2*area*B;
+  Abxy = ((G(1,2)*Mxi + G(1,3)*Mnu)'*diag(w.*bxV(:,k))...
+         +(G(2,2)*Mxi + G(2,3)*Mnu)'*diag(w.*byV(:,k)) )*M;
+  mat = 0.5/area*(Ax+Ay) + 2*area*B + Abxy;
   vec = -2*area*M'*(w.*fV(:,k));
   dofs = Mesh.node2DOF(Mesh.elem(k,:));
   for k1 = 1:10
@@ -136,7 +154,7 @@ gMat = sparse(Si,Sj,Sval,Mesh.nDOF,Mesh.nDOF);
 %% insert the edge contributions
 
 %% the edge interpolation matrix, from nodes to Gauss points
-lambda = sqrt(15)/10;  %% the sign of lambda is flipped with compared to notes
+lambda = sqrt(15)/10;  %% the sign of lambda is flipped, compared to notes
 MB = [1 lambda lambda^2 lambda^3;1 0 0 0;1 -lambda lambda^2 -lambda^3]...
      *[-1 9 9 -1;2 -54 +54 -2;+36 -36 -36 +36;-72 +216 -216 +72]/16;
 
@@ -173,9 +191,9 @@ for k = 1:size(Mesh.edges,1)
     endif% gN2func
 
     if gDFunc == 0  %% evaluate Dirichlet values
-      gD = zeros(4,1);
-      elseif ischar(gDFunc) gD = feval(gDFunc,cor);
-      else                  gD = gDFunc*ones(4,1);
+       gD = zeros(4,1);
+    elseif ischar(gDFunc) gD = feval(gDFunc,cor);
+    else                  gD = gDFunc*ones(4,1);
     endif% gDFunc
 
     dofs = Mesh.node2DOF(Mesh.edges(k,:)); %% mid points 2&3 are certainly free
