@@ -29,7 +29,7 @@ for t_ii = 1:length(t)
   axis([0 2 0 2 0 u_max])
   drawnow();
   figure(3);clf
-  tricontour(FEMmesh,u_dyn(:,t_ii),linspace(0,0.99*u_max,11))
+  FEMtricontour(FEMmesh,u_dyn(:,t_ii),linspace(0,0.99*u_max,11))
   xlabel('x'); ylabel('y')
   caxis([0,u_max]);
   drawnow(); 
