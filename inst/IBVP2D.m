@@ -90,11 +90,13 @@ function [u,t] = IBVP2D(Mesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps)
 %          and n intermediate results are returned
 %
 %        u is the matrix with n+1 columns, each of them containing
-%          the sulution at a time
+%          the solution at a time
 %        t = linspace(t0,tend,steps(1)+1) are the times at which
 %          the solutions are returned
 %
 % see also BVP2D, BVP2Dsym, BVP2Deig
+
+Mesh.node2DOF = Mesh.node2DOF(:,1);  %% not an elasticity problem
 
 if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
@@ -128,8 +130,8 @@ else
   u0 = u0(:);
 endif
 
-ind_free = find(Mesh.node2DOF>0);       %% which nodes lead to DOF
-ind_Dirichlet = find(Mesh.node2DOF==0); %% Dirichlet nodes
+ind_free = find(Mesh.node2DOF(:,1)>0);       %% which nodes lead to DOF
+ind_Dirichlet = find(Mesh.node2DOF(:,1)==0); %% Dirichlet nodes
 W = Wu(:,ind_free);
 
 t = t0;  f_dep_t = false;

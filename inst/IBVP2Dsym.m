@@ -19,49 +19,49 @@
 ## Created: 2020-03-30
 
 function [u,t] = IBVP2Dsym(Mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps)
-  ## -*- texinfo -*-
-  ## @deftypefn{function file}{}[@var{u},@var{t}] = IBVP2Dsym(@var{mesh},@var{m},@var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2},@var{u0},@var{t0},@var{tend},@var{steps})
-  ##
-  ##   Solve a symmetric initial boundary value problem
-  ##
-  ##@verbatim
-  ## m*d/dt u - div(a*grad u) + b0*u = f         in domain
-  ##                               u = gD        on Dirichlet boundary
-  ##                    n*(a*grad u) = gN1+gN2*u on Neumann boundary
-  ##                           u(t0) = u0        initial value
-  ##@end verbatim
-  ##
-  ##parameters:
-  ##@itemize
-  ##@item @var{mesh} is the mesh describing the domain and the boundary types
-  ##@item @var{m},@var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2}
-  ##are the coefficients and functions describing the PDE.
-  ##@*Any constant function can be given by its scalar value.
-  ##@*The functions @var{m},@var{a},@var{b0} and @var{f} may also be given as vectors with the values of the function at the Gauss points.
-  ##@item @var{f} may be given as a string for a function depending on (x,y) and time t or a a vector with the values at nodes or as scalar.
-  ##If @var{f} is given by a scalar or vector it is independent on time.
-  ##@item @var{u0} is the initial value, can be given as a constant, function name or as vector with the values at the nodes
-  ##@item @var{t0}, @var{tend} are the initial and final times
-  ##@item @var{steps} is a vector with one or two positive integers.
-  ##@*If @var{steps} = n, then n Crank Nicolson steps are taken and the results returned.
-  ##@*If @var{steps} = [n,nint], then n*nint Crank Nicolson steps are taken and (n+1) results returned.
-  ##@end itemize
-  ##
-  ##return values
-  ##@itemize
-  ##@item @var{u} is a matrix with n+1 columns with the values of the solution at the nodes at different times @var{t}
-  ##@item @var{t} is the vector with the values of the times at which the solutions are returned.
-  ##@end itemize
-  ##
-  ## @c Will be cut out in ??? info file and replaced with the same
-  ## @c references explicitly there, since references to core Octave
-  ## @c functions are not automatically transformed from here to there.
-  ## @c BEGIN_CUT_TEXINFO
-  ## @seealso{I2BVP2D, BVP2D, BVP2Dsym, BVP2eig, CreateMeshRect, CreateMeshTriangle}
-  ## @c END_CUT_TEXINFO
-  ## @end deftypefn
+## -*- texinfo -*-
+## @deftypefn{function file}{}[@var{u},@var{t}] = IBVP2Dsym(@var{mesh},@var{m},@var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2},@var{u0},@var{t0},@var{tend},@var{steps})
+##
+##   Solve a symmetric initial boundary value problem
+##
+##@verbatim
+## m*d/dt u - div(a*grad u) + b0*u = f         in domain
+##                               u = gD        on Dirichlet boundary
+##                    n*(a*grad u) = gN1+gN2*u on Neumann boundary
+##                           u(t0) = u0        initial value
+##@end verbatim
+##
+##parameters:
+##@itemize
+##@item @var{mesh} is the mesh describing the domain and the boundary types
+##@item @var{m},@var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2}
+##are the coefficients and functions describing the PDE.
+##@*Any constant function can be given by its scalar value.
+##@*The functions @var{m},@var{a},@var{b0} and @var{f} may also be given as vectors with the values of the function at the Gauss points.
+##@item @var{f} may be given as a string for a function depending on (x,y) and time t or a a vector with the values at nodes or as scalar.
+##If @var{f} is given by a scalar or vector it is independent on time.
+##@item @var{u0} is the initial value, can be given as a constant, function name or as vector with the values at the nodes
+##@item @var{t0}, @var{tend} are the initial and final times
+##@item @var{steps} is a vector with one or two positive integers.
+##@*If @var{steps} = n, then n Crank Nicolson steps are taken and the results returned.
+##@*If @var{steps} = [n,nint], then n*nint Crank Nicolson steps are taken and (n+1) results returned.
+##@end itemize
+##
+##return values
+##@itemize
+##@item @var{u} is a matrix with n+1 columns with the values of the solution at the nodes at different times @var{t}
+##@item @var{t} is the vector with the values of the times at which the solutions are returned.
+##@end itemize
+##
+## @c Will be cut out in ??? info file and replaced with the same
+## @c references explicitly there, since references to core Octave
+## @c functions are not automatically transformed from here to there.
+## @c BEGIN_CUT_TEXINFO
+## @seealso{I2BVP2D, BVP2D, BVP2Dsym, BVP2eig, CreateMeshRect, CreateMeshTriangle}
+## @c END_CUT_TEXINFO
+## @end deftypefn
 
-
+Mesh.node2DOF = Mesh.node2DOF(:,1);  %% not an elasticity problem
 if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
 else
@@ -109,7 +109,7 @@ else
 endif
 
 Mleft = W+dt/2*A;  Mright = W-dt/2*A;
-[L,m,Q] = chol(Mleft,'lower');    %% Q'*A*Q = L*L'
+[L,m,Q] = chol(Mleft,'lower');    %% Q'*Mleft*Q = L*L'
 Qt = Q'; Lt = L';
 t = t0;
 u = zeros(length(u0),steps(1)+1);
