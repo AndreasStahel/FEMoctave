@@ -29,6 +29,7 @@
 ##@item xi x-coordinate of node i
 ##@item yi y-coordinate of node i
 ##@item bi boundary marker for segment from node i to node i+1
+##@end itemize
 ##@itemize
 ##@item for scalar problems
 ##@itemize
