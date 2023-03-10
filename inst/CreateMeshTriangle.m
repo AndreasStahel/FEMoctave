@@ -44,7 +44,7 @@
 ##@item x/y = 3 : given force density
 ##@end itemize
 ##@end itemize
-##@item@var{area} the typical area of he individual triangles to be used
+##@item@var{area} the typical area of the individual triangles to be used
 ##@item@var{options} additional options to be used when calling triangle the options "pa" and the area will be added automatically
 ##@*Default options are "q" resp. "qpa"
 ##@*to suppress the verbose information use "Q"
