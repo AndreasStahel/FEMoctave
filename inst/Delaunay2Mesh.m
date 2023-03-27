@@ -1,15 +1,15 @@
 ## Copyright (C) 2020 Andreas Stahel
-## 
+##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see
 ## <https://www.gnu.org/licenses/>.
@@ -39,14 +39,15 @@
 
 function FEMmesh = Delaunay2Mesh(tri,x,y)
   nElem = size(tri,1);  nNodes = length(x);
-  FEMmesh.elemT=ones(nElem,1);
-  FEMmesh.nodes=[x(:),y(:)];
-  FEMmesh.nodesT=ones(size(x(:)));
+  FEMmesh.type = 'linear';
+  FEMmesh.elemT = ones(nElem,1);
+  FEMmesh.nodes = [x(:),y(:)];
+  FEMmesh.nodesT = ones(size(x(:)));
   FEMmesh.GP = zeros(3*nElem,2);
   FEMmesh.GPT = -ones(3*nElem,1);
   FEMmesh.elemArea = zeros(nElem,1);
-  
-  %% detect the edges, thei are only part of one triangle
+
+  %% detect the edges, they are only part of one triangle
   ConnMat = sparse(nNodes,nNodes);
   for k = 1:nElem
     v0 = FEMmesh.nodes(tri(k,1),1:2);
@@ -68,6 +69,7 @@ function FEMmesh = Delaunay2Mesh(tri,x,y)
   endfor
   [ind_i,ind_j] = find( ConnMat==1);
   FEMmesh.edges = [ind_i,ind_j];
+  %% modify he next twolinea if you want other boundary conditions
   FEMmesh.edgesT = -ones(size(ind_i));
   FEMmesh.nodesT(FEMmesh.edges(:)) = -1;
   ind = (FEMmesh.nodesT ~= -1);
