@@ -131,7 +131,6 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	endif
 	edges(ii,1:3) =  [edges(ii,1),number,edges(ii,2)];
       endfor %% update edges
-      
       MeshNew.type   = 'quadratic';
 
     case "cubic"
@@ -144,6 +143,7 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	direction = (nodes(ee(2),:) - nodes(ee(1),:)); 
 	newnode1 = nodes(ee(1),:) + direction/3;
 	newnode2 = nodes(ee(1),:) + direction*2/3;
+
 	if number==0  % add two new nodes
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode1;
@@ -156,7 +156,11 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	  ConnMat(min(ee),max(ee)) = nNodes;  %% marked the treated edge
 	  nNodes = nNodes+1;
 	  nodes(nNodes,[1,2])  = newnode2;
-	  nodesT(nNodes,[1,2]) = Mesh.elemT(ii);
+	  if elastic
+	    nodesT(nNodes,[1,2]) =Mesh.elemT(ii)*[1 1];
+	  else
+	    nodesT(nNodes) = Mesh.elemT(ii);
+	  endif
 	  elemN(ii,5) = nNodes;
 	else
 	  elemN(ii,4) = number+1; elemN(ii,5) = number;  %% swap the order
@@ -179,7 +183,11 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	  ConnMat(min(ee),max(ee)) = nNodes;  %% marked the treated edge
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode2;
-	  nodesT(nNodes,1:2) = Mesh.elemT(ii);
+	  if elastic
+	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[1,1];
+	  else
+	    nodesT(nNodes) = Mesh.elemT(ii);
+	  endif
 	  elemN(ii,7) = nNodes;
 	else
 	  elemN(ii,6) = number+1; elemN(ii,7) = number;  %% swap the order
@@ -203,7 +211,11 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	  ConnMat(min(ee),max(ee)) = nNodes;  %% marked the treated edge
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode2;
-	  nodesT(nNodes,1:2) = Mesh.elemT(ii);
+	  if elastic
+	    nodesT(nNodes,[1 2]) = Mesh.elemT(ii)*[1,1];
+	  else
+	    nodesT(nNodes) = Mesh.elemT(ii);
+	  endif
 	  elemN(ii,9) = nNodes;
 	else
 	  elemN(ii,8) = number+1; elemN(ii,9) = number; %% swap the order
@@ -214,7 +226,7 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	nodesT(nNodes,:) = Mesh.elemT(ii);
 	elemN(ii,10) = nNodes;
       endfor%% update elements
-      
+
       for ii = 1:size(edges,1)  %% update edges
 	ee = [edges(ii,1),edges(ii,2)];
 	number =  ConnMat(min(ee),max(ee));
