@@ -10,23 +10,23 @@ endfunction
 
 u = BVP2Dsym(FEMmesh,1,0,0,'gD',0,0);
 figure(1);
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),u);
+FEMtrimesh(FEMmesh,u);
 xlabel("x"); ylabel("y"); title('FEM solution'); view([30,30])
 
 u_exact = gD(FEMmesh.nodes);
 figure(2);
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),-u+u_exact);
+FEMtrimesh(FEMmesh,-u+u_exact);
 xlabel("x"); ylabel("y"); title('Error of FEM solution'); view([30,30])
 
 [ux,uy] = FEMEvaluateGradient(FEMmesh,u);
 figure(3);
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),ux);
+FEMtrimesh(FEMmesh,ux);
 xlabel("x"); ylabel("y"); title('FEM solution, u_x'); view([30,30])
 
 figure(4);
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),uy);
+FEMtrimesh(FEMmesh,uy);
 xlabel("x"); ylabel("y"); title('FEM solution, u_y'); view([30,30])
 
 figure(5);
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),sqrt(ux.^2+uy.^2));
+FEMtrimesh(FEMmesh,sqrt(ux.^2+uy.^2));
 xlabel("x"); ylabel("y"); title('FEM solution, norm of gradient'); view([30,30])

@@ -3,14 +3,14 @@ FEMmesh = ReadMeshTriangle('capacitance.1');
 x = FEMmesh.nodes(:,1); y = FEMmesh.nodes(:,2); 
 
 figure(1)
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2))
+FEMtrimesh(FEMmesh)
 
 function res = a(xy)     res = xy(:,1);      endfunction
 function res = Volt(xy)  res = xy(:,2)>0.1;  endfunction
 
 u = BVP2Dsym(FEMmesh,'a',0,0,'Volt',0,0);
 figure(2)
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),u);
+FEMtrimesh(FEMmesh,u);
 view([38,48])
 xlabel('radius r'); ylabel('height z'); zlabel('voltage')
 

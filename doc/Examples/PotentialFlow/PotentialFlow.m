@@ -11,7 +11,7 @@ x = FEMmesh.nodes(:,1);  y = FEMmesh.nodes(:,2);
 function res = gD(xy)   res = 1-xy(:,1)/5; endfunction
 u = BVP2Dsym(FEMmesh,1,0,0,'gD',0,0);
 figure(1)
-trimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),u)
+trimesh(FEMmesh,u)
 xlabel('x'); ylabel('y'); zlabel('potential')
 
 [xx,yy] = meshgrid(linspace(0,5-0.01,25),linspace(0,2-0.01,21));
@@ -25,7 +25,7 @@ hold on; plot([xy(:,1);0],[xy(:,2);0],'k'); hold off; axis equal
 
 [ux,uy] = FEMEvaluateGradient(FEMmesh,u);
 figure(4)
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),sqrt(ux.^2+ uy.^2))
+FEMtrimesh(FEMmesh,sqrt(ux.^2+ uy.^2))
 xlabel('x'); ylabel('y'); zlabel('v=|grad u|'); zlim([0 0.5])
 
 figure(14)

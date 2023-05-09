@@ -23,5 +23,5 @@ endfor
 Area_Difference = [area,difference]
 
 figure(1)
-FEMtrisurf(elem,x,y,u)
+FEMtrisurf(FEMmesh,u)
 xlabel('x'); ylabel('y'); zlabel('z')
