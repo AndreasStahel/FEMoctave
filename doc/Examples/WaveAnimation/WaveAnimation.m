@@ -18,7 +18,7 @@ toc()
 
 figure(1)   % show animation
 for t_ii = 1:length(t)
-  FEMtrimesh(FEMmesh.elem,x,y,u_dyn(:,t_ii))
+  FEMtrimesh(FEMmesh,u_dyn(:,t_ii))
   axis([0 pi -pi pi -0.2 0.4])
   xlabel('x'); ylabel('y')
   drawnow(); %%pause(0.1)
