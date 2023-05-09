@@ -85,7 +85,7 @@ xlabel("x"); ylabel("y"); title('error u_x, quadratic elements')
 view([45,25])
 
 figure(33);
-FEMtrimesh(FEMmesh1.ux1-ux1_exact);
+FEMtrimesh(FEMmesh1,ux1-ux1_exact);
 xlabel("x"); ylabel("y"); title('error u_x, linear elements')
 view([30,30])
 view([45,25])
