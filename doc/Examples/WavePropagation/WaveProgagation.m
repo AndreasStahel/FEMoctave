@@ -39,8 +39,4 @@ else
   view(0,90); xlim([0,L]);  ylim([-d,H]);
 endif
 
-printing = 0;
-if printing
-  print -dpng ../../doc/WavePropagation.png
-endif
 

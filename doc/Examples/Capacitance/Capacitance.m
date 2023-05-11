@@ -1,16 +1,16 @@
 FEMmesh = ReadMeshTriangle('capacitance.1');
 %%FEMmesh = MeshUpgrade(FEMmesh);
-x = FEMmesh.nodes(:,1); y = FEMmesh.nodes(:,2); 
+x = FEMmesh.nodes(:,1); y = FEMmesh.nodes(:,2);
 
 figure(1)
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2))
+FEMtrimesh(FEMmesh)
 
 function res = a(xy)     res = xy(:,1);      endfunction
 function res = Volt(xy)  res = xy(:,2)>0.1;  endfunction
 
 u = BVP2Dsym(FEMmesh,'a',0,0,'Volt',0,0);
 figure(2)
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),u);
+FEMtrimesh(FEMmesh,u);
 view([38,48])
 xlabel('radius r'); ylabel('height z'); zlabel('voltage')
 
@@ -20,7 +20,7 @@ else
   MeshTri = FEMmesh;
 endif
 figure(3)
-tricontour(MeshTri.elem,MeshTri.nodes(:,1),MeshTri.nodes(:,2),u,21);
+FEMtricontour(MeshTri,u,21);
 xlabel('radius r'); ylabel('height z');
 
 [ux,uy] = FEMEvaluateGradient(FEMmesh,u);

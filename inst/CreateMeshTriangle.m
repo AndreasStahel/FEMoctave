@@ -1,5 +1,5 @@
 ## Copyright (C) 2022 Andreas Stahel
-## 
+##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
@@ -99,12 +99,12 @@ function Mesh = CreateMeshTriangle(name,xy,area,varargin)
   opt = '-Q';
   CuthillMcKee = 0;
   DeleteFiles = 1;
-  
+
   PointCounter = 0; Points = []; Areas = [];
   HoleCounter  = 0; HoleSize = 0;
   HoleLength   = [];  HoleBorder = []; HolePoint = [];
   SegmentCounter = 0; SegmentBorder = [];
-  SegmentLength = []; 
+  SegmentLength = [];
   if (~isempty(varargin))
     for cc = 1:length(varargin)
       switch tolower(varargin{cc}.name)
@@ -201,13 +201,13 @@ function Mesh = CreateMeshTriangle(name,xy,area,varargin)
       endfor% jj
     endfor %% sc
   endif
- 
+
   fprintf(fid,"# holes\n");
   fprintf(fid,"%i\n",HoleCounter);
   for hc = 1:HoleCounter
     fprintf(fid,"%i %16.15e %16.15e\n",hc,HolePoint(hc,1), HolePoint(hc,2));
   endfor
-  
+
   if PointCounter>0
       fprintf(fid,"# area markers\n");
     fprintf(fid,"%i\n",PointCounter);
@@ -215,22 +215,25 @@ function Mesh = CreateMeshTriangle(name,xy,area,varargin)
       fprintf(fid,"%i %f %f 0 %f \n",jj,Points(jj,1), Points(jj,2),Areas(jj));
     endfor
   endif
-  
+
   %% maximal angle 30 degree
   if PointCounter>0
     command = ['triangle ',opt,sprintf('pq30a '),name,'.poly'];
   else
-    command = ['triangle ',opt,sprintf('pq30a%f ',area),name,'.poly'];
+    dd = ['%.',num2str(max(fix(abs(log10(area))),6) + 4)];  %% how mmany digits are required?
+    format_string = sprintf('pq30a%sf ',dd);
+    command = ['triangle ',opt,sprintf(format_string,area),name,'.poly'];
+    %%command = ['triangle ',opt,sprintf('pq30a%f ',area),name,'.poly']
   endif
 
   fprintf(fid,"# generate mesh by : %s\n",command);
   fclose(fid);
-  
+
   system(command);
   if CuthillMcKee
     system(['./CuthillMcKee -s0 ',name,'.1']);
   endif
-  
+
   if nargout >=1
     Mesh = ReadMeshTriangle([name,'.1']);
     if DeleteFiles

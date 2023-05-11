@@ -36,12 +36,12 @@ u_lin = BVP2Dsym(FEMmesh1,"aa",1,"LapuSol","uSol",0,0);
 uExact = uSol(FEMmesh.nodes); uExact1 = uSol(FEMmesh1.nodes);
 
 figure(1);
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),uExact);
+FEMtrimesh(FEMmesh,uExact);
 xlabel("x"); ylabel("y"); title("exact solution"); view([45,25])
 
 
 figure(2);
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),u-uExact);
+FEMtrimesh(FEMmesh,u-uExact);
 title('error, quadratic elements');xlabel("x");ylabel("y")
 view([45,25])
 
@@ -54,7 +54,7 @@ mesh(xi,yi,ui-ui_exact)
 xlabel('y'); ylabel('y'); title('difference')
 
 figure(12);
-FEMtrimesh(FEMmesh1.elem,FEMmesh1.nodes(:,1),FEMmesh1.nodes(:,2),u_lin-uExact1);
+FEMtrimesh(FEMmesh1,u_lin-uExact1);
 title('error, linear elements');xlabel("x");ylabel("y")
 
 MaxMeanL2Error2A = [max(abs(u-uExact)),mean(abs(u-uExact)),sqrt(mean((u-uExact).^2))]
@@ -74,18 +74,18 @@ uy1_exact = -sin(phi1).*besselj(1,r1);
 [ux1,uy1] = FEMEvaluateGradient(FEMmesh1,uExact1);
 
 figure(13);
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),ux_exact);
+FEMtrimesh(FEMmesh,ux_exact);
 xlabel("x"); ylabel("y"); title('u_x exact')
 view([30,30])
 
 
 figure(23);
-FEMtrimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),ux-ux_exact);
+FEMtrimesh(FEMmesh,ux-ux_exact);
 xlabel("x"); ylabel("y"); title('error u_x, quadratic elements')
 view([45,25])
 
 figure(33);
-FEMtrimesh(FEMmesh1.elem,x1,y1,ux1-ux1_exact);
+FEMtrimesh(FEMmesh1,ux1-ux1_exact);
 xlabel("x"); ylabel("y"); title('error u_x, linear elements')
 view([30,30])
 view([45,25])
