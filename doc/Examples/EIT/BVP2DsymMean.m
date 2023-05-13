@@ -1,4 +1,4 @@
-## Copyright (C) 2020 Andreas Stahel
+## Copyright (C) 2023 Andreas Stahel
 ##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -16,12 +16,13 @@
 
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2020-03-30
+## Created: 2022-05-11
 
 ## -*- texinfo -*-
 ## @deftypefn{function file}{}@var{u} = BVP2DsymMean(@var{mesh},@var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2})
 ##
 ##   Solve a symmetric, elliptic boundary value problem
+##   assume zero mean of the solution
 ##
 ##@verbatim
 ##     -div(a*grad u)+ b0*u = f            in domain
@@ -32,7 +33,7 @@
 ##parameters:
 ##@itemize
 ##@item @var{mesh} is the mesh describing the domain and the boundary types
-##@the The element type (linear, qudratic, cubic) is selected by @var{mesh}
+## the element type (linear, qudratic, cubic) is selected by @var{mesh}
 ##@item @var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2}
 ##are the coefficients and functions describing the PDE.
 ##@*Any constant function can be given by its scalar value.
@@ -55,6 +56,7 @@
 
 %  u = BVP2DsymMean(mesh,a,b0,f,gD,gN1,gN2)
 %  Solve a symmetric, elliptic boundary value problem
+%  assume zero mean of the solution
 %
 %   u = BVP2D(mesh,'a','b0','f','gD','gN1','gN2')
 %   u = BVP2D(mesh,aVec,b0Vec,fVec,'gD','gN1','gN2')

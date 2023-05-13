@@ -19,14 +19,14 @@
 ## Created: 2020-03-30
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}@var{FEMmesh} = Delaunay2Mesh(@var{tri},@var{x},@var{y}})
+## @deftypefn{function file}{}@var{FEMmesh} = Delaunay2Mesh(@var{tri},@var{x},@var{y})
 ##
 ##   generate a mesh with elements of order 1, using a Delaunay triangulation
 ##
 ##parameters:
 ##@itemize
 ##@item @var{tri} the Delaunay triangulation
-##@item @var{x},@var{y} the coodinates of the points
+##@item @var{x}, @var{y} the coodinates of the points
 ##@end itemize
 ##
 ##return value
@@ -69,7 +69,7 @@ function FEMmesh = Delaunay2Mesh(tri,x,y)
   endfor
   [ind_i,ind_j] = find( ConnMat==1);
   FEMmesh.edges = [ind_i,ind_j];
-  %% modify he next twolinea if you want other boundary conditions
+  %% modify the next two lines if you want other boundary conditions
   FEMmesh.edgesT = -ones(size(ind_i));
   FEMmesh.nodesT(FEMmesh.edges(:)) = -1;
   ind = (FEMmesh.nodesT ~= -1);
