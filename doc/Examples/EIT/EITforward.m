@@ -6,7 +6,7 @@ x = Rx*cos(alpha); y = Ry*sin(alpha);
 BC = -2*ones(size(x));
 my_angle = 120  %% select the configuration, use 60 or 120
 
-function res = sigma(xy)                 %% the conductivity
+function res = sigma(xy,m)               %% the conductivity
   x = xy(:,1); y = xy(:,2);
   res = ones(size(x));
   res((x+0.5).^2+y.^2<=0.25^2) *=  4 ;   %% heart on the left

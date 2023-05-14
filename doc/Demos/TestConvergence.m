@@ -1,7 +1,7 @@
 clear *
-  function res = u_exact(xy)  res =   sin(xy(:,1)).*sin(xy(:,2));   endfunction
-  function res = f(xy)        res = 2*sin(xy(:,1)).*sin(xy(:,2));   endfunction
-  function res = u_y(xy)      res =   sin(xy(:,1)).*cos(xy(:,2));   endfunction
+  function res = u_exact(xy,a) res =   sin(xy(:,1)).*sin(xy(:,2));   endfunction
+  function res = f(xy,a)       res = 2*sin(xy(:,1)).*sin(xy(:,2));   endfunction
+  function res = u_y(xy,a)     res =   sin(xy(:,1)).*cos(xy(:,2));   endfunction
 
 a = 1; b0 = 0;  gN2 = 0;
 N = 6;

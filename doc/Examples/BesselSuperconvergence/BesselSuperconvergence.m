@@ -18,15 +18,15 @@ else
 endif
 
 
-function y = uSol(xy)
+function y = uSol(xy,m)
   y = besselj(0,sqrt(xy(:,1).^2+xy(:,2).^2));
 endfunction
 %% the Besselj(0,r) function is an eigenfunction with eigenvalue 1
-function y = LapuSol(xy)
+function y = LapuSol(xy,m)
   y = 2*besselj(0,sqrt(xy(:,1).^2+xy(:,2).^2));
 endfunction
 
-function y = aa(xy)
+function y = aa(xy,m)
   y = ones(length(xy),1);
 endfunction
 

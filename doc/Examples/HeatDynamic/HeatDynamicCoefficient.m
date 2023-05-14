@@ -8,7 +8,7 @@ FEMmesh = MeshUpgrade(FEMmesh,'quadratic');
 figure(1); FEMtrimesh(FEMmesh);
            axis equal; xlabel('x'); ylabel('y')
 
-function res = a(xy)
+function res = a(xy,m)
   l = 0.5;
   res = ones(size(xy,1),1);
   res(find(abs(xy(:,1)-1-l/2)<l/2)) *= 1/6; 
