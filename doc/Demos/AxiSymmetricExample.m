@@ -1,4 +1,3 @@
-pkg load femoctave
 printing = 1;
 R = 0.1;
 if 0  %% nonuniform mesh

@@ -1,5 +1,4 @@
 clear all
-pkg load femoctave
 E = 110e9; nu = 0.35; %%% copper
 %%E = 200e9; nu = 0.25; %%% steel
 R = 0.1; dR = 0.01;
