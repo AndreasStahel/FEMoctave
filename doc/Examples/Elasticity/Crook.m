@@ -1,4 +1,3 @@
-pkg load femoctave
 W = 0.01; H = 0.1; Load = 1e6;;
 Layers = 2*5; gap = W/5;
 
