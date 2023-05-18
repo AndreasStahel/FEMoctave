@@ -1,5 +1,3 @@
-pkg load femoctave
-printing = 1;
 R = 0.1;
 if 0  %% nonuniform mesh
   Mesh = CreateMeshTriangle('AxiSymm',[0 0 -21; R 0 -32; R 2*R -22; 0 2*R -12],1e-4);
