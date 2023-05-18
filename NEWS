@@ -1,7 +1,12 @@
 TODO for next release:
 * compiled code for the elasticity equations, for speed reasons
 
-FEMoctave 2.0.11, 11.5.2023
+FEMoctave 2.0.14, 11.5.2023
+-------------------------------
+* fixes for the Debian package
+* in FEMDoc.pdf linebreaks improved
+
+FEMoctave 2.0.13, 11.5.2023
 -------------------------------
 * modified versions of FEMEquation.m, FEMEquationQuad.m and FEMEquationCubic.m
   - can handle nonsymmetric problems now

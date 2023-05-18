@@ -22,11 +22,11 @@ function y = uSol(xy)
   y = besselj(0,sqrt(xy(:,1).^2+xy(:,2).^2));
 endfunction
 %% the Besselj(0,r) function is an eigenfunction with eigenvalue 1
-function y = LapuSol(xy)
+function y = LapuSol(xy,dummy)
   y = 2*besselj(0,sqrt(xy(:,1).^2+xy(:,2).^2));
 endfunction
 
-function y = aa(xy)
+function y = aa(xy,dummy)
   y = ones(length(xy),1);
 endfunction
 

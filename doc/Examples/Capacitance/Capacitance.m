@@ -5,8 +5,8 @@ x = FEMmesh.nodes(:,1); y = FEMmesh.nodes(:,2);
 figure(1)
 FEMtrimesh(FEMmesh)
 
-function res = a(xy)     res = xy(:,1);      endfunction
-function res = Volt(xy)  res = xy(:,2)>0.1;  endfunction
+function res = a(xy,dummy)     res = xy(:,1);      endfunction
+function res = Volt(xy,dummy)  res = xy(:,2)>0.1;  endfunction
 
 u = BVP2Dsym(FEMmesh,'a',0,0,'Volt',0,0);
 figure(2)
