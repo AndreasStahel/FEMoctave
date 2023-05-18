@@ -1,4 +1,3 @@
-pkg load femoctave
 rho = 2700; E = 70e9; nu = 0.33;  %% Aluminum
 H = 0.001; Ri = 0.002; Ro = 0.005; D = 0.0006; H = 0.0004;
 global Offset
