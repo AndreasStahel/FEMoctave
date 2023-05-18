@@ -27,8 +27,8 @@ u1i = FEMgriddata(FEMmesh,u1,xi,yi);
 figure(8); plot(yi,u1i)
            xlabel('y'); ylabel('u_1')
 
-p = LinearRegression([yi.^2,yi,ones(size(yi))],u1i);  %% linear regression of a polynomial of degree 2
-slope = polyval([2*p(1) p(2)],-W/2)                   %% evaluate the derivative of the polynomial
+p = polyfit(yi,u1i,2);               %% linear regression of a polynomial of degree 2
+slope = polyval([2*p(1) p(2)],-W/2)  %% evaluate the derivative of the polynomial
 
 CoarseMesh = CreateMeshRect([-W:W/3:H],[-W:W/3:H],-11,-11,-11,-11);
 x = CoarseMesh.nodes(:,1); y = CoarseMesh.nodes(:,2);
