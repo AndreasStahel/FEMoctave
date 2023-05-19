@@ -8,10 +8,10 @@ FEMmesh = MeshUpgrade(FEMmesh,'quadratic');
 figure(1); FEMtrimesh(FEMmesh);
            axis equal; xlabel('x'); ylabel('y')
 
-function res = a(xy)
+function res = a(xy,dummy)
   l = 0.5;
   res = ones(size(xy,1),1);
-  res(find(abs(xy(:,1)-1-l/2)<l/2)) *= 1/6; 
+  res(find(abs(xy(:,1)-1-l/2)<l/2)) *= 1/6;
 endfunction
 
 [u t] = IBVP2D(FEMmesh,1,'a',0, 0, 0, 0,1, 0,  0,  0, 0, 10, [Nt,10]);
@@ -19,8 +19,8 @@ endfunction
 figure(2); FEMtrimesh(FEMmesh,u(:,end))
            xlabel('x'); ylabel('y'); zlim([0,1]); view([10 30]); caxis([0,1]);
 	   text(0.2,0.2,0.2,sprintf('t = %4.2f',t(end))); zlabel('temperature')
-	   
-	   
+
+
 figure(3); FEMtrimesh(FEMmesh,u(:,Nt/2+1))
            xlabel('x'); ylabel('y'); zlim([0,1]); view([10 30]); caxis([0,1])
 	   text(0.2,0.2,0.2,sprintf('t = %4.2f',t(Nt/2+1))); zlabel('temperature')
@@ -41,6 +41,6 @@ figure(10); mesh(x,t(2:end),u_int)
 figure(11); [c,h] = contour(x,t(2:end),u_int,[0:0.1:1]);
             clabel(c,h);
             xlabel('x'); ylabel('t');
-	    
+
 figure(12); plot(t(2:end),u_int(:,end))
             xlabel('t'); ylabel('temperature at x=end and y=0')
