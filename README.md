@@ -9,7 +9,8 @@
 ## 1. HISTORY
 The first version of FEMoctave was written in 2000.
 In 2020 a new version was generated.
-In 2022 a major update is available
+In 2022 a major update is available.
+In 2023 elasticity problems can be solved.
 
 ## 2. INSTALLATION INSTRUCTIONS
 To use all features of FEMoctave you have to install triangle.
