@@ -1,7 +1,7 @@
 TODO for next release:
 * compiled code for the elasticity equations, for speed reasons
 
-FEMoctave 2.0.15, 19.5.2023
+FEMoctave 2.0.16, 19.5.2023
 -------------------------------
 * dummy arguments added in many demos and examples
 * fixes, thanks to the Debian package
