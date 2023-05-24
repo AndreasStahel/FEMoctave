@@ -1,6 +1,14 @@
 TODO for next release:
 * compiled code for the elasticity equations, for speed reasons
 
+FEMoctave 2.0.17 ?????
+-------------------------------
+* FEMDoc.pdf adapted and improved
+* a few example codes added
+
+New files
+- HeatBall.m
+
 FEMoctave 2.0.16, 19.5.2023
 -------------------------------
 * dummy arguments added in many demos and examples

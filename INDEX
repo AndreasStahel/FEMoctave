@@ -69,9 +69,17 @@ Example m-files
   Capacitance.m
   capacitance.poly capacitance.1.ele  capacitance.1.node  capacitance.1.poly  
   MinimalSurface.m
+  TorionSquare.m
+  HeatDynamic.m
+  HeatDynamicCoefficient.m
+  CylinderCooling.m
+  HeatWave.m
+  HeatBall.m
+  WavePropagation.m
+  SoundWaveSpherical.m
+  SoundWave.m
   EITforward.m
   IBVP2DsymMean.m
-  PipePressure.m
   Crook.m
   PipePressure.m
   PipePressureAxi.m
