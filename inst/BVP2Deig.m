@@ -19,32 +19,33 @@
 ## Created: 2020-03-30
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}[@var{Eval},@var{Evec},@var{errorbound}] = BVP2Deig(@var{Mesh},@var{a},@var{b0},@var{w},@var{gN2},@var{nVec})
+## @deftypefn{function file}{}[@var{Eval},@var{Evec},@var{errorbound}] = BVP2Deig(@var{Mesh},@var{a},@var{b0},@var{w},@var{gN2},@var{nVec},@var{tol})
 ##
 ##determine the smallest eigenvalues @var{Eval} and eigenfunctions @var{Evec} for the BVP
 ##
 ##@verbatim
-##     -div(a*grad u)+ b0*u = Eval*w*u  in domain
-##                        u = 0         on Dirichlet boundary
-##             n*(a*grad u) = gN2*u on  Neumann boundary
+##     -div(a*grad u) + b0*u = Eval*w*u  in domain
+##                        u  = 0         on Dirichlet boundary
+##             n*(a*grad u)  = gN2*u on  Neumann boundary
 ##@end verbatim
 ##
 ##parameters:
 ##@itemize
-##@item @var{Mesh} is the mesh describing the domain and the boundary types
+##@item @var{Mesh} the mesh describing the domain and the boundary types
 ##@item @var{a},@var{b0},@var{w},@var{gN2}
-##are the coefficients and functions describing the PDE.
+## the coefficients and functions describing the PDE.
 ##@*Any constant function can be given by its scalar value.
 ##@*The functions @var{a},@var{b0} and @var{w} may also be given as vectors
 ##with the values of the function at the Gauss points.
-##@item@var{nVec} is the number of smallest eigenvalues to be computed
+##@item@var{nVec} number of smallest eigenvalues to be computed
+##@item@var{tol} optional tolerance for the eigenvalue iteration, default 1e-5
 ##@end itemize
 ##
 ##return values:
 ##@itemize
 ##@item @var{Eval} is the vector with the eigenvalues
 ##@item @var{Evec} is the matrix with the eigenvectors as columns
-##@item @var{erorbound} is a matrix with error bound of the eigenvalues
+##@item @var{errorbound} is a matrix with error bounds of the eigenvalues
 ##@end itemize
 ##
 ## @c Will be cut out in ??? info file and replaced with the same
