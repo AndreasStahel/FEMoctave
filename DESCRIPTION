@@ -1,10 +1,10 @@
 Name: FEMoctave
-Version: 2.0.16
-Date: 2023-05-19
+Version: 2.1.0
+Date: 2023-06-30
 Author: Andreas Stahel
 Maintainer: The Octave Forge community.
 Title: FEMoctave
-Description: Finite Element Method for 2D Problems, scalar and elasticity
+Description: Finite Element Method for 1D and 2D Problems, scalar and elasticity
 Depends: octave (>= 5.2.0)
 # BuildRequires:
 # SystemRequirements:

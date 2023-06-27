@@ -1,19 +1,24 @@
 TODO for next release:
 * compiled code for the elasticity equations, for speed reasons
 
-FEMoctave 2.0.17 ?????
+
+FEMoctave 2.1.0, 30.6.2023
 -------------------------------
-* FEMDoc.pdf adapted and improved
-* a few example codes added
+* algorithms for 1D problems are available now, for static and dynamic boundary value problem
+* FEMdoc.pdf adapted and improved, many more examples provided
 
 New files
-- HeatBall.m
+- BVP1D.m
+- IBVP1D.m
+- I2BVP1D.m
+- doc/Demos/
+- doc/Examples/
 
 FEMoctave 2.0.16, 19.5.2023
 -------------------------------
 * dummy arguments added in many demos and examples
 * fixes, thanks to the Debian package
-* FEMDoc.pdf adapted and improved
+* FEMdoc.pdf adapted and improved
 
 FEMoctave 2.0.13, 11.5.2023
 -------------------------------
