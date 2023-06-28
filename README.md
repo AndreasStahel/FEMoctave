@@ -9,9 +9,9 @@
 
 ## 1. HISTORY
 The first version of FEMoctave was written in 2000.
-In 2020 a new version was generated.
+In 2020 a major new version was generated.
 In 2022 a major update is available.
-In 2023 elasticity problems can be solved, plane stress, plane strain and axially symmetric setups
+In 2023 elasticity problems can be solved, plane stress, plane strain and axially symmetric setups.
 In 2023 algorithms for 1D problems are available
 
 ## 2. PURPOSE
@@ -35,4 +35,3 @@ The subdirectory doc/Examples contains the codes.
 With best regards
 
 Andreas Stahel
-
