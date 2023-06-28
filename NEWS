@@ -4,16 +4,43 @@ TODO for next release:
 
 FEMoctave 2.1.0, 30.6.2023
 -------------------------------
-* algorithms for 1D problems are available now, for static and dynamic boundary value problem
+* algorithms for 1D problems are available now, for static and dynamic boundary value problem, i.e. typical heat and wave equations
 * FEMdoc.pdf adapted and improved, many more examples provided
 
 New files
 - BVP1D.m
 - IBVP1D.m
 - I2BVP1D.m
-- doc/Demos/
-- doc/Examples/
+- BVP1Deig.m
+- GenerateFEM1D.m
+- pwquadinterp.m
+- FEM1DEvaluateDu.m
+- FEM1DGaussPoints.m
+- GenerateWeight1D.m
 
+- doc/Demos/
+     ODE1.m
+     HeatBall1D.m
+     HeatingBallRadial.m
+     Wave1D.m
+     EigenvaluesDisc1D.m
+     FEMInsideElement.m
+     BVP1DSuperconvergence.m
+     Test_C1conforming.m
+     Stability1D_dynamic.m
+
+- doc/Examples/
+      HeatDynamic/HeatBallRadial.m
+      HeatDynamic/HeatCylinder.m
+      SoundWave/SoundWaveSpherical1D.m
+      SoundWave/SoundWaveCylindrical1D.m
+      WavePropagation/Reflection.m
+      WavePropagation/MovingString.m
+      Schroedinger/SchroedingerHarmonic.m
+      Beam/BeamStretch.m
+      Beam/BendingBeam1D.m
+      Keller/Keller.m
+      
 FEMoctave 2.0.16, 19.5.2023
 -------------------------------
 * dummy arguments added in many demos and examples
