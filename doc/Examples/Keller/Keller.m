@@ -1,5 +1,5 @@
 N = 51;
-flag = 1;  %% select between successive substition (1) and Newton's method (2)
+flag = 3;  %% select between successive substition (1) and Newton's method (2)
 switch flag
 case 1  %% successive substitution
   x = linspace(-1,1,N);
@@ -29,10 +29,20 @@ case 2  %% Newton's method
     maxPHI_RHS= [max(abs(phi)) max(abs(RHS))]
     u = u + phi;
     figure(2); plot(xn,u,xn,u_exact); xlabel('x'); ylabel('u')
-               legend('FEM','exact', 'location','north')
+               legend('FEM','exact','location','north')
     figure(3); plot(xn,u-u_exact); xlabel('x'); ylabel('u')
                legend('FEM-exact')
     pause(1)
   endfor
+case 3 %% use BVP1DNL
+  x = linspace(-1,1,N);
+  f = {@(x,u)exp(u) , @(x,u)exp(u)};
+  [xn,u,inform] = BVP1DNL(x,1,0,0,1,f,0,0,0);
+  c = 1.1765019; u_exact = log(c^2./(1+cos(c*xn)));
+  figure(2); plot(xn,u,xn,u_exact); xlabel('x'); ylabel('u')
+               legend('FEM','exact','location','north')
+  figure(3); plot(xn,u-u_exact); xlabel('x'); ylabel('u')
+               legend('FEM-exact')
+  inform
 endswitch
 
