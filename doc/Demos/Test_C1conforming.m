@@ -1,7 +1,7 @@
 clear *
-flag = 3;
+CASE = 3;
 
-switch flag
+switch CASE
 case 1
  n = 8; x = linspace(-1,1,n+1)';
  [x,u] = BVP1D(x,1,0,0,@(x)sign(x),1,0,0);
