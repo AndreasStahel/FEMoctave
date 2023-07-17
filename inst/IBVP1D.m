@@ -24,7 +24,7 @@
 ##
 ##   solve a 1D initial boundary value problem (IBVP)
 ##
-##    w(x)*d/dt u(x,t) - (a(x)*u'(x,t))' + b(x)*u'(x,t) + c(x)*u(x,t) + d(x)*f(x,t) = 0
+##    w(x)*d/dt u(x,t) - (a(x)*u'(x,t))' + b(x)*u'(x,t) + c(x)*u(x,t) = d(x)*f(x,t)
 ##
 ##      with initial condition u(x,t0) = u0(x)
 ##      and boundary conditions at the two endpoints
@@ -54,7 +54,7 @@
 ##@item If @var{steps} = n, then n steps are taken and the n+1 results returned.
 ##@item If @var{steps} = [n,nint], then n*nint steps are taken and (n+1) results returned.
 ##@end itemize
-##@item @var{options} additional options to be used, given as pairs name/value. 
+##@item @var{options} additional options, given as pairs name/value.
 ##Currently only the type stepping algorithm can be selected as @var{"solver"} and then the possible values
 ##@itemize
 ##@item @var{"CN"} the standard Crank-Nicolson (default)

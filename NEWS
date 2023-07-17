@@ -1,6 +1,24 @@
 TODO for next release:
 * compiled code for the elasticity equations, for speed reasons
 
+FEMoctave 2.1.1, 18.7.2023
+-------------------------------
+* an algorithm for nonlinear boundary value problems with one variable is available
+* FEMdoc.pdf adapted and improved, more examples provided
+
+New files
+- BVP1DNL.m
+- FEM1DGaussPoints.m
+
+-doc/Demos/
+   NL_Newton.m
+   ShortestConnection.m
+
+-doc/Examples/
+   SaltLakeCity2Zuerich/SaltLakeCity2Zuerich.m
+   Keller/Keller.m
+   Keller/Keller2.m
+
 
 FEMoctave 2.1.0, 30.6.2023
 -------------------------------

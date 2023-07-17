@@ -1,5 +1,5 @@
 FEMoctave >> FEM Package.
-Solving Equations
+Solving equations
   BVP2D
   BVP2Dsym
   BVP2deig
@@ -13,6 +13,7 @@ Solving Equations
   IBVP1D.m
   I2BVP1D.m
   BVP1Deig.m
+  BVP1DNL.m
 Manipulating meshes
   CreateMeshRect
   CreateMeshTriangle
@@ -79,7 +80,10 @@ Demo m-files
   BVP1DSuperconvergence.m
   Test_C1conforming.m
   Stability1D_dynamic.m
-  
+  NL_Newton.m
+  ShortestConnection.m
+
+
 Example m-files
   WaveAnimation.m
   BesselSuperconvergence.m
@@ -109,3 +113,5 @@ Example m-files
   BeamStretch.m
   BendingBeam1D.m
   Keller.m
+  Keller2.m
+  SaltLakeCity2Zuerich/SaltLakeCity2Zuerich.m

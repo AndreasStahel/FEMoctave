@@ -1,7 +1,7 @@
 ## -*- texinfo -*-
-## @deftypefn{function file}{}@var{xGauss} = FEM1DGaussPoints(@var{x})
+## @deftypefn{function file}{}[@var{xGauss},@var{Nodes2GaussU},@var{Nodes2GaussDU}] = FEM1DGaussPoints(@var{x})
 ##
-##  determine the coordinates of the Gauss points
+##  determine the coordinates of the Gauss points and interpolation matrices
 ##
 ##parameters:
 ##@itemize
@@ -11,14 +11,34 @@
 ##return values
 ##@itemize
 ##@item @var{xGauss} coordinates of the Gauss points
+##@item @var{Nodes2GaussU} matrix to evaluate u at the Gauss points
+##@item @var{Nodes2GaussDU} matrix to evaluate u' at the Gauss points
 ##@end itemize
 ##
 ## @end deftypefn
 
-function xGauss = FEM1DGaussPoints(x)
+function [xGauss,Nodes2GaussU,Nodes2GaussDU] = FEM1DGaussPoints(x)
   x = x(:);
   h = diff(x(1:2:end));  %% length of intervals
   xm = x(2:2:end);       %% midpoints
   xGauss = sort([xm - sqrt(0.6)*h/2;xm;xm + sqrt(0.6)*h/2]);
+
+  if nargout>=2
+     s06 = sqrt(0.6);
+     %% interpolation matrix for the function values
+     G0 = [0.3+s06/2, 0.4, 0.3-s06/2;
+                   0,   1,         0;
+           0.3-s06/2, 0.4, 0.3+s06/2];
+     %% interpolation matrix for the derivative values
+     G1 = [-1-2*s06, +4*s06, +1-2*s06;
+                 -1,      0,        1;
+           -1+2*s06, -4*s06, +1+2*s06];
+  n = length(h); %% number of intervals
+  Nodes2GaussU = sparse(3*n,2*n+1); Nodes2GaussDU = Nodes2GaussU;
+  for jj = 1:n
+    Nodes2GaussU(jj*3+[-2 -1 0],jj*2+[ -1 0 1]) = G0;
+    Nodes2GaussDU(jj*3+[-2 -1 0],jj*2+[ -1 0 1]) = G1/h(jj);
+  endfor
+endif
 endfunction
 

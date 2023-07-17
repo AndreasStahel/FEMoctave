@@ -1,7 +1,7 @@
 clear *
 N = 10;              % number of elements, then 2*N+1 nodes
 x = linspace(0,pi/2,N+1);
-[xn,u] = BVP1D(x,1,0,0,1,@(x)sin(x),0,1);
+[xn,u] = BVP1D(x,1,0,0,1,@(x)-sin(x),0,1);
 
 x_fine = linspace(0,pi/2,1001);
 [u_fine du_fine, ddu_fine] = pwquadinterp(xn,u,x_fine);

@@ -30,6 +30,9 @@ function [du,ddu] = FEM1DEvaluateDu(x,u)
     du(range) += M*u(range)/h(jj);
     ddu(range) += 2*[1;2;1]*[1 -2 1]*u(range)/h(jj)^2;
   endfor
-  du([1;end]) *= 2; ddu([1;end]) *= 2;
+  du([1;end])  *= 2;
+  %%ddu([1;end]) *= 2;
+  ddu(1) = 2*ddu(2)-ddu(3);    %% linear extrapolation
+  ddu(end) = 2*ddu(end-1)-ddu(end-2);
 endfunction
 

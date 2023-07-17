@@ -10,3 +10,7 @@ t0 = 0; tend = 10; steps = [250,10];
 figure(1); mesh(t,x,u); xlabel('time t'); ylabel('position x'); zlabel('u')
            xlim([min(t),max(t)]); ylim([min(x),max(x)]); view([20,20])
 
+figure(2); contour(t,x,u,0.001*[-1,+1]); xlabel('time t'); ylabel('position x');
+           xlim([min(t),max(t)]); ylim([min(x),max(x)]);
+
+

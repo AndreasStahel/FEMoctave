@@ -26,7 +26,7 @@ case 2
             legend('interpolated','at nodes')
 case 3
  n = 2; x = linspace(-1,1,n+1)';
- [x,u] = BVP1D(x,1,0,0,1,@(x)-exp(x),exp(-1),exp(1));
+ [x,u] = BVP1D(x,1,0,0,1,@(x)exp(x),exp(-1),exp(1));
  figure(1); plot(x,u)
             xlabel('x'); ylabel('u')
 

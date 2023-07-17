@@ -24,7 +24,7 @@
 ##
 ##   solve a second order 1D initial boundary value problem (IBVP)
 ##
-##    w2(x)*d^2/dt^2 u(x,t) + w1(x)*d/dt u(x,t) - (a(x)*u'(x,t))' + b(x)*u'(x,t) + c(x)*u(x,t) + d(x)*f(x,t) = 0
+##    w2(x)*d^2/dt^2 u(x,t) + w1(x)*d/dt u(x,t) - (a(x)*u'(x,t))' + b(x)*u'(x,t) + c(x)*u(x,t) = d(x)*f(x,t)
 ##
 ##      with initial condition u(x,t0) = u0(x) and d/dt u(x,t0) = u1
 ##      and boundary conditions at the two endpoints

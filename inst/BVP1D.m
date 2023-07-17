@@ -24,7 +24,7 @@
 ##
 ##   solve a 1D boundary value problem (BVP)
 ##
-##      -(a(x)*u'(x))' + b(x)*u'(x) + c(x)*u(x) + d(x)*f(x) = 0
+##      -(a(x)*u'(x))' + b(x)*u'(x) + c(x)*u(x) = d(x)*f(x)
 ##
 ##      with boundary conditions at the two endpoints
 ##@itemize
