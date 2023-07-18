@@ -9,11 +9,16 @@
 
 ## 1. HISTORY
 The first version of FEMoctave was written in 2000.
+
 In 2020 a major new version was generated.
+
 In 2022 a major update is available.
+
 In 2023 elasticity problems can be solved, plane stress, plane strain and axially symmetric setups.
-In 2023 algorithms for 1D problems are available.
-In 2023 an algorithm for nonlinear, static 1D problems is available.
+
+In April 2023 algorithms for 1D problems are available.
+
+In July 2023 an algorithm for nonlinear, static 1D problems is available.
 
 ## 2. PURPOSE
 The main goal is to provide a tool using Octave only to teach the method of finite elements, short FEM.
