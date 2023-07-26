@@ -42,6 +42,7 @@
 ##@item @var{f} constant, vector or function handle to evaluate f(x), f(x,u) or f(x,u,u') and the partial derivatives.
 ##@itemize
 ##@item @var{f} a constant or vector of values of f(x) at the nodes.
+##@item @var{f = @@(x)} a function handle to evaluate f(x) at the nodes.
 ##@item @var{f = @{@@(x,u),  @@(x,u)@}} assumes that the function f depends on x and u. The two function handles evaluate f(x,u) and the partial derivative f_u(x,u).
 ##@item @var{f = @{@@(x,u,u'),  @@(x,u,u') , @@(x,u,u')@}} assumes that f depends on x,  u and u'. The three function handles evaluate f(x,u,u') and the partial derivatives f_u(x,u,u') and f_u'(x,u,u').
 ##@end itemize
@@ -168,35 +169,100 @@ else  %% f is a function handle or cell array of function handles
   endif %% length(f)==1
 endif
 
-%%% solve the linear BVP once, assure the correct BC
-[A,M,x] = GenerateFEM1D(interval,a_values,b_values,c_values,d_values);
+%% determine the boundary conditions
 if length(BCleft)*length(BCright)==1  %% DD: Dirichlet at both ends
   BC = "DD";
-  a_left  = A(2:end-1,1);   %% first column
-  a_right = A(2:end-1,end); %% last column
-  A = A(2:end-1,2:end-1); M = M(2:end-1,:);
-  u_values = A\(M*f_values - BCleft*a_left - BCright*a_right);
-  u_values = [BCleft;u_values;BCright];
 elseif (length(BCleft)>1)&&(length(BCright)==1) %% ND: Neumann on the left, Dirichlet on the right
   BC = "ND";
-  a_right = A(1:end-1,end); %% last column
-  A = A(1:end-1,1:end-1); M = M(1:end-1,:);
-  A(1,1) += BCleft(2);
-  RHS = M*f_values - BCright*a_right; RHS(1) -= BCleft(1);
-  u_values = [A\RHS;BCright];
 elseif (length(BCleft)==1)&&(length(BCright)>1) %% DN: Dirichlet on the left, Neumann on the right
   BC = "DN";
-  a_left = A(2:end,1); %% first column
-  A = A(2:end,2:end); M = M(2:end,:);
-  A(end,end) -= BCright(2);
-  RHS = M*f_values - BCleft*a_left; RHS(end) += BCright(1);
-  u_values = [BCleft;A\RHS];
 else  %% NN: Neumann on both endpoints
   BC = "NN";
-  A(1,1) += BCleft(2); A(end,end) -= BCright(2);
-  RHS = M*f_values; RHS(1) -= BCleft(1); RHS(end) += BCright(1);
-  u_values = A\RHS;
 endif
+
+%% apply the BC to the matrix
+function [a_left,a_right] = BCcontribA(A)
+  switch BC
+    case "DD"
+      a_left  = A(2:end-1,1);   %% first column
+      a_right = A(2:end-1,end); %% last column
+    case "ND";
+      a_right = A(1:end-1,end); %% last column
+      a_left = 0;
+    case "DN";
+      a_left = A(2:end,1); %% first column
+      a_right = 0;
+    case"NN";
+      a_left = 0; a_right = 0;
+  endswitch
+endfunction
+
+function A = ApplyBC2MatrixA(A)
+  switch BC
+    case "DD"
+      A = A(2:end-1,2:end-1);
+    case "ND";
+      A = A(1:end-1,1:end-1);
+      A(1,1) += BCleft(2);
+    case "DN";
+      A = A(2:end,2:end);
+      A(end,end) -= BCright(2);
+    case"NN";
+      A(1,1) += BCleft(2); A(end,end) -= BCright(2);
+  endswitch
+endfunction
+
+function M = ApplyBC2MatrixM(M)
+  switch BC
+    case "DD"
+      M = M(2:end-1,:);
+    case "ND";
+      M = M(1:end-1,:);
+    case "DN";
+      M = M(2:end,:);
+  endswitch
+endfunction
+
+%% solve a system with the actual BC
+function sol = SolveSystem(A,RHS,BCleft,BCright)
+  switch BC
+  case "DD";
+    sol = A\(RHS - BCleft*a_left - BCright*a_right);
+    sol = [BCleft;sol;BCright];
+  case "ND";
+    RHS = RHS - BCright*a_right; RHS(1) -= BCleft(1);
+    sol = [A\RHS;BCright];
+  case "DN";
+    RHS = RHS - BCleft*a_left; RHS(end) += BCright(1);
+    sol = [BCleft;A\RHS];
+  case "NN";
+    RHS(1) -= BCleft(1); RHS(end) += BCright(1);
+    sol = A\RHS;
+  endswitch
+endfunction
+%% solve a system with zero BC
+function sol = SolveSystemPhi(A,RHS,BCleft,BCright)
+  switch BC
+  case "DD";
+    sol = A\(RHS - BCleft*a_left - BCright*a_right);
+    sol = [0;sol;0];
+  case "ND";
+    RHS = RHS - BCright*a_right; RHS(1) -= BCleft(1);
+    sol = [A\RHS;0];
+  case "DN";
+    RHS = RHS - BCleft*a_left; RHS(end) += BCright(1);
+    sol = [0;A\RHS];
+  case "NN";
+    RHS(1) -= BCleft(1); RHS(end) += BCright(1);
+    sol = A\RHS;
+  endswitch
+endfunction
+
+%%% solve the linear BVP once, assure the correct BC
+[A,M,x] = GenerateFEM1D(interval,a_values,b_values,c_values,d_values);
+[a_left,a_right] = BCcontribA(A);
+A = ApplyBC2MatrixA(A); M = ApplyBC2MatrixM(M);
+u_values  = SolveSystem(A,M*f_values,BCleft,BCright);
 A0 = A;
 
 relError = 2*tol(1); AbsError = 2*tol(2); inform.info = 1; inform.iter = 0;
@@ -237,38 +303,20 @@ do   %% until error small enough, or inform.iter > MaxIter
 	A2 = GenerateFEM1D(interval,a_values,b_values-dfdupr_valuesGauss,c_values-dfdu_valuesGauss,d);
     endswitch  %% length(f)
 
-    switch BC %% solve the problem for phi and make one Newton step
-    case "DD" %% DD: Dirichlet on both ends
-      %%a_left  = A2(2:end-1,1);   %% first column
-      %%a_right = A2(2:end-1,end); %% last column
-      A2 = A2(2:end-1,2:end-1);
-      phi = A2\(-A*u_values(2:end-1)+M*f_values-BCleft*a_left-BCright*a_right);
-      u_values = u_values + [0;phi;0];
-    case "ND"   %% ND: Neumann on the left, Dirichlet on the right
-      %%a_right = A2(1:end-1,end); %% last column
-      A2 = A2(1:end-1,1:end-1);
-      A2(1,1) += BCleft(2);
-      RHS = -A*u_values(1:end-1) + M*f_values - BCright*a_right;
-      RHS(1) -= BCleft(1);			      
-      phi = A2\RHS;
-      u_values = u_values + [phi;0];
-    case "DN" %% DN: Dirichlet on the left, Neumann on the right
-      %%a_left = A2(2:end,1); %% first column
-      A2 = A2(2:end,2:end); %% eliminate first equation
-      A2(end,end) -= BCright(2);
-      RHS = -A*u_values(2:end) + M*f_values - BCleft*a_left;
-      RHS(end) += BCright(1);
-      phi = A2\RHS;
-      u_values = u_values + [0;phi];
-    case "NN" %% NN: Neumann on both endpoints
-      A2(1,1) += BCleft(2); A2(end,end) -= BCright(2);
-      RHS = -A*u_values + M*f_values;
-      RHS(1) -= BCleft(1); RHS(end) += BCright(1);
-      phi = A2\RHS;
-      u_values = u_values + phi;      
+    A2 = ApplyBC2MatrixA(A2);
+    switch BC  %% solve the problem for phi and make one Newton step
+      case "DD"
+	phi = SolveSystemPhi(A2,-A*u_values(2:end-1)+M*f_values,BCleft,BCright);
+      case "ND"
+	phi = SolveSystemPhi(A2,-A*u_values(1:end-1)+M*f_values,BCleft,BCright);
+      case "DN"
+	phi = SolveSystemPhi(A2,-A*u_values(2:end)+M*f_values,BCleft,BCright);
+      case "NN"
+	phi = SolveSystemPhi(A2,-A*u_values+M*f_values,BCleft,BCright);
     endswitch
+    u_values += phi;	    
   endif  %% f_NL %% apply one Newton step
-
+  
   if f_NL   %%% evaluate f(x,u) or f(x,u,u')
     switch length(f)  %% evaluate f and its partial derivatives
       case 2   %% f(x,u)
@@ -289,45 +337,12 @@ do   %% until error small enough, or inform.iter > MaxIter
 	a_values = a(xGauss,u_valuesGauss,du_valuesGauss);
     endswitch
     A = GenerateFEM1D(interval,a_values,b_values,c_values,d_values);
-    switch BC   %% solve the system with the new matrix
-      case "DD"
-	a_left  = A(2:end-1,1);   %% first column
-	a_right = A(2:end-1,end); %% last column
-	A = A(2:end-1,2:end-1);
-	u_values = A\(M*f_values - BCleft*a_left - BCright*a_right);
-	u_values = [BCleft;u_values;BCright];
-      case "ND";
-	a_right = A(1:end-1,end); %% last column
-	A = A(1:end-1,1:end-1);
-	A(1,1) += BCleft(2);
-	RHS = M*f_values - BCright*a_right; RHS(1) -= BCleft(1);
-	u_values = [A\RHS;BCright];
-      case "DN";
-	a_left = A(2:end,1); %% first column
-	A = A(2:end,2:end); 
-	A(end,end) -= BCright(2);
-	RHS = M*f_values - BCleft*a_left; RHS(end) += BCright(1);
-	u_values = [BCleft;A\RHS];
-      case "NN";
-	A(1,1) += BCleft(2); A(end,end) -= BCright(2);
-	RHS = M*f_values; RHS(1) -= BCleft(1); RHS(end) += BCright(1);
-	u_values = A\RHS;
-    endswitch  %% BC
+
+    [a_left,a_right] = BCcontribA(A);   A = ApplyBC2MatrixA(A);
+    u_values  = SolveSystem(A,M*f_values,BCleft,BCright);
+
   else     %% if a_NL  %%  solve the system with the old matrix
-    switch BC
-      case "DD"
-	u_values = A0\(M*f_values - BCleft*a_left - BCright*a_right);
-	u_values = [BCleft;u_values;BCright];
-      case "ND";
-	RHS = M*f_values - BCright*a_right; RHS(1) -= BCleft(1);
-	u_values = [A0\RHS;BCright];
-      case "DN";
-	RHS = M*f_values - BCleft*a_left; RHS(end) += BCright(1);
-	u_values = [BCleft;A0\RHS];
-      case "NN";
-	RHS = M*f_values; RHS(1) -= BCleft(1); RHS(end) += BCright(1);
-	u_values = A0\RHS;
-    endswitch %% BC
+    u_values = SolveSystem(A0,M*f_values,BCleft,BCright);
   endif %% a_NL %% apply successive substitution step
 
   AbsError = norm(u_values-u_old);
@@ -349,8 +364,8 @@ do   %% until error small enough, or inform.iter > MaxIter
   
 until or((a_NL+f_NL)==0,inform.iter>=MaxIter,AbsError2/sqrt(n)<tol(2),AbsError2<tol(1)*norm(u))
 inform.AbsError = AbsError/sqrt(n);
-if (inform.iter>=MaxIter)
+if (inform.iter >= MaxIter)
   disp('BVP1DNL did not converge')
-  inform.info = -1
+  inform.info = -1;
 endif
 endfunction
