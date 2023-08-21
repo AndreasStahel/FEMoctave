@@ -16,30 +16,35 @@
 
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2023-05-30
-
+## Created: 2023-08-21
 
 ## -*- texinfo -*-
 ## @deftypefn{function file}{}[@var{x},@var{u}] = BVP1DNL(@var{interval},@var{a},@var{b},@var{c},@var{d},@var{f},@var{BCleft},@var{BCright},@var{u0},@var{options})
 ##
 ##   solve a nonlinear 1D boundary value problem (BVP)
 ##
-##      -(a(x)*u'(x))' + b(x)*u'(x) + c(x)*u(x) = d(x)*f(x,u(x),u'(x))
+##      -(a(x,u,u')*u'(x))' + b(x)*u'(x) + c(x)*u(x) = d(x)*f(x,u,u')
 ##
 ##      with boundary conditions at the two endpoints
 ##@itemize
 ##@item Dirichlet: u(x) = g_D
-##@item Neumann: a(x)*u'(x) = g_N1 + g_N2*u(x)
+##@item Neumann: a(x,u,u')*u'(x) = g_N1 + g_N2*u(x)
 ##@end itemize
 ##
 ##parameters:
 ##@itemize
 ##@item @var{interval} the discretized interval for the BVP
-##@item @var{a} constant, vector or function handle to evaluate a(x)
-##@item @var{b} constant, vector or function handle to evaluate b(x)
-##@item @var{c} constant, vector or function handle to evaluate c(x)
-##@item @var{d} constant, vector or function handle to evaluate d(x)
-##@item @var{f} constant, vector or function handle to evaluate f(x), f(x,u) or f(x,u,u') and the partial derivatives.
+##@item @var{a} constant, vector or function handle to evaluate a(x), a(x,u) or a(x,u,u') at the Gauss points.
+##@itemize
+##@item @var{a} a constant or vector of values of a(x).
+##@item @var{a = @@(x)} a function handle to evaluate f(x).
+##@item @var{a = @{@@(x,u),  @@(x,u)@}} assumes that the function a(x,u) depends on x and u. The two function handles evaluate a(x,u) and the partial derivative a_u(x,u).
+##@item @var{a = @{@@(x,u,u'),  @@(x,u,u') , @@(x,u,u')@}} assumes that a(x,u,u') depends on x,  u and u'. The three function handles evaluate a(x,u,u') and the partial derivatives a_u(x,u,u') and a_u'(x,u,u').
+##@end itemize
+##@item @var{b} constant, vector or function handle to evaluate b(x) at Gauss points
+##@item @var{c} constant, vector or function handle to evaluate c(x) at Gauss points
+##@item @var{d} constant, vector or function handle to evaluate d(x) at Gauss points
+##@item @var{f} constant, vector or function handle to evaluate f(x), f(x,u) or f(x,u,u') and the partial derivatives at nodes
 ##@itemize
 ##@item @var{f} a constant or vector of values of f(x) at the nodes.
 ##@item @var{f = @@(x)} a function handle to evaluate f(x) at the nodes.
@@ -54,12 +59,12 @@
 ##@item @var{u0} constant, vector or function handle to evaluate u0(x) at the nodes. This is the starting value for the iteration.
 ##@item @var{options} additional options, given as pairs name/value. 
 ##@itemize
-##@item @var{"tol"} the tolerance for the iteration to stop, given as pair @var{[tolrel,tolabs]} for the relative and absolute tolerance. RMS (root means square) values are used. If only @var{tolrel} is specified then @var{TolAbs=TolRel} is used. The default values are @var{tolrel = tolabs = 1e-5}
+##@item @var{"tol"} the tolerance for the iteration to stop, given as pair @var{[tolrel,tolabs]} for the relative and absolute tolerance. The iteration stops if the absolute or relative error is smaller than the specified tolerance. RMS (root means square) values are used. If only @var{tolrel} is specified @var{TolAbs=TolRel} is used. The default values are @var{tolrel = tolabs = 1e-5}.
 ##@item @var{"MaxIter"} the maximal number of iterations to be used. The default value is 10.
 ##@item @var{"Display"} should information be displayed for the iterations
 ##@itemize
-##@item @var{off} no display, default
-##@item @var{iter} display the number of the iteration and the RMS size of the update
+##@item @var{"off"} no display, default
+##@item @var{"iter"} display the number of the iteration and the RMS size of the update
 ##@end itemize
 ##@end itemize
 ##@end itemize
@@ -68,9 +73,9 @@
 ##@itemize
 ##@item @var{x} the nodes in the given interval
 ##@item @var{u} the values of the solution at the nodes
-##@item @var{inform} a structure with information of the performance of the algorithm
+##@item @var{inform} a structure with information on the performance of the algorithm
 ##@itemize
-##@item @var{inform.info}=1 if the algorithm converged with the desired tolerance, and -1 if not.
+##@item @var{inform.info}=1 if the algorithm converged with the desired tolerance, -1 if not.
 ##@item @var{inform.iter} the number of iterations used.
 ##@item @var{inform.AbsError} the RMS value of the last correction applied.
 ##@end itemize
@@ -131,13 +136,12 @@ if isnumeric(a)
   a_values = convert2values(a);
 else
   switch nargin(a)
-    case 1  %% a depends on x only
+    case 1  %% a(x) depends on x only
       a_values = convert2values(a);
-    case 2  %% a depends on x and u
-%      [u_valuesGauss] = pwquadinterp(x,u_values,xGauss);  %% already available
+    case 2  %% a(x,u) depends on x and u
       a_values = a(xGauss,u_valuesGauss);
       a_NL = 1;
-    case 3 %% a depends on x, u and u'
+    case 3 %% a(x,u,u') depends on x, u and u'
       du_valuesGauss = Nodes2GaussDU*u_values;
       a_values = a(xGauss,u_valuesGauss,du_valuesGauss);
       a_NL = 1;
@@ -197,18 +201,18 @@ function [a_left,a_right] = BCcontribA(A)
   endswitch
 endfunction
 
-function A = ApplyBC2MatrixA(A)
+function An = ApplyBC2MatrixA(A)
   switch BC
     case "DD"
-      A = A(2:end-1,2:end-1);
+      An = A(2:end-1,2:end-1);
     case "ND";
-      A = A(1:end-1,1:end-1);
-      A(1,1) += BCleft(2);
+      An = A(1:end-1,1:end-1);
+      An(1,1) += BCleft(2);
     case "DN";
-      A = A(2:end,2:end);
-      A(end,end) -= BCright(2);
+      An = A(2:end,2:end);
+      An(end,end) -= BCright(2);
     case"NN";
-      A(1,1) += BCleft(2); A(end,end) -= BCright(2);
+      An(1,1) += BCleft(2); An(end,end) -= BCright(2);
   endswitch
 endfunction
 
@@ -224,7 +228,7 @@ function M = ApplyBC2MatrixM(M)
 endfunction
 
 %% solve a system with the actual BC
-function sol = SolveSystem(A,RHS,BCleft,BCright)
+function sol = SolveSystem(A,RHS,BCleft,BCright,a_left,a_right)
   switch BC
   case "DD";
     sol = A\(RHS - BCleft*a_left - BCright*a_right);
@@ -240,17 +244,18 @@ function sol = SolveSystem(A,RHS,BCleft,BCright)
     sol = A\RHS;
   endswitch
 endfunction
-%% solve a system with zero BC
+
+%% solve a system with homogeneous BC
 function sol = SolveSystemPhi(A,RHS,BCleft,BCright)
   switch BC
   case "DD";
-    sol = A\(RHS - BCleft*a_left - BCright*a_right);
+    sol = A\(RHS);
     sol = [0;sol;0];
   case "ND";
-    RHS = RHS - BCright*a_right; RHS(1) -= BCleft(1);
+    RHS(1) -= BCleft(1);
     sol = [A\RHS;0];
   case "DN";
-    RHS = RHS - BCleft*a_left; RHS(end) += BCright(1);
+    RHS(end) += BCright(1);
     sol = [0;A\RHS];
   case "NN";
     RHS(1) -= BCleft(1); RHS(end) += BCright(1);
@@ -260,10 +265,12 @@ endfunction
 
 %%% solve the linear BVP once, assure the correct BC
 [A,M,x] = GenerateFEM1D(interval,a_values,b_values,c_values,d_values);
+
+A0 = A;   %% no BC applied
+A00 = ApplyBC2MatrixA(A0);
 [a_left,a_right] = BCcontribA(A);
 A = ApplyBC2MatrixA(A); M = ApplyBC2MatrixM(M);
-u_values  = SolveSystem(A,M*f_values,BCleft,BCright);
-A0 = A;
+u_values  = SolveSystem(A,M*f_values,BCleft,BCright,a_left,a_right);
 
 relError = 2*tol(1); AbsError = 2*tol(2); inform.info = 1; inform.iter = 0;
 
@@ -271,11 +278,12 @@ do   %% until error small enough, or inform.iter > MaxIter
   u_old = u_values;
   inform.iter++;
   if inform.iter == 1  %% initiate A2
-    A2 = A0;
+    %%A2 = A0;
+    A2 = ApplyBC2MatrixA(A0);
   endif %% inform.iter
 
-  u_valuesGauss  = Nodes2GaussU*u_values;
-  du_valuesGauss = Nodes2GaussDU*u_values;
+  u_valuesGauss  = Nodes2GaussU  * u_values;
+  du_valuesGauss = Nodes2GaussDU * u_values;
   
   if a_NL ;  %% update the coefficient a, if necessary
     switch nargin(a)
@@ -294,30 +302,36 @@ do   %% until error small enough, or inform.iter > MaxIter
       case 2   %% f(x,u)
 	f_values         = f{1}(x,u_values);            %% f(x,u) at nodes
 	dfdu_valuesGauss = f{2}(xGauss,u_valuesGauss);  %% df/du(x,u) at Gauss
-	A2 = GenerateFEM1D(interval,a_values,b,c_values-dfdu_valuesGauss,d);
+	A2 = GenerateFEM1D(interval,a_values,b,c_values-d_values.*dfdu_valuesGauss,d);
       case 3   %% f(x,u,u')
 	du_values = FEM1DEvaluateDu(x,u_values);     %% u' at nodes 
 	f_values  = f{1}(x,u_values,du_values);      %% f(x,u,u') at nodes
 	dfdu_valuesGauss   = f{2}(xGauss,u_valuesGauss,du_valuesGauss);% df/du
 	dfdupr_valuesGauss = f{3}(xGauss,u_valuesGauss,du_valuesGauss);% df/du'
-	A2 = GenerateFEM1D(interval,a_values,b_values-dfdupr_valuesGauss,c_values-dfdu_valuesGauss,d);
+	A2 = GenerateFEM1D(interval,a_values,
+			   b_values-d_values.*dfdupr_valuesGauss,
+			   c_values-d_values.*dfdu_valuesGauss,d);
     endswitch  %% length(f)
 
     A2 = ApplyBC2MatrixA(A2);
+    if or(inform.iter==1,a_NL==0)
+      Au = A0*u_values;
+    else
+      Au = A*u_values;
+    endif
+    
     switch BC  %% solve the problem for phi and make one Newton step
       case "DD"
-	phi = SolveSystemPhi(A2,-A*u_values(2:end-1)+M*f_values,BCleft,BCright);
+	phi = SolveSystemPhi(A2,-Au(2:end-1)+M*f_values,BCleft,BCright);
       case "ND"
-	phi = SolveSystemPhi(A2,-A*u_values(1:end-1)+M*f_values,BCleft,BCright);
+	phi = SolveSystemPhi(A2,-Au(1:end-1)+M*f_values,BCleft,BCright);
       case "DN"
-	phi = SolveSystemPhi(A2,-A*u_values(2:end)+M*f_values,BCleft,BCright);
+	phi = SolveSystemPhi(A2,-Au(2:end)+M*f_values,BCleft,BCright);
       case "NN"
-	phi = SolveSystemPhi(A2,-A*u_values+M*f_values,BCleft,BCright);
+	phi = SolveSystemPhi(A2,-Au+M*f_values,BCleft,BCright);
     endswitch
-    u_values += phi;	    
-  endif  %% f_NL %% apply one Newton step
-  
-  if f_NL   %%% evaluate f(x,u) or f(x,u,u')
+    u_values += phi;
+    %%% evaluate f(x,u) or f(x,u,u')
     switch length(f)  %% evaluate f and its partial derivatives
       case 2   %% f(x,u)
 	f_values  = f{1}(x,u_values);            %% f(x,u) at nodes
@@ -326,7 +340,7 @@ do   %% until error small enough, or inform.iter > MaxIter
 	f_values  = f{1}(x,u_values,du_values);  %% f(x,u,u') at nodes
     endswitch  %% length(f)
   endif %% f_NL
-  
+
   if a_NL %% apply successive substitution step with new matrix
     u_valuesGauss = Nodes2GaussU*u_values;
     switch nargin(a)
@@ -336,13 +350,23 @@ do   %% until error small enough, or inform.iter > MaxIter
 	du_valuesGauss = Nodes2GaussDU*u_values;
 	a_values = a(xGauss,u_valuesGauss,du_valuesGauss);
     endswitch
+    if f_NL   %%% evaluate f(x,u) or f(x,u,u')
+      switch length(f)  %% evaluate f and its partial derivatives
+	case 2   %% f(x,u)
+	  f_values  = f{1}(x,u_values);            %% f(x,u) at nodes
+	case 3   %% f(x,u,u')
+	  du_values = FEM1DEvaluateDu(x,u_values); %% u' at nodes 
+	  f_values  = f{1}(x,u_values,du_values);  %% f(x,u,u') at nodes
+      endswitch  %% length(f)
+    endif %% f_NL
+
     A = GenerateFEM1D(interval,a_values,b_values,c_values,d_values);
 
-    [a_left,a_right] = BCcontribA(A);   A = ApplyBC2MatrixA(A);
-    u_values  = SolveSystem(A,M*f_values,BCleft,BCright);
+    [a_left,a_right] = BCcontribA(A);  A_BC = ApplyBC2MatrixA(A);
+    u_values  = SolveSystem(A_BC,M*f_values,BCleft,BCright,a_left,a_right);
 
   else     %% if a_NL  %%  solve the system with the old matrix
-    u_values = SolveSystem(A0,M*f_values,BCleft,BCright);
+    u_values = SolveSystem(A00,M*f_values,BCleft,BCright,a_left,a_right);
   endif %% a_NL %% apply successive substitution step
 
   AbsError = norm(u_values-u_old);
@@ -354,10 +378,10 @@ do   %% until error small enough, or inform.iter > MaxIter
     endif %% f_NL
   endif  %% strcmp
 
-  u = u_values;
+  u = u_values;  %% assign the return value u
   
   if f_NL
-      AbsError2 = mean([AbsError,norm(phi)]);
+    AbsError2 = mean([AbsError,norm(phi)]);
   else
     AbsError2 = AbsError;
   endif %% f_NL

@@ -2,11 +2,11 @@ clear *
 L = 3; EI = 1;
 %% Newton's method
 CASE = 1; %% select:    single run (1); parametrized (2)
-           %% BVP1DNL(): single run (3); parametrized (4)
+          %% BVP1DNL(): single run (3); parametrized (4)
 switch CASE
 case 1
   F2 = 1.5; %% try values of 0.1 0.5 1.0 and 2
-  N = 1000; s = linspace(0,L,N);
+  N = 1000; s = linspace(0,L,N)';
   [sn,alpha] = BVP1D(s,1,0,0,1,F2/EI,0,[0,0]);
   figure(1); plot(sn,alpha); xlabel('arclength s'); ylabel('angle \alpha')
   xGauss = FEM1DGaussPoints(sn);
@@ -25,7 +25,7 @@ case 1
   figure(3); plot(x,y); xlabel('x'); ylabel('y')
 case 2
   F2_List = [0.25:0.25:2];
-  N = 100; s = linspace(0,L,N);
+  N = 100; s = linspace(0,L,N)';
   [sn,alpha] = BVP1D(s,1,0,0,1,F2_List(1)/EI,0,[0,0]);
   figure(1); plot(sn,alpha); xlabel('arclength s'); ylabel('angle \alpha')
   xGauss = FEM1DGaussPoints(sn);

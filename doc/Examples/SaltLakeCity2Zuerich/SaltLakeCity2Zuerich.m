@@ -1,4 +1,4 @@
-CASE = 2;  %% use 1 for the codes successive substitution, 2 for BVP1DNL()
+CASE = 1;  %% use 1 for the codes successive substitution, 2 for BVP1DNL()
 switch CASE
   case 1
   N = 51; R = 6300;
@@ -51,7 +51,7 @@ case 2
   [phi2,theta2] = BVP1D(interval,1,0,0,1,0,BCleft,BCright);  %% generate an intial guess
   [phi2,theta2,inform] = BVP1DNL(interval,a,0,0,1,f,BCleft,BCright,theta2,
                                 'MaxIter',20,'Display','iter');
-  figure(4); plot(phi/pi*180,90-theta/pi*180);
+  figure(4); plot(phi2/pi*180,90-theta2/pi*180);
              xlabel('\phi [deg]'); ylabel('90-\theta [deg]');
   Dtheta2 = FEM1DEvaluateDu(phi2,theta2);
   disp(sprintf("BVP1DNL(): L = %f km",R*trapz(phi2,sqrt(sin(theta2).^2+Dtheta2.^2))))

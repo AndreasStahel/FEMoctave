@@ -24,10 +24,18 @@ maintainers:
 - name: "Andreas Stahel"
   contact:
 versions:
+- id: "2.1.2"
+  date: "2023-08-21"
+  sha256: "???"
+  url: "https://github.com/AndreasStahel/FEMoctave/archive/v2.1.2.tar.gz"
+  depends:
+  - "octave (>= 5.2.0)"
+  - "pkg"
+versions:
 - id: "2.1.1"
   date: "2023-07-18"
   sha256: "???"
-  url: "https://github.com/AndreasStahel/FEMoctave/archive/v2.1.0.tar.gz"
+  url: "https://github.com/AndreasStahel/FEMoctave/archive/v2.1.1.tar.gz"
   depends:
   - "octave (>= 5.2.0)"
   - "pkg"

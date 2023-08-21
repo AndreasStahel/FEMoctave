@@ -18,7 +18,9 @@ In 2023 elasticity problems can be solved, plane stress, plane strain and axiall
 
 In April 2023 algorithms for 1D problems are available.
 
-In July 2023 an algorithm for nonlinear, static 1D problems is available.
+In July 2023 a first algorithm for nonlinear, static 1D problems is available.
+
+In August 2023 the algorithm for nonlinear, static 1D problems is improved and many examples provided
 
 ## 2. PURPOSE
 The main goal is to provide a tool using Octave only to teach the method of finite elements, short FEM.

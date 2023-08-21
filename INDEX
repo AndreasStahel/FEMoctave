@@ -83,7 +83,6 @@ Demo m-files
   NL_Newton.m
   ShortestConnection.m
 
-
 Example m-files
   WaveAnimation.m
   BesselSuperconvergence.m
@@ -115,3 +114,6 @@ Example m-files
   Keller.m
   Keller2.m
   SaltLakeCity2Zuerich/SaltLakeCity2Zuerich.m
+  Pendulum.m
+  PorousCatalyst.m
+  Troesch.m
