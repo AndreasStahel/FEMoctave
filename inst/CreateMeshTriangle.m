@@ -1,15 +1,15 @@
 ## Copyright (C) 2022 Andreas Stahel
-##
+## 
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
-##
+## 
 ## This program is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-##
+## 
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see
 ## <https://www.gnu.org/licenses/>.
@@ -22,14 +22,13 @@
 ##parameters:
 ##@itemize
 ##@item @var{name} the base filename: the file @var{name}.poly will be generated then triangle will generate files @var{name}.1.* with the mesh
-##@item@var{xy} vector containing the coordinates of the nodes forming the outer boundary. The last given node will be connected to the first given node to create a closed curve. Currently no holes can be generated.
+##@item@var{xy} vector containing the coordinates of the nodes forming the outer boundary. The last given node will be connected to the first given node to create a closed curve.
 ##@*The format for @var{xy} is
 ##       [x1,y1,b1;x2,y2,b2;...;xn,yn,bn] where
 ##@itemize
 ##@item xi x-coordinate of node i
 ##@item yi y-coordinate of node i
 ##@item bi boundary marker for segment from node i to node i+1
-##@end itemize
 ##@itemize
 ##@item for scalar problems
 ##@itemize
@@ -45,12 +44,17 @@
 ##@end itemize
 ##@end itemize
 ##@item@var{area} the typical area of the individual triangles to be used
-##@item@var{options} additional options to be used when calling triangle the options "pa" and the area will be added automatically
-##@*Default options are "q" resp. "qpa"
-##@*to suppress the verbose information use "Q"
+##@item@var{options} additional options to be used when calling triangle.
+## The options "pa" and the area will be added automatically.
+## Default options are "q" resp. "qpa".
+## To suppress the verbose information use "Q"
+##
+##@*More options are available to adapt mesh sizes and create holes. See the ducumentation in FEMdoc.pdf
+##@end itemize
 ##@end itemize
 ##
 ##The information on the mesh generated is written to files and returned in the structure @var{Mesh}, if the return argument is provided.
+##
 ##@itemize
 ##@item  The information can then be read and used by
 ##@*Mesh = ReadMeshTriangle('@var{name}.1');
@@ -99,12 +103,12 @@ function Mesh = CreateMeshTriangle(name,xy,area,varargin)
   opt = '-Q';
   CuthillMcKee = 0;
   DeleteFiles = 1;
-
+  
   PointCounter = 0; Points = []; Areas = [];
   HoleCounter  = 0; HoleSize = 0;
   HoleLength   = [];  HoleBorder = []; HolePoint = [];
   SegmentCounter = 0; SegmentBorder = [];
-  SegmentLength = [];
+  SegmentLength = []; 
   if (~isempty(varargin))
     for cc = 1:length(varargin)
       switch tolower(varargin{cc}.name)
@@ -201,13 +205,13 @@ function Mesh = CreateMeshTriangle(name,xy,area,varargin)
       endfor% jj
     endfor %% sc
   endif
-
+ 
   fprintf(fid,"# holes\n");
   fprintf(fid,"%i\n",HoleCounter);
   for hc = 1:HoleCounter
     fprintf(fid,"%i %16.15e %16.15e\n",hc,HolePoint(hc,1), HolePoint(hc,2));
   endfor
-
+  
   if PointCounter>0
       fprintf(fid,"# area markers\n");
     fprintf(fid,"%i\n",PointCounter);
@@ -215,25 +219,22 @@ function Mesh = CreateMeshTriangle(name,xy,area,varargin)
       fprintf(fid,"%i %f %f 0 %f \n",jj,Points(jj,1), Points(jj,2),Areas(jj));
     endfor
   endif
-
+  
   %% maximal angle 30 degree
   if PointCounter>0
     command = ['triangle ',opt,sprintf('pq30a '),name,'.poly'];
   else
-    dd = ['%.',num2str(max(fix(abs(log10(area))),6) + 4)];  %% how mmany digits are required?
-    format_string = sprintf('pq30a%sf ',dd);
-    command = ['triangle ',opt,sprintf(format_string,area),name,'.poly'];
-    %%command = ['triangle ',opt,sprintf('pq30a%f ',area),name,'.poly']
+    command = ['triangle ',opt,sprintf('pq30a%f ',area),name,'.poly'];
   endif
 
   fprintf(fid,"# generate mesh by : %s\n",command);
   fclose(fid);
-
+  
   system(command);
   if CuthillMcKee
     system(['./CuthillMcKee -s0 ',name,'.1']);
   endif
-
+  
   if nargout >=1
     Mesh = ReadMeshTriangle([name,'.1']);
     if DeleteFiles
