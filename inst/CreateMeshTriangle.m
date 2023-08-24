@@ -49,7 +49,7 @@
 ## Default options are "q" resp. "qpa".
 ## To suppress the verbose information use "Q"
 ##
-##@*More options are available to adapt mesh sizes and create holes. See the ducumentation in FEMdoc.pdf
+##@*More options are available to adapt mesh sizes and create holes. See the documentation in FEMdoc.pdf
 ##@end itemize
 ##@end itemize
 ##
