@@ -221,7 +221,7 @@ switch solver
       u(:,jj1+1) = ut+uB;  t(jj1+1) = tt;
     endfor %% jj1
   otherwise
-    error('Invalid optional argument, %s, valid are CN, explicit, implicit, RK',solver);
+    error('Invalid optional argument solver: %s, valid are CN, explicit, implicit, RK',solver);
 endswitch %% solver
 
 switch BC  %% add the Dirichlet values at the endpoints

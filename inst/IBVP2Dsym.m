@@ -18,9 +18,9 @@
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
 ## Created: 2020-03-30
 
-function [u,t] = IBVP2Dsym(Mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps)
+function [u,t] = IBVP2Dsym(Mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps,varargin)
 ## -*- texinfo -*-
-## @deftypefn{function file}{}[@var{u},@var{t}] = IBVP2Dsym(@var{mesh},@var{m},@var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2},@var{u0},@var{t0},@var{tend},@var{steps})
+## @deftypefn{function file}{}[@var{u},@var{t}] = IBVP2Dsym(@var{mesh},@var{m},@var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2},@var{u0},@var{t0},@var{tend},@var{steps},@var{options})
 ##
 ##   Solve a symmetric initial boundary value problem
 ##
@@ -45,6 +45,14 @@ function [u,t] = IBVP2Dsym(Mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps)
 ##@item @var{steps} is a vector with one or two positive integers.
 ##@*If @var{steps} = n, then n Crank Nicolson steps are taken and the results returned.
 ##@*If @var{steps} = [n,nint], then n*nint Crank Nicolson steps are taken and (n+1) results returned.
+##@item @var{options} additional options, given as pairs name/value.
+##Currently only the stepping algorithm can be selected as @var{"solver"} and the possible values
+##@itemize
+##@item @var{"CN"} the standard Crank-Nicolson (default)
+##@item @var{"implicit"} the standard implicit solver
+##@item @var{"explicit"} the standard explicit solver
+##@item @var{"RK"} an L-stable, implicit Runge-Kutta solver
+##@end itemize
 ##@end itemize
 ##
 ##return values
@@ -61,7 +69,20 @@ function [u,t] = IBVP2Dsym(Mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps)
 ## @c END_CUT_TEXINFO
 ## @end deftypefn
 
+solver = 'CN';  %% default value is Crank-Nicolson
+if (~isempty(varargin))
+  for cc = 1:2:length(varargin)
+    switch tolower(varargin{cc})
+      case {'solver'}
+	solver = toupper(varargin{cc+1});
+      otherwise
+	error('Invalid optional argument, %s',varargin{cc}.name);
+    endswitch % switch
+  endfor % for
+endif % if ĩsempty
+  
 Mesh.node2DOF = Mesh.node2DOF(:,1);  %% not an elasticity problem
+
 if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
 else
@@ -108,29 +129,96 @@ else
   fVec = f;
 endif
 
-Mleft = W+dt/2*A;  Mright = W-dt/2*A;
-[L,m,Q] = chol(Mleft,'lower');    %% Q'*Mleft*Q = L*L'
-Qt = Q'; Lt = L';
-t = t0;
-u = zeros(length(u0),steps(1)+1);
-u_new = u0-u_B;  u_new(ind_Dirichlet) = 0;
 
-u(:,1) = u0;
-for ii_t = 1:steps(1)
-  for ii_2 = 1:steps(2)
-    if f_dep_t
-      fVec = feval(f,Mesh.nodes,t+dt/2);
-    endif %% f_dep_t
-    u_temp = Q*(Lt\(L\(Qt*(Mright*u_new(ind_free) + dt*(Wf*fVec)))));
-    u_new(ind_free) = u_temp;
-    t+= dt;
-  %    if ischar(gD)  %% evaluate the function
-  %      u_new(ind_Dirichlet) = feval(gD,mesh.nodes(ind_Dirichlet,:));
-  %    else           %% use the scalar value
-  %      u_new(ind_Dirichlet) = gD;
-  %    endif %ischar
-  endfor % ii_2
-  u(:,ii_t+1) = u_new + u_B;
-endfor
+switch solver
+ case 'CN'
+ Mleft = W+dt/2*A;  Mright = W-dt/2*A;
+ [L,m,Q] = chol(Mleft,'lower');  %% Q'*Mleft*Q = L*L'
+ Qt = Q'; Lt = L';
+ t = t0;
+ u = zeros(length(u0),steps(1)+1);
+
+ u_new = u0-u_B; u_new(ind_Dirichlet) = 0;
+ u(:,1) = u0;
+ for ii_t = 1:steps(1)
+   for ii_2 = 1:steps(2)
+     if f_dep_t
+       fVec = feval(f,Mesh.nodes,t+dt/2);
+     endif %% f_dep_t
+     u_temp = Q*(Lt\(L\(Qt*(Mright*u_new(ind_free) + dt*(Wf*fVec)))));
+     u_new(ind_free) = u_temp;
+     t += dt;
+   endfor % ii_2
+   u(:,ii_t+1) = u_new + u_B;
+ endfor
+
+ case 'IMPLICIT'
+ [L,m,Q] = chol(W+dt*A,'lower'); %% Q'*(W+dt*A)*Q = L*L'
+ Qt = Q'; Lt = L';
+ t = t0;
+ u = zeros(length(u0),steps(1)+1);
+
+ u_new = u0-u_B; u_new(ind_Dirichlet) = 0;
+ u(:,1) = u0;
+ for ii_t = 1:steps(1)
+   for ii_2 = 1:steps(2)
+     if f_dep_t
+       fVec = feval(f,Mesh.nodes,t+dt);
+     endif %% f_dep_t
+     u_temp = Q*(Lt\(L\(Qt*(W*u_new(ind_free) + dt*(Wf*fVec)))));
+     u_new(ind_free) = u_temp;
+     t += dt;
+   endfor % ii_2
+   u(:,ii_t+1) = u_new + u_B;
+ endfor
+
+ case 'EXPLICIT'
+ [L,m,Q] = chol(W,'lower');  %% Q'*W*Q = L*L'
+ Qt = Q'; Lt = L';
+ t = t0;
+ u = zeros(length(u0),steps(1)+1);
+ u_new = u0-u_B; u_new(ind_Dirichlet) = 0;
+ u(:,1) = u0;
+ for ii_t = 1:steps(1)
+   for ii_2 = 1:steps(2)
+     if f_dep_t
+       fVec = feval(f,Mesh.nodes,t);
+     endif %% f_dep_t
+     u_temp = dt*Q*(Lt\(L\(Qt*(-A*u_new(ind_free)+Wf*fVec))));
+     u_new(ind_free) += u_temp;
+     t += dt;
+   endfor % ii_2
+   u(:,ii_t+1) = u_new + u_B;
+ endfor
+ 
+ case 'RK'
+ theta = 1-1/sqrt(2);
+ [L,m,Q] = chol(W+theta*dt*A,'lower');  %% Q'*(W+theta*dt*A)*Q = L*L'
+ Qt = Q'; Lt = L';
+ t = t0;
+ u = zeros(length(u0),steps(1)+1);
+ u_new = u0-u_B; u_new(ind_Dirichlet) = 0;
+ u(:,1) = u0;
+ for ii_t = 1:steps(1);
+   for ii_2 = 1:steps(2);
+     if f_dep_t
+       fVec1 = feval(f,Mesh.nodes,t + theta*dt);
+       fVec2 = feval(f,Mesh.nodes,t + dt);
+     else
+       fVec1 = fVec; fVec2 = fVec;
+     endif
+     k      = Q*(Lt\(L\(Qt*(-A*u_new(ind_free) + Wf*fVec1))));
+     u_temp = Q*(Lt\(L\(Qt*((W-(dt/sqrt(2))*A)*u_new(ind_free)...
+		          - dt^2*(0.5-theta)*A*k...
+		          + dt*Wf*((1-theta)*fVec1 + theta*fVec2)))));
+     u_new(ind_free) = u_temp;
+     t += dt;
+   endfor  %% ii_2
+   u(:,ii_t+1) = u_new + u_B;
+ endfor %% ii_t
+ otherwise
+    error('Invalid optional argument for solver: %s, valid are CN, explicit, implicit, RK',solver);
+endswitch
+
 t = linspace(t0,tend,steps(1)+1);
 endfunction
