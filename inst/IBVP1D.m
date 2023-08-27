@@ -55,7 +55,7 @@
 ##@item If @var{steps} = [n,nint], then n*nint steps are taken and (n+1) results returned.
 ##@end itemize
 ##@item @var{options} additional options, given as pairs name/value.
-##Currently only the type stepping algorithm can be selected as @var{"solver"} and then the possible values
+##Currently only the stepping algorithm can be selected as @var{"solver"} and the possible values
 ##@itemize
 ##@item @var{"CN"} the standard Crank-Nicolson (default)
 ##@item @var{"implicit"} the standard implicit solver

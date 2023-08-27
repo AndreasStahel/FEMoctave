@@ -75,7 +75,7 @@
 ##@item @var{u} the values of the solution at the nodes
 ##@item @var{inform} a structure with information on the performance of the algorithm
 ##@itemize
-##@item @var{inform.info}=1 if the algorithm converged with the desired tolerance, -1 if not.
+##@item @var{inform.info} = 1 if the algorithm converged with the desired tolerance, -1 if not.
 ##@item @var{inform.iter} the number of iterations used.
 ##@item @var{inform.AbsError} the RMS value of the last correction applied.
 ##@end itemize
