@@ -164,6 +164,11 @@ u = zeros(length(uB),n_1+1);  u(:,1) = u0;
 
 switch solver
   case 'EXPLICIT'
+    lambda = eigs(A,W,1);  %% check for stability
+    if(dt>2/lambda)
+      warning(sprintf('explicit algorithm is unstable, dt=%g, 2/lambda = %g',
+		       dt,2/lambda))
+    endif
     ut = u0-uB;  %% starting value
     for jj1 = 1:n_1;
       for jj2 = 1:n_2

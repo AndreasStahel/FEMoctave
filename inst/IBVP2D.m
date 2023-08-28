@@ -214,6 +214,11 @@ switch solver
  endfor
 
  case 'EXPLICIT'
+ lambda = eigs(A,W,1);   %% check for stability
+ if(dt>2/lambda)
+   warning(sprintf('explicit algorithm is unstable, dt=%g, 2/lambda = %g',
+		   dt,2/lambda))
+ endif
  [L,U,P,Q] = lu(W);  %% P*W*Q = L*U
  t = t0;
  u = zeros(length(u0),steps(1)+1);
