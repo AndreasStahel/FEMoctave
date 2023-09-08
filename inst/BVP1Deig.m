@@ -49,8 +49,8 @@
 ##return values
 ##@itemize
 ##@item @var{x} the nodes in the given interval
-##@item @var{eVal} the eigenvalues of the solution at the nodes
-##@item @var{eVec} the matric of eigenvectors of the solutions at the nodes
+##@item @var{eVal} the eigenvalues
+##@item @var{eVec} the matrix of eigenvectors of the solutions at the nodes
 ##@item @var{errorbound} a matrix with error bounds of the eigenvalues
 ##@end itemize
 ##
