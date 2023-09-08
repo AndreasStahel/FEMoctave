@@ -36,3 +36,5 @@ rand_vec = rand_vec/norm(rand_vec);
 Norm_Random = [norm(A*rand_vec),rand_vec'*A*rand_vec/2]
 
 %% OK, generates the expected result
+%% use PlainStressEig()
+lambda = PlaneStressEig(Mesh,W,nu,1,6)'
