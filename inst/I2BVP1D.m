@@ -20,7 +20,7 @@
 
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}[@var{x},@var{u},@var{t}] = I2BVP1D(@var{interval},@var{w1},@var{a},@var{b},@var{c},@var{d},@var{f},@var{BCleft},@var{BCright},@var{u0},@var{u1},@var{t0},@var{tend},@var{steps})
+## @deftypefn{function file}{}[@var{x},@var{u},@var{t}] = I2BVP1D(@var{interval},@var{w1},@var{a},@var{b},@var{c},@var{d},@var{f},@var{BCleft},@var{BCright},@var{u0},@var{u1},@var{t0},@var{tend},@var{steps},@var{options})
 ##
 ##   solve a second order 1D initial boundary value problem (IBVP)
 ##
@@ -56,6 +56,13 @@
 ##@item If @var{steps} = n, then n steps are taken and the n+1 results returned.
 ##@item If @var{steps} = [n,nint], then n*nint steps are taken and (n+1) results returned.
 ##@end itemize
+##@item @var{options} additional options, given as pairs name/value.
+##Currently only the stepping algorithm can be selected as @var{"solver"} and the possible values
+##@itemize
+##@item @var{"implicit"} the standard implicit solver (default)
+##@item @var{"explicit"} the standard explicit solver
+##@end itemize
+
 ##@end itemize
 ##
 ##return values
@@ -162,19 +169,49 @@ dt = (tend-t0)/(n_1*n_2);
 t = linspace(t0,tend,n_1+1);  tt = t0+dt;
 u = zeros(length(uB),n_1+1);  u(:,1) = u0;
 
+%%lambda = eigs(A,W2,1);
+%%disp(sprintf("Values:  lambda = %g, dt = %g, 2/sqrt(lambda) = %g\n",...
+%%	      lambda,dt,2/sqrt(lambda)))
+
+
+u_curr = u0-uB;  %% starting value
+if f_var
+  f_values = f(x,t0);
+endif %% f_dep_t
+%% value at t0+Delta t
+u_new = W2\((W2-dt*W1)*dt*u1 + W2*u_curr + dt^2/2*(M*f_values-A*u_curr));
+
 switch solver
   case 'IMPLICIT'
     Mleft    = W2+dt*W1+dt^2/4*A;  %% matrix for u(t+dt)
     Mmiddle  = 2*W2 - dt^2/2*A;   %% matrix for u(t)
     Mright   = -Mleft + 2*dt*W1;  %% matrix for u(t-dt)
     [L,U,P,Q] = lu(Mleft);  %% P*A*Q = L*U
+    for ii_t = 1:n_1
+      for ii_2 = 1:n_2
+	if f_var
+	  f_values = f(x,tt);
+	endif %% f_dep_t
+	u_temp = Q*(U\(L\(P*(Mmiddle*u_new + Mright*u_curr + dt^2*(M*f_values)))));
+	u_curr = u_new;
+	u_new = u_temp;
+	tt += dt;
+      endfor % ii_2
+      u(:,ii_t+1) = u_new + uB;
+    endfor
 
-    u_curr = u0-uB;  %% starting value
-    if f_var
-      f_values = f(x,t0);
-    endif %% f_dep_t
-    %% value at t0+Delta t
-    u_new = W2\((W2-dt*W1)*dt*u1 + W2*u_curr + dt^2/2*(M*f_values-A*u_curr));
+  case 'EXPLICIT'
+    Mleft    = W2+dt/2*W1;  %% matrix for u(t+dt)
+    Mmiddle  = 2*W2 - dt^2*A;   %% matrix for u(t)
+    Mright   = -W2+dt/2*W1;  %% matrix for u(t-dt)
+    [L,U,P,Q] = lu(Mleft);  %% P*A*Q = L*U
+
+    lambda = eigs(A,W2,1);  %% check for stability
+    if(dt>2/sqrt(lambda))
+      warning(sprintf(
+              'explicit algorithm is unstable, dt = %g, 2/sqrt(lambda) = %g',
+              dt,2/sqrt(lambda)))
+    endif
 
     for ii_t = 1:n_1
       for ii_2 = 1:n_2
@@ -189,7 +226,7 @@ switch solver
       u(:,ii_t+1) = u_new + uB;
     endfor
   otherwise
-    error('Invalid optional argument, %s, valid are implicit',solver);
+    error('Invalid optional argument, %s, valid are implicit and explicit',solver);
 endswitch %% solver
 
 switch BC  %% add the Dirichlet values at the endpoints
