@@ -23,9 +23,8 @@ endfunction
 
 u1i = FEMgriddata(FEMmesh,u1,CMesh.nodes(:,1),CMesh.nodes(:,2));
 u2i = FEMgriddata(FEMmesh,u2,CMesh.nodes(:,1),CMesh.nodes(:,2));
-factor = 2;
-figure(11); ShowDeformation(CMesh,u1i,u2i,2);
-            axis equal; xlabel('x'); ylabel('y'); ylim([0,0.35])
+figure(1); ShowDeformation(CMesh,u1i,u2i,2);
+           axis equal; xlabel('x'); ylabel('y'); ylim([0,0.35])
 figure(2); FEMtrimesh(FEMmesh,u1)
            xlabel('x'); ylabel('y'); zlabel('u_1'); view([50,30])
 figure(3); FEMtrimesh(FEMmesh,u2)
@@ -60,4 +59,3 @@ figure(7); FEMtrimesh(FEMmesh,Tresca)
            xlabel('x'); ylabel('y'); zlabel('Tresca stress'); view([120,30])
 
 [s1,s2] = EvaluatePrincipalStress(sigma_x,sigma_y,tau_xy);
-
