@@ -11,15 +11,11 @@ function res = force(rz)
   res = -P*max(R^2-rz(:,2).^2,0);
 endfunction
 
-
 E = 110e9; nu = 0.35; f = {0,0}; gD = {0,0}; gN = {'force',0};
 [ur,uz] = AxiStress(Mesh,E,nu,f,gD,gN);
 
 factor = 0.1*R/max(sqrt(ur.^2+uz.^2));
-figure(1); trimesh(Mesh.elem,Mesh.nodes(:,1),Mesh.nodes(:,2),'color','green'); hold on
-           trimesh(Mesh.elem,Mesh.nodes(:,1)+factor*ur,Mesh.nodes(:,2)+factor*uz,'color','red')
-           xlabel('r'); ylabel('z')
-           axis equal; hold off
+figure(1); ShowDeformation(Mesh,ur,uz,factor); xlabel('r'); ylabel('z'); axis equal
 
 [sigma_x,sigma_y,sigma_z,tau_xz] = EvaluateStressAxi(Mesh,ur,uz,E,nu);
 figure(12); FEMtrimesh(Mesh,sigma_x)
@@ -28,7 +24,6 @@ figure(13); FEMtrimesh(Mesh,sigma_y)
             xlabel('r'); ylabel('z'); zlabel('\sigma_y')
 figure(14); FEMtrimesh(Mesh,sigma_z)
             xlabel('r'); ylabel('z'); zlabel('\sigma_z')
-
 
 vonMises = EvaluateVonMises(sigma_x,sigma_y,sigma_z,tau_xz);
 figure(15); FEMtrimesh(Mesh,vonMises)
