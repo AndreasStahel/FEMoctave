@@ -1,4 +1,5 @@
 clear all
+pkg load femoctave
 E = 110e9; nu = 0.35; %%% copper
 %%E = 200e9; nu = 0.25; %%% steel
 R = 0.1; dR = 0.01;
@@ -34,9 +35,11 @@ endfunction
 [u1,u2] = PlaneStrain(FEMmesh,E,nu,{0,0},{0,0},{'gN1','gN2'});
 
 factor = 400;
-figure(1); trimesh(FEMmesh.elem,FEMmesh.nodes(:,1)+factor*u1,FEMmesh.nodes(:,2)+factor*u2,'color','red','linewidth',2);
-hold on ;  trimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),'color','green','linewidth',1);
-hold off; axis equal; xlabel('x'); ylabel('y');
+figure(1); ShowDeformation(FEMmesh,u1,u2,factor);
+%trimesh(FEMmesh.elem,FEMmesh.nodes(:,1)+factor*u1,FEMmesh.nodes(:,2)+factor*u2,'color','red','linewidth',2);
+%hold on ;  trimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),'color','green','linewidth',1);
+%hold off;
+axis equal; xlabel('x'); ylabel('y');
 
 [sigma_x,sigma_y,tau_xy,sigma_z] = EvaluateStress(FEMmesh,u1,u2,E,nu);
 vonMises = EvaluateVonMises(sigma_x,sigma_y,tau_xy,sigma_z);

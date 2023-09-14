@@ -13,10 +13,7 @@ endfunction
 [ur,uz] = AxiStress(Mesh,E,nu,{'fr',0},{0,0},{0,0});
 
 factor = 1;
-figure(10); trimesh(Mesh.elem,Mesh.nodes(:,1)+factor*ur,...
-                   Mesh.nodes(:,2)+factor*uz,'color','red','linewidth',2);
-hold on ;  trimesh(Mesh.elem,Mesh.nodes(:,1),Mesh.nodes(:,2),'color','green','linewidth',1);
-           hold off; axis equal; xlabel('x'); ylabel('y');
+figure(10); ShowDeformation(Mesh,ur,uz,1); axis equal; xlabel('x'); ylabel('y');
 figure(11); FEMtrimesh(Mesh,ur)
             xlabel('r'); ylabel('z'); zlabel('u_r')
 figure(12); FEMtrimesh(Mesh,uz)

@@ -1,10 +1,10 @@
-%% bending of beam by applied force
+%% bending of beam by an applied force
 L = 1; H = 0.1;
 E = 100e9; nu = 0; Force = 100;
 
-NL = 10;   %% number of elements along length L
-NH =  NL/10;   %% number of elements along height H
-Order = 1; %% order of elements, either 1, 2 or 3
+NL = 20;   %% number of elements along length L
+NH =  round(NL/10);   %% number of elements along height H
+Order = 3; %% order of elements, either 1, 2 or 3
 FEMmesh = CreateMeshRect([0:L/NL:L],[-H/2:H/NH:+H/2],-22,-22,-11,-33);
 
 figure(1); FEMtrimesh(FEMmesh);%% axis equal;
@@ -56,7 +56,4 @@ figure(14); mesh(xx,yy,Wi);xlabel('x'); ylabel('y');
 
 %% show deformed domain
 factor = 1e5/2;
-figure(100);  trimesh(FEMmesh.elem,FEMmesh.nodes(:,1)+factor*u1,FEMmesh.nodes(:,2)+factor*u2,'color','red','linewidth',2);
-              hold on ;  trimesh(FEMmesh.elem,FEMmesh.nodes(:,1),FEMmesh.nodes(:,2),'color','green','linewidth',1);
-              hold off; xlabel('x'); ylabel('y'); axis equal
-
+figure(100); ShowDeformation(FEMmesh,u1,u2,factor); xlabel('x'); ylabel('y'); axis equal
