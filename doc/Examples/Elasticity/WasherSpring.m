@@ -1,3 +1,4 @@
+pkg load femoctave
 rho = 2700; E = 70e9; nu = 0.33;  %% Aluminum
 H = 0.001; Ri = 0.002; Ro = 0.005; D = 0.0006; H = 0.0004;
 global Offset
@@ -22,14 +23,8 @@ endfunction
 
 [ur,uz] = AxiStress(Mesh,E,nu,{0,0},{0,'gDz'},{0,0});
 
-factor = 1;
-figure(10);clf
-           trimesh(Mesh.elem,Mesh.nodes(:,1)+factor*ur,...
-                   Mesh.nodes(:,2)+factor*uz,'color','red','linewidth',2);
-hold on ;  trimesh(Mesh.elem,Mesh.nodes(:,1),Mesh.nodes(:,2),'color','green','linewidth',1);
-           hold off; axis equal; xlabel('r'); ylabel('z');
-           xticks([2:5]/1000); yticks([0:0.5:1]/1000)
-
+figure(10); ShowDeformation(Mesh,ur,uz,1);
+            axis equal; xlabel('r'); ylabel('z'); xticks([2:5]/1000); yticks([0:0.5:1]/1000)
 figure(11); FEMtrimesh(Mesh,ur)
             xlabel('r'); ylabel('z'); zlabel('u_r')
             xticks([2:5]/1000); yticks([0:0.5:1]/1000)

@@ -11,6 +11,7 @@ function res = force(rz)
   res = -P*max(R^2-rz(:,2).^2,0);
 endfunction
 
+
 E = 110e9; nu = 0.35; f = {0,0}; gD = {0,0}; gN = {'force',0};
 [ur,uz] = AxiStress(Mesh,E,nu,f,gD,gN);
 
@@ -24,6 +25,7 @@ figure(13); FEMtrimesh(Mesh,sigma_y)
             xlabel('r'); ylabel('z'); zlabel('\sigma_y')
 figure(14); FEMtrimesh(Mesh,sigma_z)
             xlabel('r'); ylabel('z'); zlabel('\sigma_z')
+
 
 vonMises = EvaluateVonMises(sigma_x,sigma_y,sigma_z,tau_xz);
 figure(15); FEMtrimesh(Mesh,vonMises)
