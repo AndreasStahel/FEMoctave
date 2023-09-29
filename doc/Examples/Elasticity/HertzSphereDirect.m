@@ -1,6 +1,3 @@
-clear *
-printing = 0;
-pkg load femoctave
 %% 1 GPa = 10^9 N/m^2 = 10^3 MPa = 10^3 N/mm^2
 E = 200e3; nu = 0.24 ;%% N/mm^2
 %% parameters for steel E = 200 GPa = 200e3 MPa, nu = 0.24, yield strength = 300 MPa
@@ -61,14 +58,4 @@ figure(32); contourf(rr,zz,sigma_zg/1e3,51); xlabel('r'); ylabel('z');
             title('\sigma_z [kPa]'); axis equal; colorbar
 figure(33); contourf(rr,zz,VonMises_g/1e3,51); xlabel('r'); ylabel('z');
             title('von Mises [kPa]'); axis equal; colorbar
-
-%%figure(21); mesh(rr,zz,sigma_rg/1e3); xlabel('r'); ylabel('z');
-%%            title('\sigma_r [kPa]');
-%%figure(22); mesh(rr,zz,sigma_zg/1e3); xlabel('r'); ylabel('z');
-%%            title('\sigma_z [kPa]');
-
-if printing
-  figure(32); print -dpng HertzSphereDirectSigma_z.png
-  figure(11); print -dpdfcrop HertzSphereDirectUz.pdf
-endif
 
