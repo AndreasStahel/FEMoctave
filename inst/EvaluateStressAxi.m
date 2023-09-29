@@ -52,7 +52,7 @@ function [sigma_x,sigma_y,sigma_z,tau_xz] = EvaluateStressAxi(Mesh,ur,uz,EFunc,n
   %% evaluate the strains
   [eps_xx, eps_xz1] = FEMEvaluateGradient(Mesh,ur);
   [eps_xz2,eps_zz]  = FEMEvaluateGradient(Mesh,uz);
-  eps_yy = ur./Mesh.nodes(:,1);
+  eps_yy = ur./max((Mesh.nodes(:,1)),eps);  %% avoid division by 0
   eps_xz = (eps_xz1+eps_xz2)/2;
 
   %% evaluate the material parameters at the nodes
