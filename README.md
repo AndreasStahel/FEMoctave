@@ -22,6 +22,8 @@ In July 2023 a first algorithm for nonlinear, static 1D problems is available.
 
 In August 2023 the algorithm for nonlinear, static 1D problems is improved and many examples provided
 
+In October 2023 elementary Hertz contact problems provided
+
 ## 2. PURPOSE
 The main goal is to provide a tool using Octave only to teach the method of finite elements, short FEM.
 The mathematics of the algorithms are spelled out and implemented in Octave

@@ -1,6 +1,23 @@
 TODO for next release:
 * ???
 
+FEMoctave 2.1.3, 10.10.2023
+-------------------------------
+* elementary Hertz contact problems added
+* Black Scholes Merton examples added
+* mathematical bugs in EvaluateStressAxi.m and  EvaluateStrainAxi.m fixed
+* FEMdoc.pdf adapted and improved, more examples provided
+
+New files
+- EvaluateStressAxi.m
+- EvaluateStrainAxi.m
+-doc/Examples/
+   BlackScholes/BlackScholesCall.m
+   BlackScholes/BlackScholesPut.m
+   HertzContact/HertzCylinder.m
+   HertzContact/HertzSphere.m
+   HertzContact/HertzSphereDirect.m
+
 FEMoctave 2.1.2, 21.8.2023
 -------------------------------
 * an improved algorithm for nonlinear boundary value problems with one variable is available, including a few examples

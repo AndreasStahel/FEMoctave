@@ -117,3 +117,8 @@ Example m-files
   Pendulum.m
   PorousCatalyst.m
   Troesch.m
+  BlackScholesCall.m
+  BlackScholesPut.m
+  HertzCylinder.m
+  HertzSphere.m
+  HertzSphereDirect.m

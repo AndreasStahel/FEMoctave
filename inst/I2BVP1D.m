@@ -62,7 +62,6 @@
 ##@item @var{"implicit"} the standard implicit solver (default)
 ##@item @var{"explicit"} the standard explicit solver
 ##@end itemize
-
 ##@end itemize
 ##
 ##return values
