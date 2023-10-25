@@ -49,7 +49,7 @@
 ##@item for a Neumann condition specify the values @var{[g_N1,g_N2]}
 ##@end itemize
 ##@item @var{u0} constant, vector with the initial values at the nodes or a function handle to evaluate u(t0)
-##@item @var{u1} constant, vector with the initial velocitiesat the nodes or a function handle to evaluate u(t0)
+##@item @var{u1} constant, vector with the initial velocities at the nodes or a function handle to evaluate u(t0)
 ##@item @var{t0}, @var{tend} are the initial and final times
 ##@item @var{steps} is a vector with one or two positive integers.
 ##@itemize
@@ -177,11 +177,15 @@ u_curr = u0-uB;  %% starting value
 if f_var
   f_values = f(x,t0);
 endif %% f_dep_t
-%% value at t0+Delta t
-u_new = W2\((W2-dt*W1)*dt*u1 + W2*u_curr + dt^2/2*(M*f_values-A*u_curr));
 
 switch solver
   case 'IMPLICIT'
+    if d==0  %% no damping, %% value at t0+Delta t
+      u_new = Q*(U\(L\(P*(dt*(W2-dt*W1+dt^2/4*A)*u1 + (W2-dt^2/4*A)*u_curr + dt^2/2*M*f_values))));
+    else
+      u_new = (W2+dt^2/4*A)\(dt*(W2-dt*W1+dt^2/4*A)*u1 + (W2-dt^2/4*A)*u_curr + dt^2/2*M*f_values);
+    endif
+
     Mleft    = W2+dt*W1+dt^2/4*A;  %% matrix for u(t+dt)
     Mmiddle  = 2*W2 - dt^2/2*A;   %% matrix for u(t)
     Mright   = -Mleft + 2*dt*W1;  %% matrix for u(t-dt)
@@ -200,6 +204,9 @@ switch solver
     endfor
 
   case 'EXPLICIT'
+    %% value at t0+Delta t
+    u_new = W2\((W2-dt*W1)*dt*u1 + W2*u_curr + dt^2/2*(M*f_values-A*u_curr));
+
     Mleft    = W2+dt/2*W1;  %% matrix for u(t+dt)
     Mmiddle  = 2*W2 - dt^2*A;   %% matrix for u(t)
     Mright   = -W2+dt/2*W1;  %% matrix for u(t-dt)

@@ -82,7 +82,6 @@ if (~isempty(varargin))
   endfor % for
 endif % if
 
-
 if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
 else
@@ -128,7 +127,7 @@ ind_free      = find(Mesh.node2DOF>0);  %% which nodes lead to DOF
 ind_Dirichlet = find(Mesh.node2DOF==0); %% Dirichlet nodes
 W = Wu(:,ind_free);  D = D (:,ind_free);
 
-t=t0; f_dep_t = false;
+t = t0; f_dep_t = false;
 if ischar(f)
   fVec = feval(f,Mesh.nodes,t);
   f_dep_t = true;  % has to be evaluated at each timestep
@@ -156,8 +155,21 @@ switch solver
     u_curr = u_curr(ind_free); %% u(t-dt)
     u_new  = zeros(size(u0));  %% u(t)
     u(:,1) = u0;
+
+    lambda = eigs(A,W,1);  %% check for stability of first step
+    if(dt>2/sqrt(lambda))
+      warning(sprintf(
+              'first step of implicit algorithm could be unstable, dt = %g, 2/sqrt(lambda) = %g',
+              dt,2/sqrt(lambda)))
+    endif
+
+    %%    u_new(ind_free) = W\( (W-dt*D)*dt*v0(ind_free) + W*u_curr + dt^2/2*(Wf*fVec-A*u_curr));
+    if d==0  %% no damping term
+      u_new(ind_free) = Q*(U\(L\(P*( dt*(W+dt^2/4*A)*v0(ind_free) + (W-dt^2/4*A)*u_curr + dt^2/2*Wf*fVec))));
+    else
+      u_new(ind_free) = (W+dt^2/4*A)\( dt*(W-dt*D+dt^2/4*A)*v0(ind_free) + (W-dt^2/4*A)*u_curr + dt^2/2*Wf*fVec);
+    endif
     
-    u_new(ind_free) = W\( (W-dt*D)*dt*v0(ind_free) + W*u_curr + dt^2/2*(Wf*fVec-A*u_curr));
     for ii_t = 1:steps(1)
       for ii_2 = 1:steps(2)
 	if f_dep_t
@@ -205,6 +217,9 @@ switch solver
       endfor % ii_2
       u(:,ii_t+1) = u_new + u_B;
     endfor
+
+  otherwise
+    error('Invalid optional argument for solver: %s, valid are implicit,  explicit',solver);
 endswitch
 
 t = linspace(t0,tend,steps(1)+1);
