@@ -15,9 +15,9 @@
 ## <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*- 
-## @deftypefn {} FEMtricontour (@var{mesh}, @var{x}, @var{u}, @var{v})
+## @deftypefn {} FEMtricontour (@var{mesh}, @var{u}, @var{v})
 ##
-##   display contours of a solution @var{u} on a triangular @var{mesh}
+##   display contours of a function @var{u} on a triangular @var{mesh}
 ##
 ##parameters:
 ##@itemize
@@ -25,7 +25,7 @@
 ##@item @var{u} values of the function to be displayed
 ##@item @var{v} contours to be used, default value is 21
 ##@* if @var{v} is scalar, it is the number of contours
-##@* if @var{v} is a vector,  it is the levels of the contours
+##@* if @var{v} is a vector, it is the levels of the contours
 ##@end itemize
 ##
 ## @c Will be cut out in ??? info file and replaced with the same
@@ -41,29 +41,41 @@
 
 function FEMtricontour (mesh,u,v)
   tri = mesh.elem;
-  switch mesh.type;
-  case 'linear'  % linear elements
-    triN = tri;
-  case 'quadratic'  % quadratic elements
-    triN = [tri(:,1),tri(:,6),tri(:,5);
-	    tri(:,6),tri(:,2),tri(:,4);
-	    tri(:,5),tri(:,4),tri(:,3);
-	    tri(:,4),tri(:,5),tri(:,6)];
-  case 'cubic'  %% cubic elements
-    triN = [tri(:,1),tri(:,8),tri(:,7);
-	    tri(:,8),tri(:,10),tri(:,7);
-	    tri(:,8),tri(:,9),tri(:,10);
-	    tri(:,9),tri(:,4),tri(:,10);
-	    tri(:,9),tri(:,2),tri(:,4);
-	    tri(:,7),tri(:,10),tri(:,6);
-	    tri(:,10),tri(:,5),tri(:,6);
-	    tri(:,10),tri(:,4),tri(:,5);
-	    tri(:,6),tri(:,5),tri(:,3)];
-  endswitch
-
-  if nargin == 2
-    tricontour(triN,mesh.nodes(:,1),mesh.nodes(:,2),u,21);
-  else
-    tricontour(triN,mesh.nodes(:,1),mesh.nodes(:,2),u,v);
+  %% check if there is a contour to draw
+  DrawContour = 1;
+  if length(v)>1
+    if sum((v>min(u)).*(v<max(u)))==0
+      DrawContour = 0;
+    endif
   endif
+  if DrawContour
+    switch mesh.type;
+      case 'linear'  % linear elements
+	triN = tri;
+      case 'quadratic'  % quadratic elements
+	triN = [tri(:,1),tri(:,6),tri(:,5);
+		tri(:,6),tri(:,2),tri(:,4);
+		tri(:,5),tri(:,4),tri(:,3);
+		tri(:,4),tri(:,5),tri(:,6)];
+      case 'cubic'  %% cubic elements
+	triN = [tri(:,1),tri(:,8),tri(:,7);
+		tri(:,8),tri(:,10),tri(:,7);
+		tri(:,8),tri(:,9),tri(:,10);
+		tri(:,9),tri(:,4),tri(:,10);
+		tri(:,9),tri(:,2),tri(:,4);
+		tri(:,7),tri(:,10),tri(:,6);
+		tri(:,10),tri(:,5),tri(:,6);
+		tri(:,10),tri(:,4),tri(:,5);
+		tri(:,6),tri(:,5),tri(:,3)];
+    endswitch
+
+    if nargin == 2
+      tricontour(triN,mesh.nodes(:,1),mesh.nodes(:,2),u,21);
+    else
+      tricontour(triN,mesh.nodes(:,1),mesh.nodes(:,2),u,v);
+    endif
+  else
+    warning('FEMtricontour: no contours to be drawn')
+  endif %% DrawContour
+  
 endfunction

@@ -60,8 +60,12 @@ function MeshNew = MeshUpgrade(Mesh,type)
   nodesT= Mesh.nodesT;
 
   elastic = (Mesh.edgesT(1)<-9);
-  ConnMat = zeros(nNodes,nNodes);
-
+  if nNodes > 8000  %% allow for meshes with many elements
+    ConnMat = sparse(nNodes,nNodes);
+  else
+    ConnMat = zeros(nNodes,nNodes);
+  endif
+  
   switch tolower(type)
     case "quadratic"
       elemN = zeros(nElem,6);
@@ -131,6 +135,7 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	endif
 	edges(ii,1:3) =  [edges(ii,1),number,edges(ii,2)];
       endfor %% update edges
+      
       MeshNew.type   = 'quadratic';
 
     case "cubic"
@@ -143,7 +148,6 @@ function MeshNew = MeshUpgrade(Mesh,type)
 	direction = (nodes(ee(2),:) - nodes(ee(1),:)); 
 	newnode1 = nodes(ee(1),:) + direction/3;
 	newnode2 = nodes(ee(1),:) + direction*2/3;
-
 	if number==0  % add two new nodes
 	  nNodes = nNodes+1;
 	  nodes(nNodes,1:2) = newnode1;
