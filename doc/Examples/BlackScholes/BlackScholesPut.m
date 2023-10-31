@@ -25,6 +25,6 @@ if 1 %% to determine the resuts with the financial package
   pkg load financial
   S = 130; tau = T/2;
   [Call,Put] = blsprice(S,K,r+sigma^2/2,tau,sigma ,0);
-  disp(sprintf("For S = %g obtain Call = %g or put = %g at time tau = %g",S,Call,Put,tau))
+  disp(sprintf("For S = %g obtain Call = %g or Put = %g at time tau = %g",S,Call,Put,tau))
 endif
 
