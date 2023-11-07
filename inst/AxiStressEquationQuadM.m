@@ -166,7 +166,7 @@ for k = 1:size(Mesh.edges,1)
     dofs = Mesh.node2DOF(Mesh.edges(k,:),:);
     dofs1 = dofs(:,1);  dofs2 = dofs(:,2);
     if EdgeType_x == -3  % nonzero force in x-direction
-      if ischar(gNFunc{1}) g1 =feval(gNFunc{1},[p1;p2;p3]).*[p1(1);p2(1);p3(1)];
+      if ischar(gNFunc{1}) g1 = feval(gNFunc{1},[p1;p2;p3]).*[p1(1);p2(1);p3(1)];
       else                 g1 = gNFunc{1}*[p1(1);p2(1);p3(1)];
       endif
       edgeVec1 = L*Mbc*g1;
