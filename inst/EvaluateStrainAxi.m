@@ -49,7 +49,8 @@ function [eps_xx,eps_yy,eps_zz,eps_xz] = EvaluateStrainAxi(Mesh,ur,uz)
   [eps_xx, eps_xz1] = FEMEvaluateGradient(Mesh,ur);
   [eps_xz2,eps_zz]  = FEMEvaluateGradient(Mesh,uz);
   eps_xz = (eps_xz1+eps_xz2)/2;
-  eps_yy = ur./Mesh.nodes(:,1);    %% has to be fixed at radii 0
-  ind = find(Mesh.nodes(:,1)==0);
+  r = Mesh.nodes(:,1);
+  eps_yy = ur./r;                   %% has to be fixed at radius 0
+  ind = find(abs(r)<1e-15*max(r));  %% use de L´Hopital
   eps_yy(ind) = eps_xx(ind);
 endfunction

@@ -32,7 +32,7 @@
 ##@item @var{u1} vector with the values of the x-displacements at the nodes
 ##@item @var{u2} vector with the values of the y-displacements at the nodes
 ##@item @var{E} Young's modulus of elasticity, either as constant or as string with the function name
-##@item @var{nu} Young's modulus of elasticity, either as constant or as string with the function name
+##@item @var{nu} Poisson's ratio, either as constant or as string with the function name
 ##@end itemize
 ##
 ##return values:

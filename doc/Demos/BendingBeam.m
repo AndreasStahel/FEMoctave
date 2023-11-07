@@ -37,12 +37,9 @@ figure(4);FEMtrimesh(FEMmesh,W); xlabel('x'); ylabel('y');
 figure(5);clf;FEMtricontour(FEMmesh,W); xlabel('x'); title('energy density')
 
 %% integrate by evaluation at the Gauss points
-[u1G,gradU1] = FEMEvaluateGP(FEMmesh,u1);
-[u2G,gradU2] = FEMEvaluateGP(FEMmesh,u2);
-eps_xxG = gradU1(:,1); eps_yyG = gradU2(:,2); eps_xyG = (gradU1(:,2)+gradU2(:,1))/2;
-W = 0.5*E/(1-nu^2)*(eps_xxG.^2 + eps_yyG.^2+2*nu*eps_xxG.*eps_yyG+2*(1-nu)*eps_xyG.^2);
+W = EvaluateEnergyDensity(FEMmesh,eps_xx,eps_yy,eps_xy,E,nu);
+EnergyIntegration = FEMIntegrate(FEMmesh,W)
 
-EnergiesFEMIntegrateGauss = FEMIntegrate(FEMmesh,W)
 
 [xx,yy] = meshgrid(linspace(0,L,101),linspace(-H/2,+H/2,51));
 [u1i,eps_xxi,eps_xy1i] = FEMgriddata(FEMmesh,u1,xx,yy);

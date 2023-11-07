@@ -145,7 +145,7 @@ for k = 1:size(Mesh.edges,1)
     %%    edgeVec = ElementContributionEdge(corners,gNFunc);
     p1 = (cor(1,:)+cor(2,:))/2 - (cor(2,:)-cor(1,:))/(2*sqrt(3));
     p2 = (cor(1,:)+cor(2,:))/2 + (cor(2,:)-cor(1,:))/(2*sqrt(3));
-    L = norm(cor(2,:)-cor(1,:))/2;
+    L = norm(cor(2,:)-cor(1,:))/2;  %% use half of the length
     dofs = Mesh.node2DOF(Mesh.edges(k,:),:);
     dofs1 = dofs(:,1);  dofs2 = dofs(:,2);
     if EdgeType_x == -3  % nonzero force in x-direction

@@ -42,6 +42,9 @@
 function FEMtricontour (mesh,u,v)
   tri = mesh.elem;
   %% check if there is a contour to draw
+  if nargin == 2
+    v = 21;  %% default value for number of contours
+  endif
   DrawContour = 1;
   if length(v)>1
     if sum((v>min(u)).*(v<max(u)))==0
@@ -69,11 +72,7 @@ function FEMtricontour (mesh,u,v)
 		tri(:,6),tri(:,5),tri(:,3)];
     endswitch
 
-    if nargin == 2
-      tricontour(triN,mesh.nodes(:,1),mesh.nodes(:,2),u,21);
-    else
-      tricontour(triN,mesh.nodes(:,1),mesh.nodes(:,2),u,v);
-    endif
+    tricontour(triN,mesh.nodes(:,1),mesh.nodes(:,2),u,v);
   else
     warning('FEMtricontour: no contours to be drawn')
   endif %% DrawContour
