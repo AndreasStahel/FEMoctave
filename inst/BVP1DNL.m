@@ -14,12 +14,11 @@
 ## along with this program.  If not, see
 ## <https://www.gnu.org/licenses/>.
 
-
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
 ## Created: 2023-08-21
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}[@var{x},@var{u}] = BVP1DNL(@var{interval},@var{a},@var{b},@var{c},@var{d},@var{f},@var{BCleft},@var{BCright},@var{u0},@var{options})
+## @deftypefn{function file}{}[@var{x},@var{u},@var{inform}] = BVP1DNL(@var{interval},@var{a},@var{b},@var{c},@var{d},@var{f},@var{BCleft},@var{BCright},@var{u0},@var{options})
 ##
 ##   solve a nonlinear 1D boundary value problem (BVP)
 ##
@@ -84,7 +83,7 @@
 ##@end deftypefn
 
 function  [x,u,inform] = BVP1DNL(interval,a,b,c,d,f,BCleft,BCright,u0,varargin)
-  
+
 tol = [1e-5, 1e-5];  %% default tolerance
 MaxIter = 10;        %% default maximal number of iterations
 Display = 'off';
@@ -272,7 +271,8 @@ A00 = ApplyBC2MatrixA(A0);
 A = ApplyBC2MatrixA(A); M = ApplyBC2MatrixM(M);
 u_values  = SolveSystem(A,M*f_values,BCleft,BCright,a_left,a_right);
 
-relError = 2*tol(1); AbsError = 2*tol(2); inform.info = 1; inform.iter = 0;
+relError = 2*tol(1); AbsError = 2*tol(2);
+inform.info = 1; inform.iter = 0;
 
 do   %% until error small enough, or inform.iter > MaxIter
   u_old = u_values;
@@ -385,7 +385,7 @@ do   %% until error small enough, or inform.iter > MaxIter
   else
     AbsError2 = AbsError;
   endif %% f_NL
-  
+
 until or((a_NL+f_NL)==0,inform.iter>=MaxIter,AbsError2/sqrt(n)<tol(2),AbsError2<tol(1)*norm(u))
 inform.AbsError = AbsError/sqrt(n);
 if (inform.iter >= MaxIter)
