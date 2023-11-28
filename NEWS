@@ -1,6 +1,47 @@
 TODO for next release:
 * ???
 
+FEMoctave 2.1.4, 28.11.2023
+-------------------------------
+* solver for nonlinear initial boundary value problem in one dimension added
+* dynamic elasticity solvers added
+* eigenvalue solvers added for elasticity
+* MeshUpgrade can handle huge meshes
+* evaluation of energy density added
+* evaluation of strain for axisymmetric problems improved
+* example of a sphere under hydrostatic load added
+* examples for elastic waves added
+* examples for elastic eigenvalue problems
+* tuning fork and vibrating ring added
+* example for Fata Morgana added
+* plane stress example by Wait&Mitchell added
+* instructions on how to install Triangle on a Linux system
+
+New files
+- PlaneStressDynamic.m
+- PlaneStrainDynamic.m
+- PlaneStressEig.m
+- PlaneStrainEig.m
+- EvaluateEnergyDensity.m
+- EvaluateEnergyDensityAxi.m
+- IBVP1DNL.m
+- doc/Demos/EulerBeamDynamic.m
+- doc/Demos/HeatNonlinear.m  
+- doc/Examples/
+   ElasticWaves/ElasticWaveCylinder.m
+   ElasticWaves/ElasticWaveCanal.m
+   ElasticWaves/ElasticWaveCorner.m
+   Elasticity/SphereHydrostatic.m
+   Elasticity/WaitMitchell.m
+   Elasticity/RingVibration.m
+   Elasticity/TuningFork.m
+   Nonlinear1D/FataMorgana.m
+   Wing/Wing.m
+   Fisher/FisherDynamic.m
+   Fisher/FisherDynamicRadial.m
+   FataMorgana/FataMorgana.m
+   Beam/BeamNonlinear1DDynamic.m
+
 FEMoctave 2.1.3, 10.10.2023
 -------------------------------
 * elementary Hertz contact problems added
@@ -11,7 +52,7 @@ FEMoctave 2.1.3, 10.10.2023
 New files
 - EvaluateStressAxi.m
 - EvaluateStrainAxi.m
--doc/Examples/
+- doc/Examples/
    BlackScholes/BlackScholesCall.m
    BlackScholes/BlackScholesPut.m
    HertzContact/HertzCylinder.m

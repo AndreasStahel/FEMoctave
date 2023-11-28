@@ -1,51 +1,58 @@
 FEMoctave >> FEM Package.
 Solving equations
-  BVP2D
-  BVP2Dsym
-  BVP2deig
-  IBVP2D
-  IBVP2Dsym
-  I2BVP2D
-  PlaneStress
-  PlaneStrain
-  AxiStress
+  BVP2D.m
+  BVP2Dsym.m
+  BVP2deig.m
+  IBVP2D.m
+  IBVP2Dsym.m
+  I2BVP2D.m
+  PlaneStress.m
+  PlaneStrain.m
+  PlaneStressDynamic.m
+  PlaneStrainDynamic.m
+  PlaneStressEig.m
+  PlaneStrainEig.m
+  AxiStress.m
   BVP1D.m
   IBVP1D.m
   I2BVP1D.m
   BVP1Deig.m
   BVP1DNL.m
+  IBVP1DNL.m
 Manipulating meshes
-  CreateMeshRect
-  CreateMeshTriangle
-  ReadMeshTriangle
-  MeshDeform
-  MeshUpgrade
-  MeshQuad2Linear
-  MeshCubic2Linear
-  Delaunay2Mesh
-  FEMtrimesh
-  FEMtrisurf
-  FEMtricontour
-  FEMEvaluateGradient
-  FEMEvaluateGP
-  FEMgriddata
-  FEMIntgerate
-  tricontour
+  CreateMeshRect.m
+  CreateMeshTriangle.m
+  ReadMeshTriangle.m
+  MeshDeform.m
+  MeshUpgrade.m
+  MeshQuad2Linear.m
+  MeshCubic2Linear.m
+  Delaunay2Mesh.m
+  FEMtrimesh.m
+  FEMtrisurf.m
+  FEMtricontour.m
+  FEMEvaluateGradient.m
+  FEMEvaluateGP.m
+  FEMgriddata.m
+  FEMIntgerate.m
+  tricontour.m
 Evaluation of elasticity
-  EvaluateStress
-  EvaluateStrain
-  EvaluatePrincipalStress
-  EvaluatevonMises
-  EvaluateTresca
-  EvaluateStressAxi
-  EvaluateStrainAxi
-  EvaluatePrincipalStressAxi
-  EvaluateVonMisesAxi
-  EvaluateTrescaAxi
+  EvaluateStress.m
+  EvaluateStrain.m
+  EvaluatePrincipalStress.m
+  EvaluatevonMises.m
+  EvaluateTresca.m
+  EvaluateStressAxi.m
+  EvaluateStrainAxi.m
+  EvaluatePrincipalStressAxi.m
+  EvaluateVonMisesAxi.m
+  EvaluateTrescaAxi.m
+  EvaluateEnergyDensity.m
+  EvaluateEnergyDensityAxi.m
 Creating equations
-  FEMEquationM
-  FEMEquationQuadM
-  FEMEquationCubicM
+  FEMEquationM.m
+  FEMEquationQuadM.m
+  FEMEquationCubicM.m
   PStressEquationM.m
   PStressEquationQuadM.m
   PStressEquationCubicM.m
@@ -122,3 +129,5 @@ Example m-files
   HertzCylinder.m
   HertzSphere.m
   HertzSphereDirect.m
+  RingVibration.m
+  TuningFork.m

@@ -30,7 +30,8 @@ The mathematics of the algorithms are spelled out and implemented in Octave
 
 ## 3. INSTALLATION INSTRUCTIONS
 To use all features of FEMoctave you have to install triangle.
-Find the source code and instructions at
+Find instructions on how to intstall on a Linux system in FEMdoc.pdf.
+Find the source code of Triangle and instructions at
 https://www.cs.cmu.edu/~quake/triangle.html
 
 ## 4. DOCUMENTATION, DEMOS AND EXAMPLES
