@@ -59,6 +59,7 @@
 ##@item @var{"tol"} the tolerance for the iteration at each time step to stop, given as pair @var{[tolrel,tolabs]} for the relative and absolute tolerance. The iteration stops if the absolute or relative error is smaller than the specified tolerance. RMS (root means square) values are used. If only @var{tolrel} is specified @var{TolAbs=TolRel} is used. The default values are @var{tolrel = tolabs = 1e-5}.
 ##@item @var{"MaxIter"} the maximal number of iterations to be used. The default value is 10.
 ##@end itemize
+##@end itemize
 ##
 ##return values
 ##@itemize
