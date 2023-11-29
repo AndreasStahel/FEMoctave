@@ -42,15 +42,17 @@
 function FEMtricontour (mesh,u,v)
   tri = mesh.elem;
   %% check if there is a contour to draw
-  if nargin == 2
-    v = 21;  %% default value for number of contours
-  endif
   DrawContour = 1;
-  if length(v)>1
-    if sum((v>min(u)).*(v<max(u)))==0
+  if (nargin()==2)||length(v)==1
+    if min(u)+eps > max(u)
       DrawContour = 0;
     endif
-  endif
+    else
+      if sum((v>min(u)).*(v<max(u)))==0
+	DrawContour = 0;
+      endif
+    endif
+
   if DrawContour
     switch mesh.type;
       case 'linear'  % linear elements
@@ -61,18 +63,22 @@ function FEMtricontour (mesh,u,v)
 		tri(:,5),tri(:,4),tri(:,3);
 		tri(:,4),tri(:,5),tri(:,6)];
       case 'cubic'  %% cubic elements
-	triN = [tri(:,1),tri(:,8),tri(:,7);
-		tri(:,8),tri(:,10),tri(:,7);
-		tri(:,8),tri(:,9),tri(:,10);
-		tri(:,9),tri(:,4),tri(:,10);
-		tri(:,9),tri(:,2),tri(:,4);
-		tri(:,7),tri(:,10),tri(:,6);
-		tri(:,10),tri(:,5),tri(:,6);
-		tri(:,10),tri(:,4),tri(:,5);
-		tri(:,6),tri(:,5),tri(:,3)];
+	triN = [tri(:,1), tri(:,8), tri(:,7);
+		tri(:,8), tri(:,10),tri(:,7);
+		tri(:,8), tri(:,9), tri(:,10);
+		tri(:,9), tri(:,4), tri(:,10);
+		tri(:,9), tri(:,2), tri(:,4);
+		tri(:,7), tri(:,10),tri(:,6);
+		tri(:,10),tri(:,5), tri(:,6);
+		tri(:,10),tri(:,4), tri(:,5);
+		tri(:,6), tri(:,5), tri(:,3)];
     endswitch
 
-    tricontour(triN,mesh.nodes(:,1),mesh.nodes(:,2),u,v);
+    if nargin == 2
+      tricontour(triN,mesh.nodes(:,1),mesh.nodes(:,2),u,21);
+    else
+      tricontour(triN,mesh.nodes(:,1),mesh.nodes(:,2),u,v);
+    endif
   else
     warning('FEMtricontour: no contours to be drawn')
   endif %% DrawContour
