@@ -17,7 +17,7 @@
 ## -*- texinfo -*-
 ## @deftypefn{function file}{}@var{mesh} = MeshAddConstraint(@var{Mesh},@var{position},@var{mode})
 ##
-##   apply additional constraints
+##   apply an additional constraint
 ##
 ##parameters:
 ##@itemize
