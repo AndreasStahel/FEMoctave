@@ -1,7 +1,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {} {} FataMorgana.m
 ##
-## This is a demo file  inside the `doc/Examples/FataMorgana/` directory@*
+## This is a demo file inside the `doc/Examples/FataMorgana/` directory@*
 ## Find the description in the documentation FEMdoc.pdf
 ##
 ## @end deftypefn

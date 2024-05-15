@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} AdditionalConstraintPlate.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 Mesh = CreateMeshRect(linspace(-1,1,9),linspace(-1,1,9),-23, -23, -32, -32);
 Mesh = MeshUpgrade(Mesh,'quadratic');
 function res = fx(xy)
@@ -22,7 +30,8 @@ figure(12); FEMtrimesh(Mesh,u1m); xlabel('x'); ylabel('y'); zlabel('u_1')
 figure(13); FEMtrimesh(Mesh,u2m); xlabel('x'); ylabel('y'); zlabel('u_2')
 figure(14); FEMtrimesh(Mesh,sqrt(u1m.^2+u2m.^2)); xlabel('x'); ylabel('y'); zlabel('|u|')
 figure(15); clf; FEMtricontour(Mesh,sqrt(u1m.^2+u2m.^2)); xlabel('x'); ylabel('y'); axis equal
-printing = 1;
+
+printing = 0;
 if printing
   figure(5); print -dpdfcrop AdditionalConstraintPlate1.pdf
   figure(15); print -dpdfcrop AdditionalConstraintPlate2.pdf

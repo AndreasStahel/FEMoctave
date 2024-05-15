@@ -1,7 +1,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {} {} WaveExplicitTest.m
 ##
-## This is a demo file  inside the `doc/Demos/` directory@*
+## This is a demo file inside the `doc/Demos/` directory@*
 ## Find the description in the documentation FEMdoc.pdf
 ##
 ## @end deftypefn
