@@ -1,5 +1,12 @@
-R = 2; H = 2;
-N = 60;
+## -*- texinfo -*-
+## @deftypefn  {} {} SoundWaveSpherical.m
+##
+## This is a demo file  inside the `doc/Examples/SoundWave/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
+R = 2; H = 2; N = 60;
 FEMmesh = CreateMeshRect(linspace(0,R,N),linspace(0,H,N),-2,-2,-2,-2);
 FEMmesh = MeshUpgrade(FEMmesh,'quadratic');
 
@@ -35,3 +42,4 @@ t_tail = t(t_start:end)';
 figure(11); plot(t,max_u,t_tail, p./t_tail)
             xlabel('time t'); ylabel ('amplitude'); xlim([0,max(t)])
             legend('amplitude','best fit')
+

@@ -1,4 +1,11 @@
-pkg load femoctave
+## -*- texinfo -*-
+## @deftypefn  {} {} HeatNonlinear.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 L = 1; N = 41;  Interval = linspace(0,L,N)';
 w = 1; a = 0.1 ; b = 0; c = 0; d = 1;
 f = {@(x,t,u)x.^3+sin(u),@(x,t,u)cos(u)};

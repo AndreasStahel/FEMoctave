@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} FataMorgana.m
+##
+## This is a demo file  inside the `doc/Examples/FataMorgana/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 Interval = linspace(0,1,21)';
 alpha = 0.2;
 f = {@(x,u,v)alpha*sqrt(1+v.^2),

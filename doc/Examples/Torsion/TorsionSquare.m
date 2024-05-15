@@ -1,11 +1,13 @@
-N = 10;
-l = sqrt(pi)/2;  al = 1; %%al = sqrt(2);
-if 0 %% uniform mesh
-  Mesh = CreateMeshRect(al*linspace(-l,l,N),1/al*linspace(-l,l,N),-1,-1,-1,-1);
-else %% non uniform mesh
-  Mesh = CreateMeshTriangle('Torsion',
-  [-al*l -1/al*l -1; al*l -1/al*l -1; al*l 1/al*l -1; -al*l 1/al*l -1],pi/2/N^2);
-endif
+## -*- texinfo -*-
+## @deftypefn  {} {} TorsionSquare.m
+##
+## This is a demo file  inside the `doc/Examples/Torsion/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
+N = 10; l = sqrt(pi)/2;  al = 1; %%al = sqrt(2);
+Mesh = CreateMeshTriangle('Torsion',[-al*l -1/al*l -1; al*l -1/al*l -1; al*l 1/al*l -1; -al*l 1/al*l -1],pi/2/N^2);
 Mesh = MeshUpgrade(Mesh);
 
 chi = BVP2Dsym(Mesh,1,0,2,0,0,0);
@@ -21,6 +23,4 @@ FEMtrisurf(Mesh,Stress)
 xlabel('x'); ylabel('y');
 
 MaxStress = max(Stress)
-%print -dpdfwrite doc/TorsionSquare.pdf
-%print -dpdfwrite doc/TorsionRectangle.pdf
 

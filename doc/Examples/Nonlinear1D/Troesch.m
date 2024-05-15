@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Troesch.m
+##
+## This is a demo file  inside the `doc/Examples/Nonlinear1D/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 N = 51; interval = linspace(0,1,N)'; BCleft = 0; BCright = 1;
 CASE = 1;
 switch CASE

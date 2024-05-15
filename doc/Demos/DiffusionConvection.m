@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} DiffusionConvection.m ()
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear *
 if 0  %% linear elements
   FEMmesh = CreateMeshRect(linspace(0,2,51),linspace(0,2,51),-1,-1,-1,-1);

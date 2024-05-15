@@ -1,4 +1,11 @@
-pkg load femoctave
+## -*- texinfo -*-
+## @deftypefn  {} {} FisherDynamicRadial.m
+##
+## This is a demo file  inside the `doc/Examples/Fisher/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 L = 60; N = 401; Interval = linspace(0,L,N)';
 w = @(r)r.^2; a = @(r)r.^2; b = 0; c = 0; d = @(r)r.^2;
 alpha = 1.0/pi;

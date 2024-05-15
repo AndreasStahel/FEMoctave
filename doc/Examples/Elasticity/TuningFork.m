@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} TuningFork.m
+##
+## This is a demo file  inside the `doc/Examples/Elasticity/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 angle = linspace(0,pi,11); halfangle = linspace(0,pi/2,6);
 R1 = 5.5; R2 = 6.25; H1 = 108.5; H2 = H1+15;
 dH = 0; %% for different length of the two branches

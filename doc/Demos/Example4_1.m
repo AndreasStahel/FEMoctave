@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Example4_1.m ()
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 MeshBorder = [0 0 -11; 0.1 0 -22; 1.1 1 -23; 1 1 -22]; %% outer boundary of the domain
 
 Hole.name   = 'Hole';   %% a hole in the middle section

@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Wing.m
+##
+## This is a demo file inside the `doc/Examples/Wing/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear *
 x = linspace(0,1,200)';
 function [height,slope] = FoilThickness(x)

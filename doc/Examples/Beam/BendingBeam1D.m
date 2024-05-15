@@ -1,7 +1,13 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} BendingBeam1D.m
+##
+## This is a demo file  inside the `doc/Examples/Beam/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
 clear *
 L = 3; EI = 1;
-%% Newton's method
-CASE = 1; %% select:    single run (1); parametrized (2)
+CASE = 4; %% select:    single run (1); parametrized (2)
           %% BVP1DNL(): single run (3); parametrized (4)
 switch CASE
 case 1

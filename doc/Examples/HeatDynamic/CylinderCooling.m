@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} CylinderCooling.m
+##
+## This is a demo file  inside the `doc/Examples/HeatDynamic/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 R = 2;  N = 50; alpha = linspace(0,2*pi*N/(N-1),N)';
 Tend = 2; Nt = 60; %% number of shown time steps
 FEMmesh = CreateMeshTriangle('circle',[R*cos(alpha),1.5*R*sin(alpha),-ones(size(alpha))],0.1);

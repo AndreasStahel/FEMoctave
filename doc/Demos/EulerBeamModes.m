@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} EulerBeamModes.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear *
 L = 0.20; H = 0.01; W = 0.01; rho = 2.7e3;
 E = 70e9; nu = 0.33; %% Aluminum

@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} EulerBeamDynamic.m () {}
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 E = 70e9; nu = 0.33; rho = 2.7e3; L = 0.2; H = 0.01;
 f = {0,0}; gD = {0,0}; gN = {0,0};
 function res = u0Func(xy)

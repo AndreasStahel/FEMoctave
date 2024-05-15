@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} EITforward.m
+##
+## This is a demo file  inside the `doc/Examples/EIT/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 global Rx Ry dalpha my_angle
 N = 2*64; %% number of angle segments
 alpha = linspace(0,2*pi*(N-1)/N,N)';  Rx = 1; Ry = 0.5;
@@ -6,7 +14,7 @@ x = Rx*cos(alpha); y = Ry*sin(alpha);
 BC = -2*ones(size(x));
 my_angle = 120  %% select the configuration, use 60 or 120
 
-function res = sigma(xy,dummy)           %% the conductivity
+function res = sigma(xy)                 %% the conductivity
   x = xy(:,1); y = xy(:,2);
   res = ones(size(x));
   res((x+0.5).^2+y.^2<=0.25^2) *=  4 ;   %% heart on the left

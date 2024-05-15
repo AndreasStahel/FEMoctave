@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Pendulum.m
+##
+## This is a demo file  inside the `doc/Examples/Nonlinear1D/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 N = 1001; T = 2.0;
 interval = linspace(0,T,N)';
 BCleft = 0; BCright = [0,0];

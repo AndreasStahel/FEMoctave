@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} FisherDynamic.m
+##
+## This is a demo file  inside the `doc/Examples/Fisher/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 L = 60; N = 401;
 Interval = linspace(0,L,N)';
 w = 1; a = 1; b = 0; c = 0; d = 1; alpha = 1.0;

@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} WaiitMitchell.m
+##
+## This is a demo file  inside the `doc/Examples/Elasticity/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 E = 3e6; nu = 0.45;    %% rubber
 Dom = [0,1/3,-11;1/3,1/3,-11;1/3,0,-22;1,0,-22;1,2/3,-11;2/3,1,-22;0,1,-22];
 Mesh = CreateMeshTriangle('Domain',Dom,1e-3);

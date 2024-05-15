@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} SoundWaveSpherical1D.m
+##
+## This is a demo file  inside the `doc/Examples/SoundWave/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 N = 2*60; R = 3; interval = linspace(0,R,N)';
 f_r2 = @(r)r.^2;
 u0 = @(r)(1+cos(10*r)).*(r<pi/10);   u1 = 0;

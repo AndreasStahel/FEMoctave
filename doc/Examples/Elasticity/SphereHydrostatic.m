@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} SphereHydrostatic.m
+##
+## This is a demo file  inside the `doc/Examples/Elasticity/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 
 clear *
 global P

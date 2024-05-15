@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} ElasticWaveCanal.m
+##
+## This is a demo file  inside the `doc/Examples/ElasticWaves/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 x = linspace(0,1,21)'; y = cos(pi/2*x).^2; bc = -22*ones(size(x));
 MeshData = [-1,0.5,-22;x,0.5*y,bc;2.5,0,-11;2.5,-1,-22;-1,-1,-22];
 

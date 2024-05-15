@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} PlaneStrainExample ()
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 W = 0.1; H = 0.3; E = 110e9; nu = 0.35;  %% copper
 
 FEMmesh = CreateMeshRect(linspace(-W/2,W/2,10),linspace(0,H,30),-11,-12,-22,-22);

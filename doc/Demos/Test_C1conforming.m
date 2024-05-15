@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Test_C1Conforming.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear *
 CASE = 3;
 

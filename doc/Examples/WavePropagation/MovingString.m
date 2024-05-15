@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} MovingString.m
+##
+## This is a demo file inside the `doc/Examples/WaveAnimation/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 N = 101; x_max = 5; interval = linspace(0,x_max,N)';
 omega = 2*pi;
 f = @(x,t)(cos(x*pi/2).*(x<=1))*(sin(omega*t)*(t<=2));

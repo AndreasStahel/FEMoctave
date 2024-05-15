@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} SaltLakeCity2Zuerich.m
+##
+## This is a demo file  inside the `doc/Examples/SaltLakeCity2Zuerich/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 CASE = 1;  %% use 1 for the codes successive substitution, 2 for BVP1DNL()
 switch CASE
   case 1

@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} BlackScholesput.m
+##
+## This is a demo file  inside the `doc/Examples/BlackScholes/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear *
 %% script file to solve Black-Scholes for a European put option
 K = 120;          % strike

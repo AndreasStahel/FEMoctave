@@ -1,3 +1,10 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} AxiSymmetricExample ()
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
 R = 0.1;
 if 0  %% nonuniform mesh
   Mesh = CreateMeshTriangle('AxiSymm',[0 0 -21; R 0 -32; R 2*R -22; 0 2*R -12],1e-4);

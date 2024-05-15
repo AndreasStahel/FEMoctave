@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HeatCylinder.m
+##
+## This is a demo file  inside the `doc/Examples/HeatDynamic/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 R = 3; BCleft = [0,0]; BCright = [0,0];
 f = @(r,t)sin(1*t)*(r<R/2);
 u0 = 0;  t0 = 0; t_end = 6*pi; steps = [121,10];  interval = linspace(0,R,21);

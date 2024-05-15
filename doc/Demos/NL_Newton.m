@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} NL_Newton.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 interval = linspace(-1,2,40)';
 al = +0.1;
 f = {@(x,u)0.5+al*(x.*u+sin(u)), @(x,u)+al*(x+cos(u))};

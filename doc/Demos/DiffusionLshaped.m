@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} DiffusionLshaped.m ()
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 nodes = [0,0,-2;1,0,-2;1,1,-2;-1,1,-2;-1,-1,-2;0,-1,-2];
 FEMmesh = CreateMeshTriangle('Ldomain',nodes,0.02);
 %%FEMmesh = MeshUpgrade(FEMmesh);  %% uncomment to use quadratic elements

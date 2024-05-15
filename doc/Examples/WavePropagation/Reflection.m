@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Reflection.m
+##
+## This is a demo file  inside the `doc/Examples/WaveAnimation/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 interval = linspace(0,14,301)';
 a = @(x) 1+1*(x>4);
 b = 0; c = 0; d = 1; f = 0;

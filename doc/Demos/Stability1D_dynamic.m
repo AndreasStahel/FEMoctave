@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Stability1D_dynamic.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 BCleft = [0,0]; BCright = 1; xMax = 1;
 interval = linspace(0,xMax,15);
 t0 = 0 ; tend = 2; steps = [10,1]; u0 = 0;

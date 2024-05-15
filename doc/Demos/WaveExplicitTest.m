@@ -1,9 +1,18 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} WaveExplicitTest.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% test the stability 1D wave equation
 if 1
  solver = 'explicit';
 else
  solver = 'implicit';
 endif
+solver = 'expl'
 
 if 0
   steps = [20,5];  %% unstable for explicit solver

@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Wrench.m
+##
+## This is a demo file  inside the `doc/Examples/Elasticity/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 load WrenchData.m                 %% load the contour data
 scale = 0.15/max(x);              %% scale the contour data
 x = scale*x; y = scale*y;

@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} EigenvaluesDisc.m ()
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear *
 %% create a circle with mesh
 xM = 0; yM = 0; R = 1; N = 1*40;

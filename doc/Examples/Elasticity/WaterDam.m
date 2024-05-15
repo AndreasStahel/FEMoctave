@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} WaterDam.m
+##
+## This is a demo file  inside the `doc/Examples/Elasticity/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear *
 global H Hwater BaseLeft
 H = 30; Base = 0.7*H; Crest = 0.2*H; Hwater = 0.9*H; BaseLeft = H*0.2;

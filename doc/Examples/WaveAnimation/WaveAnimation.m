@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} WaveAnimation.m
+##
+## This is a demo file  inside the `doc/Examples/WaveAnimation/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 if 0 %% linear elements
   FEMmesh = CreateMeshRect(linspace(0,pi,101),linspace(-pi,pi,101),-1,-2,-2,-2);
 else %% quadratic elements
@@ -6,7 +14,7 @@ else %% quadratic elements
 endif
 x = FEMmesh.nodes(:,1); y = FEMmesh.nodes(:,2);
 
-m=1; alpha=0.0; a=1; b0=0; bx=0; by=0; f=0;
+m = 1; alpha = 0.0; a = 1; b0 = 0; bx = 0; by = 0; f = 0;
 gD=0; gN1=0; gN2=0;
 t0=0; tend=3 ; steps = [150,10];
 

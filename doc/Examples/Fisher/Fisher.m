@@ -1,4 +1,12 @@
 function Fisher()
+## -*- texinfo -*-
+## @deftypefn  {} {} Fisher.m
+##
+## This is a demo file  inside the `doc/Examples/Fisher/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 c = 5/sqrt(6);
 M = 20; N = 50;
 f = {@(x,u)(u.*(1-u)), @(x,u)(1-2*u)};

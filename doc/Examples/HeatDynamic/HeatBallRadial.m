@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HeatBallRadial.m
+##
+## This is a demo file  inside the `doc/Examples/HeatDynamic` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 R1 = 1; R2 = 3; BCleft = 0; BCright = 1;
 interval = linspace(R1,R2,11);
 [r,u] = BVP1D(interval,@(r)-r.^2,0,0,1,0,BCleft,BCright);

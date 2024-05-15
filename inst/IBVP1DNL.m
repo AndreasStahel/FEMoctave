@@ -22,7 +22,7 @@
 ## -*- texinfo -*-
 ## @deftypefn{function file}{}[@var{x},@var{u},@var{t}] = IBVP1DNL(@var{interval},@var{w},@var{a},@var{b},@var{c},@var{d},@var{f},@var{BCleft},@var{BCright},@var{u0},@var{t0},@var{tend},@var{steps},@var{options})
 ##
-##   solve a 1D initial boundary value problem (IBVP)
+##   solve a 1D nonlinear initial boundary value problem (IBVP)
 ##
 ##    w(x)*d/dt u(x,t) - (a(x)*u'(x,t))' + b(x)*u'(x,t) + c(x)*u(x,t) = d(x)*f(x,t,u(x,t))
 ##
@@ -68,7 +68,7 @@
 ##@item @var{t} is the vector with the values of the times at which the solutions are returned.
 ##@end itemize
 ##
-## @end deftypefn
+##@end deftypefn
 
 function  [x,u,t] = IBVP1DNL(interval,w,a,b,c,d,f,BCleft,BCright,u0,t0,tend,steps,varargin)
 

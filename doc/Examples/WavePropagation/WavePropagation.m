@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} WavePropagation.m
+##
+## This is a demo file inside the `doc/Examples/WavePropagation/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 l = 1; h = 0.1; L = 10; d = 2; H = 9;
 FEMmesh = CreateMeshTriangle('test',[-l,0,-2;0 0 -2;0,-d,-2;L,-d,-2; L,H,-2;0,H,-2;0,h,-2;-l,h,-2],0.1);
 figure(1); FEMtrimesh(FEMmesh)

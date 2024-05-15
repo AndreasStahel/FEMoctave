@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} MinimalSurface.m
+##
+## This is a demo file  inside the `doc/Examples/MinimalSurface/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear *
 %%FEMmesh = CreateMeshRect(linspace(-1,1,21),linspace(-1,1,21),-1, -1, -1, -1);
 xy = [1,0,-1;0,1,-1;-1,0,-1;0,-1,-1];

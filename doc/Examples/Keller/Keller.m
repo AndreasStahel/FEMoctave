@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Keller.m
+##
+## This is a demo file  inside the `doc/Examples/Keller/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 N = 51; interval = linspace(-1,1,N)';
 c = 1.176501939901833; %% or use the solver
 opt.TolFun = 1e-15; opt.TolX = 1e-15;  c = fsolve(@(c)1+cos(c)-c^2,1,opt);

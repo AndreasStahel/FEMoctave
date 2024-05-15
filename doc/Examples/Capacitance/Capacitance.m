@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Capacitance.m
+##
+## This is a demo file  inside the `doc/Examples/Capacitance/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 FEMmesh = ReadMeshTriangle('capacitance.1');
 %%FEMmesh = MeshUpgrade(FEMmesh);
 x = FEMmesh.nodes(:,1); y = FEMmesh.nodes(:,2);
@@ -5,8 +13,8 @@ x = FEMmesh.nodes(:,1); y = FEMmesh.nodes(:,2);
 figure(1)
 FEMtrimesh(FEMmesh)
 
-function res = a(xy,dummy)     res = xy(:,1);      endfunction
-function res = Volt(xy,dummy)  res = xy(:,2)>0.1;  endfunction
+function res = a(xy)     res = xy(:,1);      endfunction
+function res = Volt(xy)  res = xy(:,2)>0.1;  endfunction
 
 u = BVP2Dsym(FEMmesh,'a',0,0,'Volt',0,0);
 figure(2)

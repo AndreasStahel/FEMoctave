@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HeatBall1D.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 R = 5;  f = +3;
 N = 10; r = linspace(0,R,N);
 [r,u] = BVP1D(r,@(r)r.^2,0,0,@(r)r.^2,f,[0,0],0);

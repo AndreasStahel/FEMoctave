@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} PorousCatalyst.m
+##
+## This is a demo file  inside the `doc/Examples/Nonlinear1D/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 N = 51; interval = linspace(0,1,N)';
 a  = 2; gamma = 20; beta = 0.05;
 BCleft = [0,0]; BCright = 1;

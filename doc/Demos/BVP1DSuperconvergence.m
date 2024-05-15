@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} BVP1DSuperconvergence ()
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear *
 N = 10;              % number of elements, then 2*N+1 nodes
 x = linspace(0,pi/2,N+1);

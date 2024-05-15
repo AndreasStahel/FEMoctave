@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} RubberBox.m
+##
+## This is a demo file  inside the `doc/Examples/Elasticity/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 rho = 1100; E = 1e6; nu = 0.47;  %% Silicone rubber
 H = 0.1; R = 0.2; W = 0.01;
 Contour = [0 H -11;0 H-2*W -22; R-2*W H-2*W -22; R-W H-2*W -22;R-W 0 -21;

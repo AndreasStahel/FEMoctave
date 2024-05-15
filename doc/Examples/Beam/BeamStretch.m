@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} BeamStretch.m
+##
+## This is a demo file  inside the `doc/examples/Beam/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 L = 3; F = 0.2; N = 10;
 EA = @(x) (2-sin(x/L*pi))/2;
 [x,u] = BVP1D(linspace(0,L,N),EA,0,0,0,0,0,[F,0]);

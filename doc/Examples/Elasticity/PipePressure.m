@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} PipePressure.m
+##
+## This is a demo file  inside the `doc/Examples/Elasticity/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear all
 pkg load femoctave
 E = 110e9; nu = 0.35; %%% copper

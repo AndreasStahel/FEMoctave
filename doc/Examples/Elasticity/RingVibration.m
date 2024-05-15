@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} RingVibration.m
+##
+## This is a demo file  inside the `doc/Examples/Elasticity/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear *
 R = 0.03; D = 0.002;
 Nring = 36; angles = linspace(0,2*pi,Nring+1)'; angles = angles(1:end-1);

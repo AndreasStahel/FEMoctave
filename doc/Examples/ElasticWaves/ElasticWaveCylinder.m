@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} ElasticWaveCylinder.m
+##
+## This is a demo file  inside the `doc/Examples/ElasticWaves/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 E = 1; nu = 0; rho = 1; f = {0,0}; gD = {0,0}; gN = {0,0}; L = 10; H = L;
 function res = u0Func(xy)
   r = sqrt(xy(:,1).^2+xy(:,2).^2);

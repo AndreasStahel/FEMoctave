@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} PipePressureAxi.m
+##
+## This is a demo file  inside the `doc/Examples/Elasticity/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 R = 0.1; dR = 0.01;
 if 0 %% regular mesh
   Mesh = CreateMeshRect(R+linspace(0,dR,20),linspace(0,R,10),-21,-21,-32,-22);
