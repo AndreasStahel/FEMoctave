@@ -1,6 +1,13 @@
 TODO for next release:
 * ???
 
+FEMoctave 2.1.5, 15.05.2024
+-------------------------------
+* MeshAddConstraint.m is added to apply additional constraints
+* dummy texinfo strings added to most of the demo files and examples
+  should get rid of many warnings during installation
+* the documentation in FEMdoc.pdf is updated
+
 FEMoctave 2.1.4, 28.11.2023
 -------------------------------
 * solver for nonlinear initial boundary value problem in one dimension added

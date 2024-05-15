@@ -28,6 +28,7 @@ Manipulating meshes
   MeshQuad2Linear.m
   MeshCubic2Linear.m
   Delaunay2Mesh.m
+  MeshAddConstraint.m
   FEMtrimesh.m
   FEMtrisurf.m
   FEMtricontour.m
