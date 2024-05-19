@@ -1,7 +1,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {} {} Troesch.m
 ##
-## This is a demo file  inside the `doc/Examples/Nonlinear1D/` directory@*
+## This is a demo file inside the `doc/Examples/Nonlinear1D/` directory@*
 ## Find the description in the documentation FEMdoc.pdf
 ##
 ## @end deftypefn

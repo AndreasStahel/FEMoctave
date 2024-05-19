@@ -1,3 +1,10 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} AdditionalConstraintHeat.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
 
 Mesh = CreateMeshTriangle('square',[-1,-1,-2;1,-1,-2;1 1 -2; -1 1 -2],0.05);
 figure(1); FEMtrimesh(Mesh);

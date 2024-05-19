@@ -6,13 +6,13 @@
 ##
 ## @end deftypefn
 
+1; %% dummy, for help WaveExplititTest to work
 %% test the stability 1D wave equation
 if 1
  solver = 'explicit';
 else
  solver = 'implicit';
 endif
-solver = 'expl'
 
 if 0
   steps = [20,5];  %% unstable for explicit solver

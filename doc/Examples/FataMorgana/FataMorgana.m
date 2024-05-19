@@ -23,4 +23,3 @@ du = FEM1DEvaluateDu(x,u); du1 = du(1);
 du = FEM1DEvaluateDu(x,u2); du2 = du(1);
 figure(2); plot(x,u,'b',[0,1],[0,du1],'g',x,u2,'b',[0,1],[0,du2],'g')
            legend('true','visual','location','northwest')
-
