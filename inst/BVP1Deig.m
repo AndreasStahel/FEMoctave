@@ -64,7 +64,7 @@ if (nargin==8) tol = 1e-5;endif
 
 if length(BCleft)*length(BCright)==1  %% DD: Dirichlet at both ends
   A = A(2:end-1,2:end-1); M = M(2:end-1,2:end-1);
-  if (nargout>=3)
+  if (nargout>=2)
     if (nargout==4)
       [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol);
     else
