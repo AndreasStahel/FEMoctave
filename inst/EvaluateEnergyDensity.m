@@ -17,7 +17,7 @@
 ## -*- texinfo -*-
 ## @deftypefn{function file}{}@var{W} = EvaluateEnergyDensity(@var{Mesh},@var{eps_xx},@var{eps_yy},@var{eps_xy},@var{E},@var{nu},@var{options})
 ##
-##   evaluate the energy density at the nodes for a plane stress or strain setup
+##   evaluate the elastic energy density at the nodes for a plane stress or strain setup
 ##
 ##parameters:
 ##@itemize
@@ -35,7 +35,7 @@
 ##
 ##return value:
 ##@itemize
-##@item @var{w} values of the energy density at the nodes
+##@item @var{w} values of the elastic energy density at the nodes
 ##@end itemize
 ##
 ## @c Will be cut out in ??? info file and replaced with the same
