@@ -39,11 +39,11 @@
 ##@item @var{w} constant, vector or function handle to evaluate d(x)
 ##@item @var{BCleft} and @var{BCright} the two boundary conditions
 ##@itemize
-##@item for a Dirichlet condition specify a single value @var{g_D}
-##@item for a Neumann condition specify the values @var{[g_N1,g_N2]}
+##@item for a Dirichlet condition specify a single value @var{g_D=0}
+##@item for a Neumann condition specify the values @var{[g_N1,g_N2]=[0,g_N2]}
 ##@end itemize
 ##@item @var{nVec} the number of smallest eigenvalues to be computed
-##@item@var{tol} optional tolerance for the eigenvalue iteration, default 1e-5
+##@item@var{tol} tolerance for the eigenvalue iteration, default 1e-5
 ##@end itemize
 ##
 ##return values
