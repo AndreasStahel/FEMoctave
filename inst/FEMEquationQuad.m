@@ -8,6 +8,10 @@ function [gMat,gVec] = FEMEquationQuad(Mesh,aFunc,b0Func,bxFunc,byFunc,fFunc,gDF
 %   'a','b0', 'bx','by','f','gD','gN1','gN2' are the functions and coefficients 
 %         for the boundary value problem. They can be given as a scalar value
 %         or as a string with the function name 
+%         The coefficient 'a' can also be a symmetric matrix a=[axx,axy;axy,ayy]
+%         given by the row vector [axx,ayy,axy].
+%         It can be given as row vector or as string with the function name or
+%         as nx3 matrix with the values at the Gauss points.
 %
 %  -div(a*grad u-u*(bx,by)) + b0*u = f    in domain%
 %                          u = gD         on Dirichlet section of the boundary
@@ -23,12 +27,37 @@ function [gMat,gVec] = FEMEquationQuad(Mesh,aFunc,b0Func,bxFunc,byFunc,fFunc,gDF
 nElem = size(Mesh.elem,1);
 nGP   = size(Mesh.GP,1)  ;
 
-if ischar(aFunc)
-  aV = reshape(feval(aFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
-elseif isscalar(aFunc)
+isotropic = 1; %% flag to mark that the coefficient a is a scalar
+
+if ischar(aFunc)  %% given as string
+  aV = feval(aFunc,Mesh.GP,Mesh.GPT);
+  sizeA = size(aV);
+  if sizeA(2)==3
+    isotropic = 0;
+    a11V = reshape(aV(:,1),nGP/nElem,nElem);
+    a22V = reshape(aV(:,2),nGP/nElem,nElem);
+    a12V = reshape(aV(:,3),nGP/nElem,nElem);
+  else
+    aV = reshape(aV,nGP/nElem,nElem);
+  endif
+elseif isscalar(aFunc)  %% given as one scalar value
   aV = aFunc*ones(nGP/nElem,nElem);
-else
-  aV = reshape(aFunc,nGP/nElem,nElem);
+else     %% given as values at the Gauss points
+  aSize = size(aFunc);
+  if aSize(2)==3   %% three coefficients, values at Gauss points
+    isotropic = 0;
+    if (aSize(1)==1) %% three scalar values
+      a11V = aFunc(1)*ones(nGP/nElem,nElem);
+      a22V = aFunc(2)*ones(nGP/nElem,nElem);
+      a12V = aFunc(3)*ones(nGP/nElem,nElem);
+    else            %% matrix with values at all Gauss points
+      a11V = reshape(aFunc(:,1),nGP/nElem,nElem);
+      a22V = reshape(aFunc(:,2),nGP/nElem,nElem);
+      a12V = reshape(aFunc(:,3),nGP/nElem,nElem);
+    endif
+  else           %% one coefficient, values at Gauss points
+    aV = reshape(aFunc,nGP/nElem,nElem);
+  endif
 endif
 
 if ischar(b0Func)
@@ -88,13 +117,21 @@ for k = 1:nElem   %%for each element
   G = [cor(3,2)-cor(2,2),cor(1,2)-cor(3,2),cor(2,2)-cor(1,2);...
        cor(2,1)-cor(3,1),cor(3,1)-cor(1,1),cor(1,1)-cor(2,1)];
   B = M'*diag(w.*bV(:,k))*M;
-  Mtemp = -G(1,2)*Mxi-G(1,3)*Mnu;
-  Ax = Mtemp'*diag(w.*aV(:,k))*Mtemp;
-  Mtemp = -G(2,2)*Mxi-G(2,3)*Mnu;
-  Ay = Mtemp'*diag(w.*aV(:,k))*Mtemp;
+  MtempX = -G(1,2)*Mxi-G(1,3)*Mnu;
+  MtempY = -G(2,2)*Mxi-G(2,3)*Mnu;
+  if isotropic
+    A11 = MtempX'*diag(w.*aV(:,k))*MtempX;
+    A22 = MtempY'*diag(w.*aV(:,k))*MtempY;
+    mat = 0.5/area*(A11+A22) + 2*area*B;
+  else
+    A11 = MtempX'*diag(w.*a11V(:,k))*MtempX;
+    A22 = MtempY'*diag(w.*a22V(:,k))*MtempY;
+    A12 = MtempY'*diag(w.*a12V(:,k))*MtempX;
+    mat = 0.5/area*(A11+A22+2*A12) + 2*area*B;
+  endif
   Abxy = ((G(1,2)*Mxi + G(1,3)*Mnu)'*diag(w.*bxV(:,k))...
          +(G(2,2)*Mxi + G(2,3)*Mnu)'*diag(w.*byV(:,k)) )*M;
-  mat = 0.5/area*(Ax+Ay) + 2*area*B + Abxy;
+  mat = mat + Abxy;
   vec = -2*area*M'*(w.*fV(:,k));
   dofs = Mesh.node2DOF(Mesh.elem(k,:));
   for k1 = 1:6

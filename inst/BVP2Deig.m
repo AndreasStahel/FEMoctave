@@ -37,6 +37,10 @@
 ##@*Any constant function can be given by its scalar value.
 ##@*The functions @var{a},@var{b0} and @var{w} may also be given as vectors
 ##with the values of the function at the Gauss points.
+##@item The coefficient @var{a} can also be a symmetric matrix
+## A=[axx,axy;axy,ayy] given by the row vector [axx,ayy,axy].
+## It can be given as row vector or as string with the function name or
+## as nx3 matrix with the values at the Gauss points.
 ##@item@var{nVec} number of smallest eigenvalues to be computed
 ##@item@var{tol} optional tolerance for the eigenvalue iteration, default 1e-5
 ##@end itemize

@@ -53,6 +53,8 @@ are the coefficients and functions describing the PDE.\n\
 @*Any constant function can be given by its scalar value.\n\
 @*The functions @var{a},@var{b0},@var{bx},@var{by} and @var{f} may also be given as vectors\n\
 with the values of the function at the Gauss points.\n\
+@item The coefficient @var{a} can als be a symmetric matrix @var{a=[axx,axy;axy,ayy]} given by the row vector @var{[axx,ayy,axy]}.\n\
+@* It can be given as row vector or as string with the function name or as nx3 matrix with the values at the Gauss points.\
 @end itemize\n\
 \n\
 return values:\n\
@@ -102,27 +104,56 @@ return values:\n\
   const Matrix GP              =  arg0.contents(p1)(0).matrix_value();
   p1 = arg0.seek ("GPT");
   const ColumnVector GPT       =  arg0.contents(p1)(0).column_vector_value();
-
+  int nGP = GP.rows();
 
   string Func;
-  //argin(0) = nodes;
+  bool isotropic = true;
   //  evaluate function a
-  ColumnVector aV; 
+  ColumnVector aV, aVtmp;
+  int ii;
   if (args(1).is_string()) {  // function given as string
     Func = args(1).string_value();
     argin(0) = GP;
     nargout  = 1;
     res = octave::feval (Func, argin, nargout);
     aV = res(0).column_vector_value();
+    if (res(0).columns()==3)
+      { isotropic = false;} // store all coefficients in one vector aV
+                            // first a11, then a22, then a12
   }
   else if(args(1).is_real_scalar()){ //function given as scalar
-    aV.resize(GP.rows());
+    aV.resize(nGP);
     aV.fill(args(1).double_value());
   }
-  else {  // function given by its values
-    aV = args(1).column_vector_value();
+  else {// function given by its values
+    if(args(1).is_real_scalar()){ //function given as scalar
+      aV.resize(nGP);
+      aV.fill(args(1).double_value());
+    }
+    else {
+      if (args(1).columns()==3)  // anisotropic
+      { isotropic = false; // store all coefficients in one vector aV
+                           // first a11, then a22, then a12
+	if (args(1).rows()==1){// only three values given
+	  aVtmp = args(1).column_vector_value();
+	  aV.resize(3*nGP);
+	  for(ii = 0; ii < nGP; ii = ii+1){
+	    aV(ii)             = aVtmp(0);
+	    aV(ii+nGP)   = aVtmp(1);
+	    aV(ii+2*nGP) = aVtmp(2);
+	  }
+	}
+	else {//  all a values in three columns
+	  aV = args(1).column_vector_value();
+	}
+      }
+      else {//  all a values in three columns
+	aV = args(1).column_vector_value();
+      }
+    }
   }
-
+  octave_stdout <<"size of aV: "<< aV.rows()<<" "<< aV.columns()<<"\n";
+  
   // evaluate function b
   ColumnVector bV; 
   if (args(2).is_string()) {  // function given as string
@@ -133,7 +164,7 @@ return values:\n\
     bV = res(0).column_vector_value();
   }
   else if(args(2).is_real_scalar()){ //function given as scalar
-    bV.resize(GP.rows());
+    bV.resize(nGP);
     bV.fill(args(2).double_value());
   }
   else {  // function given by its values
@@ -152,7 +183,7 @@ return values:\n\
     bxV = res(0).column_vector_value();
   }
   else if(args(3).is_real_scalar()){ //function given as scalar
-    bxV.resize(GP.rows());
+    bxV.resize(nGP);
     bxV.fill(args(3).double_value());
     if (args(3).double_value()!=0){convectionFlag=true;}
   }
@@ -172,7 +203,7 @@ return values:\n\
     byV = res(0).column_vector_value();
   }
   else if(args(4).is_real_scalar()){ //function given as scalar
-    byV.resize(GP.rows());
+    byV.resize(nGP);
     byV.fill(args(4).double_value());
     if (args(4).double_value() !=0){convectionFlag=true;}
   }
@@ -191,7 +222,7 @@ return values:\n\
     fV = res(0).column_vector_value();
   }
   else if(args(5).is_real_scalar()){ //function given as scalar
-    fV.resize(GP.rows());
+    fV.resize(nGP);
     fV.fill(args(5).double_value());
   }
   else {  // function given by its values
@@ -253,6 +284,7 @@ return values:\n\
 
   Matrix M(2,3);
   Matrix elMat (3,3);
+  Matrix A(2,2);
   ColumnVector elVec (3);
   ColumnVector dofs(3);
 
@@ -282,26 +314,20 @@ return values:\n\
       }
     }
   
-    double factor = (aV(k3)+aV(k3+1)+aV(k3+2))/(12.0*area);
 
-    // factor* M'*M
-    elMat(0,0) = factor*(M(0,0)*M(0,0)+M(1,0)*M(1,0));
-    elMat(0,1) = factor*(M(0,0)*M(0,1)+M(1,0)*M(1,1));
-    elMat(0,2) = factor*(M(0,0)*M(0,2)+M(1,0)*M(1,2));
+    if (isotropic ==1){
+      // factor* M'*M
+      double factor = (aV(k3)+aV(k3+1)+aV(k3+2))/(12.0*area);
+      elMat = factor * M.transpose()*M;
+    }
+    else{ //anisotropic case
+      A(0,0) = (aV(k3)+aV(k3+1)+aV(k3+2));
+      A(1,1) = (aV(k3+nGP)+aV(k3+1+nGP)+aV(k3+2+nGP));
+      A(1,0) = (aV(k3+2*nGP)+aV(k3+1+2*nGP)+aV(k3+2+2*nGP));
+      A(0,1) = A(1,0);
+      elMat = 1.0/(12.0*area)*M.transpose()*A*M;
+    }
 
-    //elMat(1,0)=factor*(M(0,1)*M(0,0)+M(1,1)*M(1,0));
-    elMat(1,0) = elMat(0,1);
-    elMat(1,1) = factor*(M(0,1)*M(0,1)+M(1,1)*M(1,1));
-    elMat(1,2) = factor*(M(0,1)*M(0,2)+M(1,1)*M(1,2));
-    
-    //elMat(2,0)=factor*(M(0,2)*M(0,0)+M(1,2)*M(1,0));
-    //elMat(2,1)=factor*(M(0,2)*M(0,1)+M(1,2)*M(1,1));
-    elMat(2,0) = elMat(0,2);
-    elMat(2,1) = elMat(1,2);
-    elMat(2,2) = factor*(M(0,2)*M(0,2)+M(1,2)*M(1,2));
-
-    // //    octave_stdout <<factor<< "\n";
-    
     elMat += M1*bMat;
     elVec(0) = fV(k3)  *area/3.0;
     elVec(1) = fV(k3+1)*area/3.0;

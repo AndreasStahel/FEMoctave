@@ -51,6 +51,8 @@ are the coefficients and functions describing the PDE.\n\
 @*Any constant function can be given by its scalar value.\n\
 @*The functions @var{a},@var{b0},@var{bx},@var{by} and @var{f} may also be given as vectors\n\
 with the values of the function at the Gauss points.\n\
+@item The coefficient @var{a} can als be a symmetric matrix @var{a=[axx,axy;axy,ayy]} given by the row vector @var{[axx,ayy,axy]}.\n\
+@* It can be given as row vector or as string with the function name or as nx3 matrix with the values at the Gauss points.\
 @end itemize\n\
 \n\
 return values:\n\
@@ -101,24 +103,56 @@ return values:\n\
   const Matrix GP              =  arg0.contents(p1)(0).matrix_value();
   p1 = arg0.seek ("GPT");
   const ColumnVector GPT       =  arg0.contents(p1)(0).column_vector_value();
-  
+  int nGP = GP.rows();
+
   /* INPUT CHECK and Evaluate*/
   string Func;
+  bool isotropic = true;
+
   //  evaluate function a
-  ColumnVector aV; 
+  ColumnVector aV, aVtmp;
+  int ii;
   if (args(1).is_string()) {  // function given as string
     Func = args(1).string_value();
     argin(0) = GP;
     nargout  = 1;
     res = octave::feval (Func, argin, nargout);
     aV = res(0).column_vector_value();
+    if (res(0).columns()==3)
+      { isotropic = false;} // store all coefficients in one vector aV
+                            // first a11, then a22, then a12
   }
   else if(args(1).is_real_scalar()){ //function given as scalar
-    aV.resize(GP.rows());
+    aV.resize(nGP);
     aV.fill(args(1).double_value());
   }
-  else {  // function given by its values
-    aV = args(1).column_vector_value();
+  else {// function given by its values
+    if(args(1).is_real_scalar()){ //function given as scalar
+      aV.resize(nGP);
+      aV.fill(args(1).double_value());
+    }
+    else {
+      //      octave_stdout <<"not a scalar\n";
+      if (args(1).columns()==3)  // anisotropic
+      { isotropic = false; // store all coefficients in one vector aV
+                           // first a11, then a22, then a12
+	if (args(1).rows()==1){// only three values given
+	  aVtmp = args(1).column_vector_value();
+	  aV.resize(3*nGP);
+	  for(ii = 0; ii < nGP; ii = ii+1){
+	    aV(ii)             = aVtmp(0);
+	    aV(ii+nGP)   = aVtmp(1);
+	    aV(ii+2*nGP) = aVtmp(2);
+	  }
+	}
+	else {//  all a values in three columns
+	  aV = args(1).column_vector_value();
+	}
+      }
+      else {//  all a values in three columns
+	aV = args(1).column_vector_value();
+      }
+    }
   }
 
   // evaluate function b
@@ -131,7 +165,7 @@ return values:\n\
     bV = res(0).column_vector_value();
   }
   else if(args(2).is_real_scalar()){ //function given as scalar
-    bV.resize(GP.rows());
+    bV.resize(nGP);
     bV.fill(args(2).double_value());
   }
   else {  // function given by its values
@@ -150,7 +184,7 @@ return values:\n\
     bxV=res(0).column_vector_value();
   }
   else if(args(3).is_real_scalar()){ //function given as scalar
-    bxV.resize(GP.rows());
+    bxV.resize(nGP);
     bxV.fill(args(3).double_value());
     if (args(3).double_value()!=0){convectionFlag=true;}
   }
@@ -170,7 +204,7 @@ return values:\n\
     byV = res(0).column_vector_value();
   }
   else if(args(4).is_real_scalar()){ //function given as scalar
-    byV.resize(GP.rows());
+    byV.resize(nGP);
     byV.fill(args(4).double_value());
     if (args(4).double_value() !=0){convectionFlag=true;}
   }
@@ -189,7 +223,7 @@ return values:\n\
     fV = res(0).column_vector_value();
   }
   else if(args(5).is_real_scalar()){ //function given as scalar
-    fV.resize(GP.rows());
+    fV.resize(nGP);
     fV.fill(args(5).double_value());
   }
   else {  // function given by its values
@@ -289,7 +323,9 @@ return values:\n\
 
   // diagonal matrices (some will be overwritten later, but have the same size as diagb, therefore they are initialized as follows)
   DiagMatrix diagb(7,7);
-  DiagMatrix diaga(7,7);
+  DiagMatrix diagaxx(7,7);
+  DiagMatrix diagayy(7,7);
+  DiagMatrix diagaxy(7,7);
   DiagMatrix diagb1(7,7);
   DiagMatrix diagb2(7,7);
   // weights for edge contribution	
@@ -306,9 +342,11 @@ return values:\n\
   Matrix elMat (10,10);
   ColumnVector elVec (10);
   ColumnVector wvalVec (7);
-  Matrix tt(7,10);
-  Matrix Ax(10,10);
-  Matrix Ay(10,10);
+  Matrix ttx(7,10);
+  Matrix tty(7,10);
+  Matrix Axx(10,10);
+  Matrix Ayy(10,10);
+  Matrix Axy(10,10);
 
   // for assembling of global stiffnes matrix
   RowVector tmpCorner(2); // for jus one corner
@@ -327,17 +365,6 @@ return values:\n\
     MB2(2,0) = 1.0; MB2(2,1) = -lambda; MB2(2,2) = lambda*lambda; MB2(2,3) = -lambda*lambda*lambda;
     Matrix MB(3,4);
     MB = MB2 * MB1/16.0;
-  //  double s15 = sqrt(15.0);
-  //MB(0,0) = -1.0+s15/5.0+5.4-10.8*s15;
-  //   MB(0,1) = 9.0-27.0*s15/5.0-5.4+32.4*s15;
-  //   MB(0,2) = 9.0+27.0*s15/5.0-5.4-32.4*s15;
-  //   MB(0,3) = -1.0-s15/5.0 + 5.4 + 10.8*s15;
-  //MB(1,0) = -1.0; MB(1,1) = 9.0; MB(1,2) = 9.0; MB(1,3) = -1.0;
-  //MB(2,0) = -1.0-s15/5.0+5.4+10.8*s15;
-  //  MB(2,1) = 9.0+27.0*s15/5.0-5.4-32.4*s15;
-  //  MB(2,2) = 9.0-27.0*s15/5.0-5.4+32.4*s15;
-  //  MB(2,3) = -1.0+s15/5.0+5.4-10.8*s15;
-  //  MB = MB/16.0;
   
   Matrix MBT(3,4);   MBT = MB.transpose();
   Matrix Ep(4,2);  // for 4 nodes on an edge
@@ -393,7 +420,14 @@ return values:\n\
     
     // fill in diagonal matrices for current element
     for(int gg = 0;gg < 7;gg++){
-      diaga(gg,gg)  = w(gg)*aV(7*k+gg);
+      diagaxx(gg,gg)  = w(gg)*aV(7*k+gg);
+      if (isotropic==1) {
+	diagayy(gg,gg) = diagaxx(gg,gg);
+	diagaxy(gg,gg) = 0.0;}
+      else {
+	diagayy(gg,gg) = w(gg)*aV(7*k+gg + nGP);
+	diagaxy(gg,gg) = w(gg)*aV(7*k+gg + 2*nGP);
+      }
       diagb(gg,gg)  = w(gg)*bV(7*k+gg);
       diagb1(gg,gg) = w(gg)*bxV(7*k+gg);
       diagb2(gg,gg) = w(gg)*byV(7*k+gg);
@@ -408,12 +442,13 @@ return values:\n\
     /* integration of b0*u*phi */	
     elMat = detT*Mtrans*diagb*M;
     /* integration of a*nabla u * nabla phi */
-    tt = T(1,1)*Mxi-T(1,0)*Mnu;   // scalar*7x10 - scalar*7x6 = 7x10
-    Ax = tt.transpose()*diaga*tt; // 10x7*7x7*7x7*7x10 = 10x10
-    
-    tt = T(0,0)*Mnu-T(0,1)*Mxi;
-    Ay = tt.transpose()*diaga*tt;
-    elMat += 1/detT*(Ax+Ay); 		// scalar*(10x10+10x10) = 10x10
+    ttx = T(1,1)*Mxi-T(1,0)*Mnu;   // scalar*7x10 - scalar*7x6 = 7x10
+    tty = T(0,0)*Mnu-T(0,1)*Mxi;
+    Axx = ttx.transpose()*diagaxx*ttx; // 10x7*7x7*7x7*7x10 = 10x10
+    Ayy = tty.transpose()*diagayy*tty;
+    Axy = tty.transpose()*diagaxy*ttx;
+
+    elMat += 1/detT*(Axx+Ayy+2.0*Axy); // scalar*(10x10+10x10) = 10x10
     if (convectionFlag){
       /* integration u*b*nabla*phi */ 
       Ab1 = ((+T(1,1)*Mxi.transpose()-T(1,0)*Mnu.transpose())*diagb1*M);
