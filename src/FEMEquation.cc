@@ -152,7 +152,6 @@ return values:\n\
       }
     }
   }
-  octave_stdout <<"size of aV: "<< aV.rows()<<" "<< aV.columns()<<"\n";
   
   // evaluate function b
   ColumnVector bV; 
