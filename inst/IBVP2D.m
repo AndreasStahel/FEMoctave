@@ -38,7 +38,7 @@ function [u,t] = IBVP2D(Mesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps,varargin
   ##are the coefficients and functions describing the PDE.
   ##@*Any constant function can be given by its scalar value.
   ##@*The functions @var{m},@var{a},@var{b0},@var{bx},@var{by} and @var{f} may also be given as vectors with the values of the function at the Gauss points.
-  ##@item @var{f} may be given as a string for a function depending on (x,y) and time t or a a vector with the values at nodes or as scalar.
+  ##@item @var{f} may be given as a string for a function depending on (x,y) and time t or as a vector with the values at nodes or as scalar.
   ##If @var{f} is given by a scalar or vector it is independent on time.
   ##@item @var{u0} is the initial value, can be given as a constant, function name or as vector with the values at the nodes
   ##@item @var{t0}, @var{tend} are the initial and final times
@@ -48,12 +48,21 @@ function [u,t] = IBVP2D(Mesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps,varargin
   ##@item If @var{steps} = [n,nint], then n*nint steps are taken and (n+1) results returned.
   ##@end itemize
   ##@item @var{options} additional options, given as pairs name/value.
-  ##Currently only the stepping algorithm can be selected as @var{"solver"} and the possible values
+  ##@itemize
+  ##@item The stepping algorithm can be selected as @var{"solver"}. The possible values
   ##@itemize
   ##@item @var{"CN"} the standard Crank-Nicolson (default)
   ##@item @var{"implicit"} the standard implicit solver
   ##@item @var{"explicit"} the standard explicit solver
   ##@item @var{"RK"} an L-stable, implicit Runge-Kutta solver
+  ##@end itemize
+  ##@item Complex coefficients can be selected by @var{type}.
+  ##The possible values are
+  ##@itemize
+  ##@item @var{"real"}: all coefficients are real (default)
+  ##@item @var{"complex"}: some coefficients might be complex
+  ##@end itemize
+  ## If only the coefficient @var{m} is complex, there is no need to ask for complex coefficients.
   ##@end itemize
   ##@end itemize
   ##
@@ -113,32 +122,79 @@ function [u,t] = IBVP2D(Mesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps,varargin
 %
 % see also BVP2D, BVP2Dsym, BVP2Deig
 
-solver = 'CN';  %% default value is Crank-Nicolson
+solver = 'CN';   %% default value is Crank-Nicolson
+Type   = 'REAL'; %% default value
 if (~isempty(varargin))
   for cc = 1:2:length(varargin)
-    switch tolower(varargin{cc})
-      case {'solver'}
+    switch toupper(varargin{cc})
+      case {'TYPE'}
+	Type = toupper(varargin{cc+1});
+      case {'SOLVER'}
 	solver = toupper(varargin{cc+1});
       otherwise
-	error('Invalid optional argument, %s',varargin{cc}.name);
+	error('Invalid optional argument, %s. Possible values: SOLVER, TYPE',varargin{cc});
     endswitch % switch
   endfor % for
-endif % if ĩsempty
+endif % if isempty
+
+if ((strcmp(Type,'REAL')==0)&&(strcmp(Type,'COMPLEX')==0))
+  error('wrong TYPE, possible values are REAL or COMPLEX')
+endif
+
 
 Mesh.node2DOF = Mesh.node2DOF(:,1);  %% not an elasticity problem
 
 if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
 else
-  u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,0);  %% solve BVP
+  u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,0,'type',TYPE);  %% solve BVP
 endif
 switch Mesh.type
 case 'linear'    %% linear elements
-  A = FEMEquation(Mesh,a,b0,bx,by,0, 0, 0,gN2);
+  switch Type
+    case 'REAL'
+      if exist("FEMEquation.oct")==3
+	A = FEMEquation(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+    case 'COMPLEX'
+      if exist("FEMEquationComplex.oct")==3
+	A = FEMEquationComplex(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+  endswitch
 case 'quadratic' %% quadratic elements
-  A = FEMEquationQuad(Mesh,a,b0,bx,by,0, 0, 0,gN2);
+  switch Type
+    case 'REAL'
+      if exist("FEMEquationQuad.oct")==3
+	A = FEMEquationQuad(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationQuadM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+    case 'COMPLEX'
+      if exist("FEMEquationQuadComplex.oct")==3
+	A = FEMEquationQuadComplex(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationQuadM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+  endswitch
 case 'cubic'     %% cubic elements
-  A = FEMEquationCubic(Mesh,a,b0,bx,by,0, 0, 0,gN2);
+  switch Type
+    case 'REAL'
+      if exist("FEMEquationCubic.oct")==3
+	A = FEMEquationCubic(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationCubicM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+    case 'COMPLEX'
+      if exist("FEMEquationCubicComplex.oct")==3
+	A = FEMEquationCubicComplex(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationCubicM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+  endswitch
 endswitch
 
 Wu  = FEMInterpolWeight(Mesh,m);  %% weight matrix, leading to W* (d/dt u)

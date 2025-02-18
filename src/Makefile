@@ -1,4 +1,4 @@
-## Copyright (C) 2019 Andreas Stahel
+## Copyright (C) 2019-2025 Andreas Stahel
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 
 
 
-CCFILES=FEMEquation.cc	FEMEquationQuad.cc FEMEquationCubic.cc
+CCFILES=FEMEquation.cc FEMEquationQuad.cc FEMEquationCubic.cc FEMEquationComplex.cc FEMEquationQuadComplex.cc FEMEquationCubicComplex.cc
 OCTFILES=$(CCFILES:.cc=.oct)
 
 MKOCTFILE ?= mkoctfile

@@ -37,8 +37,8 @@
 ##@itemize
 ##@item @var{a} a constant or vector of values of a(x).
 ##@item @var{a = @@(x)} a function handle to evaluate f(x).
-##@item @var{a = @{@@(x,u),  @@(x,u)@}} assumes that the function a(x,u) depends on x and u. The two function handles evaluate a(x,u) and the partial derivative a_u(x,u).
-##@item @var{a = @{@@(x,u,u'),  @@(x,u,u') , @@(x,u,u')@}} assumes that a(x,u,u') depends on x,  u and u'. The three function handles evaluate a(x,u,u') and the partial derivatives a_u(x,u,u') and a_u'(x,u,u').
+##@item @var{a = @@(x,u)} assumes that the function a(x,u) depends on x and u. 
+##@item @var{a = @@(x,u,u')} assumes that a(x,u,u') depends on x,  u and u'.
 ##@end itemize
 ##@item @var{b} constant, vector or function handle to evaluate b(x) at Gauss points
 ##@item @var{c} constant, vector or function handle to evaluate c(x) at Gauss points
@@ -53,10 +53,10 @@
 ##@item @var{BCleft} and @var{BCright} the two boundary conditions
 ##@itemize
 ##@item for a Dirichlet condition specify a single value @var{g_D}
-##@item for a Neumann condition specify the values @var{[g_N1,g_N2]}
+##@item for a Neumann condition specify the two values @var{[g_N1,g_N2]}
 ##@end itemize
 ##@item @var{u0} constant, vector or function handle to evaluate u0(x) at the nodes. This is the starting value for the iteration.
-##@item @var{options} additional options, given as pairs name/value. 
+##@item @var{options} additional options, given as pairs name/value.
 ##@itemize
 ##@item @var{"tol"} the tolerance for the iteration to stop, given as pair @var{[tolrel,tolabs]} for the relative and absolute tolerance. The iteration stops if the absolute or relative error is smaller than the specified tolerance. RMS (root means square) values are used. If only @var{tolrel} is specified @var{TolAbs=TolRel} is used. The default values are @var{tolrel = tolabs = 1e-5}.
 ##@item @var{"MaxIter"} the maximal number of iterations to be used. The default value is 10.
@@ -110,11 +110,11 @@ x = [interval(:) interval(:)+[diff(interval(:))/2;0]]'(1:end-1); x = x(:);
 n = length(x);  %% number of nodes
 
 function fun_values = convert2values(fun)  %% evaluate at Gauss points
-  if (length(fun)>1)&&isnumeric(fun)  %% a given as vector
+  if (length(fun)>1)&&isnumeric(fun)       %% a given as vector
     fun_values = fun;
-  elseif isnumeric(fun)               %% a given as scalar
+  elseif isnumeric(fun)                    %% a given as scalar
     fun_values = fun*(ones(size(xGauss)));
-  else                                %% a given as function handle
+  else                                     %% a given as function handle
     fun_values = fun(xGauss);
   endif
 endfunction
@@ -171,6 +171,7 @@ else  %% f is a function handle or cell array of function handles
     endif %% nargin(F{1})
   endif %% length(f)==1
 endif
+
 
 %% determine the boundary conditions
 if length(BCleft)*length(BCright)==1  %% DD: Dirichlet at both ends
@@ -284,7 +285,7 @@ do   %% until error small enough, or inform.iter > MaxIter
 
   u_valuesGauss  = Nodes2GaussU  * u_values;
   du_valuesGauss = Nodes2GaussDU * u_values;
-  
+
   if a_NL ;  %% update the coefficient a, if necessary
     switch nargin(a)
       case 2  %% a depends on x and u
@@ -293,7 +294,7 @@ do   %% until error small enough, or inform.iter > MaxIter
 	a_values = a(xGauss,u_valuesGauss,du_valuesGauss);
     endswitch
   endif  % a_NL
-  
+
   if f_NL   %%% evaluate f and apply one Newton step
     switch length(f)  %% evaluate f and its partial derivatives
       case 1   %% f(x)
@@ -304,7 +305,7 @@ do   %% until error small enough, or inform.iter > MaxIter
 	dfdu_valuesGauss = f{2}(xGauss,u_valuesGauss);  %% df/du(x,u) at Gauss
 	A2 = GenerateFEM1D(interval,a_values,b,c_values-d_values.*dfdu_valuesGauss,d);
       case 3   %% f(x,u,u')
-	du_values = FEM1DEvaluateDu(x,u_values);     %% u' at nodes 
+	du_values = FEM1DEvaluateDu(x,u_values);     %% u' at nodes
 	f_values  = f{1}(x,u_values,du_values);      %% f(x,u,u') at nodes
 	dfdu_valuesGauss   = f{2}(xGauss,u_valuesGauss,du_valuesGauss);% df/du
 	dfdupr_valuesGauss = f{3}(xGauss,u_valuesGauss,du_valuesGauss);% df/du'
@@ -319,7 +320,7 @@ do   %% until error small enough, or inform.iter > MaxIter
     else
       Au = A*u_values;
     endif
-    
+
     switch BC  %% solve the problem for phi and make one Newton step
       case "DD"
 	phi = SolveSystemPhi(A2,-Au(2:end-1)+M*f_values,BCleft,BCright);
@@ -336,7 +337,7 @@ do   %% until error small enough, or inform.iter > MaxIter
       case 2   %% f(x,u)
 	f_values  = f{1}(x,u_values);            %% f(x,u) at nodes
       case 3   %% f(x,u,u')
-	du_values = FEM1DEvaluateDu(x,u_values); %% u' at nodes 
+	du_values = FEM1DEvaluateDu(x,u_values); %% u' at nodes
 	f_values  = f{1}(x,u_values,du_values);  %% f(x,u,u') at nodes
     endswitch  %% length(f)
   endif %% f_NL
@@ -355,7 +356,7 @@ do   %% until error small enough, or inform.iter > MaxIter
 	case 2   %% f(x,u)
 	  f_values  = f{1}(x,u_values);            %% f(x,u) at nodes
 	case 3   %% f(x,u,u')
-	  du_values = FEM1DEvaluateDu(x,u_values); %% u' at nodes 
+	  du_values = FEM1DEvaluateDu(x,u_values); %% u' at nodes
 	  f_values  = f{1}(x,u_values,du_values);  %% f(x,u,u') at nodes
       endswitch  %% length(f)
     endif %% f_NL
@@ -379,7 +380,7 @@ do   %% until error small enough, or inform.iter > MaxIter
   endif  %% strcmp
 
   u = u_values;  %% assign the return value u
-  
+
   if f_NL
     AbsError2 = mean([AbsError,norm(phi)]);
   else

@@ -1,4 +1,4 @@
-## Copyright (C) 2020 Andreas Stahel
+## Copyright (C) 2025 Andreas Stahel
 ##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
 
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2020-03-30
+## Created: 2025-01-04
 
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}@var{u} = BVP2D(@var{mesh},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{gN1},@var{gN2})
+## @deftypefn{function file }{}@var{ u} = BVP2D(@var{mesh},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{gN1},@var{gN2},@var{options})
 ##
 ##   Solve an elliptic boundary value problem
 ##
@@ -42,7 +42,13 @@
 ##A=[axx,axy;axy,ayy] given by the row vector [axx,ayy,axy].
 ##It can be given as row vector or as string with the function name or
 ##as nx3 matrix with the values at the Gauss points.
-
+##@item @var{options} additional options, given as pairs name/value.
+##Currently only real or complex coefficient problems can be selected by
+##@var{"TYPE"} and the possible values are
+##@itemize
+##@item @var{"real"}: all coefficients are real (default)
+##@item @var{"complex"}: some coefficients might be complex
+##@end itemize
 ##@end itemize
 ##
 ##return value
@@ -58,20 +64,74 @@
 ## @c END_CUT_TEXINFO
 ## @end deftypefn
 
-function u = BVP2D(Mesh,a,b0,bx,by,f,gD,gN1,gN2)
-  if nargin ~=9
-    print_usage();
-  endif
+function u = BVP2D(Mesh,a,b0,bx,by,f,gD,gN1,gN2,varargin)
+if nargin < 9
+  print_usage();
+endif
 
-  switch Mesh.type
-    case 'linear' %% first order elements
-      [A,b] = FEMEquation    (Mesh,a,b0,bx,by,f,gD,gN1,gN2);
-    case 'quadratic'  %% second order elements
-      [A,b] = FEMEquationQuad(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
-    case 'cubic'  %% third order elements
-      [A,b] = FEMEquationCubic(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
-  endswitch
+Type = 'REAL'; %% default value
+if (~isempty(varargin))
+  for cc = 1:2:length(varargin)
+    switch toupper(varargin{cc})
+      case {'TYPE'}
+	Type = toupper(varargin{cc+1});
+      otherwise
+	error('Invalid optional argument, %s. Possible value TYPE',varargin{cc});
+    endswitch % switch
+  endfor % for
+endif % if isempty
 
+if ((strcmp(Type,'REAL')==0)&&(strcmp(Type,'COMPLEX')==0))
+  error('wrong TYPE, possible values are REAL or COMPLEX')
+endif
 
-  u = FEMSolve(Mesh,A,b,gD);  %% solve the resulting system
+switch Mesh.type
+  case 'linear' %% first order elements
+    switch Type
+     case 'REAL'
+       if exist("FEMEquation.oct")==3
+	 [A,b] = FEMEquation(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       else
+	 [A,b] = FEMEquationM(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       endif
+     case 'COMPLEX'
+       if exist("FEMEquationComplex.oct")==3
+	 [A,b] = FEMEquationComplex(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       else
+	 [A,b] = FEMEquationM(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       endif
+    endswitch
+  case 'quadratic'  %% second order elements
+    switch Type
+     case 'REAL'
+       if exist("FEMEquationQuad.oct")==3
+	 [A,b] = FEMEquationQuad(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       else
+	 [A,b] = FEMEquationQuadM(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       endif
+     case 'COMPLEX'
+       if exist("FEMEquationQuadComplex.oct")==3
+	 [A,b] = FEMEquationQuadComplex(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       else
+	 [A,b] = FEMEquationQuadM(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       endif
+    endswitch
+  case 'cubic'  %% third order elements
+    switch Type
+     case 'REAL'
+       if exist("FEMEquationCubic.oct")==3
+	 [A,b] = FEMEquationCubic(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       else
+	 [A,b] = FEMEquationCubicM(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       endif
+     case 'COMPLEX'
+       if exist("FEMEquationCubicComplex.oct")==3
+	 [A,b] = FEMEquationCubicComplex(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       else
+	 [A,b] = FEMEquationCubicM(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
+       endif
+    endswitch
+endswitch
+
+u = FEMSolve(Mesh,A,b,gD);  %% solve the resulting system
 endfunction

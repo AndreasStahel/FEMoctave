@@ -30,12 +30,13 @@
 #define NEUMANN   -2
 #define DIRICHLET -1
 
-DEFUN_DLD (FEMEquationCubic, args, ,
+DEFUN_DLD (FEMEquationCubicComplex, args, ,
    "-*- texinfo -*-\n\
-@deftypefn {} {} [@var{A},@var{b}] = FEMEquationCubic(@var{mesh},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{gN1},@var{gN2})\n\
+@deftypefn {} {} [@var{A},@var{b}] = FEMEquationCubicComplex(@var{mesh},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{gN1},@var{gN2})\n\
 \n\
 sets up the system of linear equations for a numerical solution of a PDE\n\
-using a triangular mesh with elements of order 3\n\
+using a triangular mesh with elements of order 3.\n\
+Complex coefficients are permitted.\n\
 \n\
 @verbatim\n\
 -div(a*grad u - u*(bx,by))+ b0*u = f         in domain\n\
@@ -60,7 +61,7 @@ return values:\n\
 @item@var{A}, @var{b}: matrix and vector for the linear system to be solved, @var{A}*u-@var{b}=0\n\
 @end itemize\n\
 @c BEGIN_CUT_TEXINFO\n\
-@seealso{FEMEquation, FEMEquationQuad, FEMEquationComplex, FEMEquationQuadComplex, FEMEquationCubicComplex, BVP2D, BVP2Dsym, BVP2eig, IBVP2D, I2BVP2D, CreateMeshRect, CreateMeshTriangle}\n\
+@seealso{FEMEquation, FEMEquationQuad, FEMEquationCubic, FEMEquationComplex, FEMEquationQuadComplex, BVP2D, BVP2Dsym, BVP2eig, IBVP2D, I2BVP2D, CreateMeshRect, CreateMeshTriangle}\n\
 @c END_CUT_TEXINFO\n\
 @end deftypefn")
 
@@ -107,26 +108,26 @@ return values:\n\
   bool isotropic = true;
 
   //  evaluate function a
-  ColumnVector aV, aVtmp;
+  ComplexColumnVector aV, aVtmp;
   int ii;
   if (args(1).is_string()) {  // function given as string
     Func = args(1).string_value();
     argin(0) = GP;
     nargout  = 1;
     res = octave::feval (Func, argin, nargout);
-    aV = res(0).column_vector_value();
+    aV = res(0).complex_column_vector_value();
     if (res(0).columns()==3)
       { isotropic = false;} // store all coefficients in one vector aV
                             // first a11, then a22, then a12
   }
-  else if(args(1).is_real_scalar()){ //function given as scalar
+  else if(args(1).length()==1){ //function given as scalar
     aV.resize(nGP);
-    aV.fill(args(1).double_value());
+    aV.fill(args(1).complex_value());
   }
   else {// function given by its values
-    if(args(1).is_real_scalar()){ //function given as scalar
+    if(args(1).is_complex_scalar()){ //function given as scalar
       aV.resize(nGP);
-      aV.fill(args(1).double_value());
+      aV.fill(args(1).complex_value());
     }
     else {
       //      octave_stdout <<"not a scalar\n";
@@ -134,7 +135,7 @@ return values:\n\
       { isotropic = false; // store all coefficients in one vector aV
                            // first a11, then a22, then a12
 	if (args(1).rows()==1){// only three values given
-	  aVtmp = args(1).column_vector_value();
+	  aVtmp = args(1).complex_column_vector_value();
 	  aV.resize(3*nGP);
 	  for(ii = 0; ii < nGP; ii = ii+1){
 	    aV(ii)             = aVtmp(0);
@@ -143,119 +144,119 @@ return values:\n\
 	  }
 	}
 	else {//  all a values in three columns
-	  aV = args(1).column_vector_value();
+	  aV = args(1).complex_column_vector_value();
 	}
       }
       else {//  all a values in three columns
-	aV = args(1).column_vector_value();
+	aV = args(1).complex_column_vector_value();
       }
     }
   }
 
   // evaluate function b
-  ColumnVector bV; 
+  ComplexColumnVector bV;
   if (args(2).is_string()) {  // function given as string
     Func = args(2).string_value();
     nargout  = 1;
     argin(0) = GP;
     res = octave::feval (Func, argin, nargout);
-    bV = res(0).column_vector_value();
+    bV = res(0).complex_column_vector_value();
   }
-  else if(args(2).is_real_scalar()){ //function given as scalar
+  else if(args(2).length()==1){ //function given as scalar
     bV.resize(nGP);
-    bV.fill(args(2).double_value());
+    bV.fill(args(2).complex_value());
   }
   else {  // function given by its values
-    bV = args(2).column_vector_value();
+    bV = args(2).complex_column_vector_value();
   }
   
   bool convectionFlag = false;
   // evaluate function bx
-  ColumnVector bxV; 
+  ComplexColumnVector bxV;
   if (args(3).is_string()) {  // function given as string
     convectionFlag = true;
     Func    = args(3).string_value();
     nargout = 1;
     argin(0) = GP;
     res = octave::feval (Func, argin, nargout);
-    bxV=res(0).column_vector_value();
+    bxV=res(0).complex_column_vector_value();
   }
-  else if(args(3).is_real_scalar()){ //function given as scalar
+  else if(args(3).length()==1){ //function given as scalar
     bxV.resize(nGP);
-    bxV.fill(args(3).double_value());
-    if (args(3).double_value()!=0){convectionFlag=true;}
+    bxV.fill(args(3).complex_value());
+    if (abs(args(3).complex_value())> 0.0){convectionFlag = true;}
   }
   else {  // function given by its values
-    bxV = args(3).column_vector_value();
-    convectionFlag=true;
+    bxV = args(3).complex_column_vector_value();
+    convectionFlag = true;
  }
 
   // evaluate function by
-  ColumnVector byV; 
+  ComplexColumnVector byV;
   if (args(4).is_string()) {  // function given as string
     Func = args(4).string_value();
     convectionFlag = true;
     nargout  = 1;
     argin(0) = GP;
     res = octave::feval (Func, argin, nargout);
-    byV = res(0).column_vector_value();
+    byV = res(0).complex_column_vector_value();
   }
-  else if(args(4).is_real_scalar()){ //function given as scalar
+  else if(args(4).length()==1){ //function given as scalar
     byV.resize(nGP);
-    byV.fill(args(4).double_value());
-    if (args(4).double_value() !=0){convectionFlag=true;}
+    byV.fill(args(4).complex_value());
+    if (abs(args(4).complex_value()) > 0.0){convectionFlag = true;}
   }
   else {  // function given by its values
-    byV = args(4).column_vector_value();
+    byV = args(4).complex_column_vector_value();
     convectionFlag = true;
   }
 
   //  evaluate function f
-  ColumnVector fV; 
+  ComplexColumnVector fV;
   if (args(5).is_string()) {  // function given as string
     Func = args(5).string_value();
     nargout  = 1;
     argin(0) = GP;
     res = octave::feval (Func, argin, nargout);
-    fV = res(0).column_vector_value();
+    fV = res(0).complex_column_vector_value();
   }
-  else if(args(5).is_real_scalar()){ //function given as scalar
+  else if(args(5).length()==1){ //function given as scalar
     fV.resize(nGP);
-    fV.fill(args(5).double_value());
+    fV.fill(args(5).complex_value());
   }
   else {  // function given by its values
-    fV = args(5).column_vector_value();
+    fV = args(5).complex_column_vector_value();
   }
   
 //  string gDFunc  = args(6).string_value();
   string gDFunc;
-  double gDValue = 0.0;;
+  complex gDValue(0.0,0.0);;
   bool gDscalar  = true;
   if (args(6).is_string()) {  // function given as string
     gDFunc   = args(6).string_value();
     gDscalar = false;
   }
-  else {gDValue = args(6).double_value();}
+  else {gDValue = args(6).complex_value();}
 
 //  string gN1Func  = args(7).string_value();
   string gN1Func;
-  double gN1Value = 0.0;
+  complex gN1Value(0.0,0.0);
   bool gN1scalar  = true;
   if (args(7).is_string()) {  // function given as string
     gN1Func   = args(7).string_value();
     gN1scalar = false;
   }
-  else {gN1Value = args(7).double_value();}
+  else {gN1Value = args(7).complex_value();}
 
 //  string gN2Func  = args(8).string_value();
   string gN2Func;
-  double gN2Value = 0.0;
+  complex gN2Value(0.0,0.0);
   bool gN2scalar  = true;
   if (args(8).is_string()) {  // function given as string
     gN2Func   = args(8).string_value();
     gN2scalar = false;
   }
-  else {gN2Value = args(8).double_value();}
+  else {gN2Value = args(8).complex_value();}
   
   /* END INIT */
   
@@ -265,11 +266,11 @@ return values:\n\
   // interpolation matrix for second and third order elements
   double l1 = (12.0-2.0*sqrt(15.0))/21.0;
   double l2 = (12.0+2.0*sqrt(15.0))/21.0;
-  double w1 = (155.0-sqrt(15.0))/2400.0;
-  double w2 = (155.0+sqrt(15.0))/2400.0;
-  double w3 = 0.1125;
+  complex w1 = (155.0-sqrt(15.0))/2400.0;
+  complex w2 = (155.0+sqrt(15.0))/2400.0;
+  complex w3 = 0.1125;
 
-  ColumnVector w(7);  // weights of Gauss points
+  ComplexColumnVector w(7);  // weights of Gauss points
   w(0) = w1; w(1) = w1; w(2) = w1; w(3) = w2; w(4) = w2; w(5) = w2; w(6) = w3;
   ColumnVector xi(7); // first coordinates of Gauss points
   xi(0)=0.5*l1; xi(1)=1.0-l1; xi(2)=0.5*l1; xi(3)=0.5*l2; xi(4)=1.0-l2; xi(5)=0.5*l2; xi(6)=1.0/3.0;
@@ -278,9 +279,9 @@ return values:\n\
 
   double xit, nut, xinu;
   
-  Matrix M(7,10);   // interpolate values of function 
-  Matrix Mxi(7,10); // interpolate values of partial derivative w.r. to xi
-  Matrix Mnu(7,10); // interpolate values of partial derivative w.r. to nu
+  ComplexMatrix M(7,10);  // interpolate values of function 
+  ComplexMatrix Mxi(7,10);// interpolate values of partial derivative w.r. to xi
+  ComplexMatrix Mnu(7,10);// interpolate values of partial derivative w.r. to nu
   for (int row=0;row<7;row++){
     xit = xi(row); nut = nu(row); xinu = xit+nut;
     M(row,0) = (1.0-xinu)*(1.0-3.0*xinu)*(1.0-1.5*xinu); 
@@ -316,39 +317,39 @@ return values:\n\
     Mnu(row,8) = 4.5*xit*(1.0-3.0*xit);
     Mnu(row,9) = 27.0*xit*(1.0 - xit - 2.0*nut);
   };
-  Matrix Mtrans = M.transpose();
+  ComplexMatrix Mtrans = M.transpose();
 
   // diagonal matrices (some will be overwritten later, but have the same size as diagb, therefore they are initialized as follows)
-  DiagMatrix diagb(7,7);
-  DiagMatrix diagaxx(7,7);
-  DiagMatrix diagayy(7,7);
-  DiagMatrix diagaxy(7,7);
-  DiagMatrix diagb1(7,7);
-  DiagMatrix diagb2(7,7);
+  ComplexDiagMatrix diagb(7,7);
+  ComplexDiagMatrix diagaxx(7,7);
+  ComplexDiagMatrix diagayy(7,7);
+  ComplexDiagMatrix diagaxy(7,7);
+  ComplexDiagMatrix diagb1(7,7);
+  ComplexDiagMatrix diagb2(7,7);
   // weights for edge contribution	
-  ColumnVector wc(3);
+  ComplexColumnVector wc(3);
   wc(0) = 5.0/18.0; wc(1) = 8.0/18.0;  wc(2) = 5.0/18.0;
-  DiagMatrix diagwc(wc);
+  ComplexDiagMatrix diagwc(wc);
 
   // matrices and variables for element stiffness matrix
-  Matrix Ab1(10,10);
-  Matrix Ab2(10,10);
+  ComplexMatrix Ab1(10,10);
+  ComplexMatrix Ab2(10,10);
   Matrix corners(10,2);
   Matrix T(2,2);
   double detT;
-  Matrix elMat (10,10);
-  ColumnVector elVec (10);
-  ColumnVector wvalVec (7);
-  Matrix ttx(7,10);
-  Matrix tty(7,10);
-  Matrix Axx(10,10);
-  Matrix Ayy(10,10);
-  Matrix Axy(10,10);
+  ComplexMatrix elMat (10,10);
+  ComplexColumnVector elVec (10);
+  ComplexColumnVector wvalVec (7);
+  ComplexMatrix ttx(7,10);
+  ComplexMatrix tty(7,10);
+  ComplexMatrix Axx(10,10);
+  ComplexMatrix Ayy(10,10);
+  ComplexMatrix Axy(10,10);
 
-  // for assembling of global stiffnes matrix
-  RowVector tmpCorner(2); // for jus one corner
+  // for assembling of global stiffness matrix
+  RowVector tmpCorner(2); // for just one corner
   ColumnVector dofs(10);  // degrees of freedom in element
-  ColumnVector dofsB(4); // degrees of freedom on edge
+  ColumnVector dofsB(4);  // degrees of freedom on edge
   
   // matrices and variables for edge contribution
   Matrix MB1(4,4);
@@ -366,16 +367,16 @@ return values:\n\
   Matrix MBT(3,4);   MBT = MB.transpose();
   Matrix Ep(4,2);  // for 4 nodes on an edge
   Matrix p(3,2);   // for Gauss points on an edge
-  Matrix EdgeMat(4,4);
-  //  DiagMatrix diagRes2Vec(3,3);
+  ComplexMatrix EdgeMat(4,4);
+  //  ComplexDiagMatrix diagRes2Vec(3,3);
 
   // allocate enough space to create the sparse matrix
   const int MaxContrib = 100*elem.rows() + 16*edges.rows();	
   ColumnVector Si  (MaxContrib);
   ColumnVector Sj  (MaxContrib);
-  ColumnVector Sval(MaxContrib);
+  ComplexColumnVector Sval(MaxContrib);
   
-  ColumnVector gVec(nDOF);
+  ComplexColumnVector gVec(nDOF);
   for(int k1 = 0; k1<nDOF; k1++){ gVec(k1) = 0.0; }
   
   /* START THE WORK */	
@@ -407,10 +408,10 @@ return values:\n\
     corners(9,1) = nodes((int)elem(k,9)-1,1); //y10
 
     // Transformation Matrix - standard triangle to general triangle
-    T(0,0) = corners(1,0)-corners(0,0); //x2-x1
-    T(0,1) = corners(2,0)-corners(0,0); //x3-x1
-    T(1,0) = corners(1,1)-corners(0,1); //y2-y1
-    T(1,1) = corners(2,1)-corners(0,1); //y3-y1
+    T(0,0) = corners(1,0)-corners(0,0); // x2-x1
+    T(0,1) = corners(2,0)-corners(0,0); // x3-x1
+    T(1,0) = corners(1,1)-corners(0,1); // y2-y1
+    T(1,1) = corners(2,1)-corners(0,1); // y3-y1
 
     //detT = 2*area;  // or: (x2-x1)(y3-y1)-(x3-x1)(y2-y1)
     detT = T.determinant();  // has to be positive
@@ -420,7 +421,7 @@ return values:\n\
       diagaxx(gg,gg)  = w(gg)*aV(7*k+gg);
       if (isotropic==1) {
 	diagayy(gg,gg) = diagaxx(gg,gg);
-	diagaxy(gg,gg) = 0.0;}
+	diagaxy(gg,gg) = (0.0,0.0);}
       else {
 	diagayy(gg,gg) = w(gg)*aV(7*k+gg + nGP);
 	diagaxy(gg,gg) = w(gg)*aV(7*k+gg + 2*nGP);
@@ -450,7 +451,7 @@ return values:\n\
       /* integration u*b*nabla*phi */ 
       Ab1 = ((+T(1,1)*Mxi.transpose()-T(1,0)*Mnu.transpose())*diagb1*M);
       Ab2 = ((-T(0,1)*Mxi.transpose()+T(0,0)*Mnu.transpose())*diagb2*M);
-      elMat -= Ab1+Ab2;
+      elMat -= Ab1 + Ab2;
     }
 
     /* ADD ELEMENT TO GLOBAL STIFFNESS MATRIX */
@@ -478,7 +479,7 @@ return values:\n\
 	      argin(0) = tmpCorner;
 	      nargout = 1;
 	      res = octave::feval (gDFunc, argin, nargout);
-	      gVec((int)dofs(k1)-1) += elMat(k1,k2)*res(0).double_value();
+	      gVec((int)dofs(k1)-1) += elMat(k1,k2)*res(0).complex_value();
 	    }
 	  } // endif
 	} // endfor k2
@@ -492,10 +493,10 @@ return values:\n\
   //Matrix Ep(4,2); // coordinates of the nodes on the edge
   double length;
   ColumnVector vec_diff(2);
-  ColumnVector edgeVec(4);
+  ComplexColumnVector edgeVec(4);
   // insert the edge contributions
   // test if there could be any contribution from edges
-  if ((gN1scalar==false)||(gN1Value!=0.0)||(gN2scalar==false)||(gN2Value!=0.0)){
+  if ((gN1scalar==false)||(abs(gN1Value)>0.0)||(gN2scalar==false)||abs(gN2Value)>0.0){
     for(int k=0; k<edges.rows(); k++){ // loop over all edges
       if ((int)edgesT(k)==NEUMANN){  // work with all Neumann edges
 	Ep(0,0) = nodes((int)edges(k,0)-1,0);// the four points on the edge
@@ -517,9 +518,9 @@ return values:\n\
 	p(2,0) =  p(1,0)-vec_diff(0);
 	p(2,1) =  p(1,1)-vec_diff(1);
 
-	ColumnVector g(4) ; // Dirichlet values at the four points
-	ColumnVector res1Vec(4);
-	ColumnVector res2Vec(4);
+	ComplexColumnVector g(4) ; // Dirichlet values at the four points
+	ComplexColumnVector res1Vec(4);
+	ComplexColumnVector res2Vec(4);
 	length = sqrt(20.0/3.0*(vec_diff(0)*vec_diff(0)+vec_diff(1)*vec_diff(1)));
 	// determine the dofs for the four nodes on the boundary
 	dofsB(0) = (int)n2d((int)edges(k,0)-1);
@@ -533,7 +534,7 @@ return values:\n\
 	  argin(0) = Ep;
 	  nargout  = 1;
 	  res      = octave::feval(gDFunc, argin, nargout);
-	  g        = res(0).column_vector_value();
+	  g        = res(0).complex_column_vector_value();
 	}// if (gDscalar)
 
 	// evaluate the values of gN1 at the three Gauss points
@@ -545,10 +546,10 @@ return values:\n\
 	  argin(0) = p;
 	  nargout  = 1;
 	  res      = octave::feval(gN1Func, argin, nargout);
-	  res1Vec  = res(0).column_vector_value();
+	  res1Vec  = res(0).complex_column_vector_value();
 	} // gN1scalar
 	
-	edgeVec = MBT*(diagwc*res1Vec)*length;
+	edgeVec = length*MBT*(diagwc*res1Vec);
 
 	if (dofsB(0)>0) { gVec((int)dofsB(0)-1) -=  edgeVec(0);}
 	if (dofsB(1)>0) { gVec((int)dofsB(1)-1) -=  edgeVec(1);}
@@ -564,10 +565,10 @@ return values:\n\
 	  argin(0) = p;
 	  nargout  = 1;
 	  res      = octave::feval(gN2Func, argin, nargout);
-	  res2Vec  = res(0).column_vector_value();
+	  res2Vec  = res(0).complex_column_vector_value();
 	}// if(gN2scalar)
 	
-	DiagMatrix diagRes2Vec(res2Vec);
+	ComplexDiagMatrix diagRes2Vec(res2Vec);
 	EdgeMat = length*MBT*(diagwc*diagRes2Vec)*MB;
 	
 	for (int k1 = 0;k1<4;k1++){
@@ -588,11 +589,11 @@ return values:\n\
 	}//k1=0
       }// endif ((int)edgesT(k)==NEUMANN){  // work with all Neumann edges
     }//endfor k edges
-  }//endif ((gN1scalar==false)||(gN1Value!=0.0)||(gN2scalar==false)||
+  }//endif ((gN1scalar==false)||(abs(gN1Value)>0)||(gN2scalar==false)||
 
   /* OUTPUT */
   Si.resize(ptrDOF);  Sj.resize(ptrDOF);  Sval.resize(ptrDOF);
-  SparseMatrix sm (Sval,Si,Sj,nDOF,nDOF);
+  SparseComplexMatrix sm (Sval,Si,Sj,nDOF,nDOF);
   //  sm.maybe_compress (true);
   retval(0) = sm;
   retval(1) = gVec;

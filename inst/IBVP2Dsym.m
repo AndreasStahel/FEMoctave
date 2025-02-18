@@ -46,12 +46,21 @@ function [u,t] = IBVP2Dsym(Mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps,varargin)
 ##@*If @var{steps} = n, then n Crank Nicolson steps are taken and the results returned.
 ##@*If @var{steps} = [n,nint], then n*nint Crank Nicolson steps are taken and (n+1) results returned.
 ##@item @var{options} additional options, given as pairs name/value.
-##Currently only the stepping algorithm can be selected as @var{"solver"} and the possible values
+##@itemize
+##@item The stepping algorithm can be selected as @var{"solver"}. The possible values
 ##@itemize
 ##@item @var{"CN"} the standard Crank-Nicolson (default)
 ##@item @var{"implicit"} the standard implicit solver
 ##@item @var{"explicit"} the standard explicit solver
 ##@item @var{"RK"} an L-stable, implicit Runge-Kutta solver
+##@end itemize
+##@item Complex coefficients can be selected by @var{type}.
+##The possible values are
+##@itemize
+##@item @var{"real"}: all coefficients are real (default)
+##@item @var{"complex"}: some coefficients might be complex
+##@end itemize
+## If only the coefficient @var{m} is complex, there is no need to ask for complex coefficients.
 ##@end itemize
 ##@end itemize
 ##

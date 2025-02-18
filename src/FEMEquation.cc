@@ -34,7 +34,7 @@
 
 DEFUN_DLD (FEMEquation, args, ,
    "-*- texinfo -*-\n\
-@deftypefn {} {} [@var{A},@var{b},@var{n2d}] = FEMEquation(@var{mesh},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{gN1},@var{gN2})\n\
+@deftypefn {} {} [@var{A},@var{b}] = FEMEquation(@var{mesh},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{gN1},@var{gN2})\n\
 \n\
 sets up the system of linear equations for a numerical solution of a PDE\n\
 using a triangular mesh with elements of order 1\n\
@@ -60,12 +60,9 @@ with the values of the function at the Gauss points.\n\
 return values:\n\
 @itemize\n\
 @item@var{A}, @var{b}: matrix and vector for the linear system to be solved, @var{A}*u-@var{b}=0\n\
-@item@var{n2d} is a vectors used to match nodes to degrees of freedom\n\
-@* n2d(k)= 0  indicates that node k is a Dirichlet node\n\
-@* n2d(k)=nn indicates that the value of the solution at node k is given by u(nn)\n\
 @end itemize\n\
 @c BEGIN_CUT_TEXINFO\n\
-@seealso{FEMEqiationQuad, BVP2D, BVP2Dsym, BVP2eig, IBVP2D, I2BVP2D, CreateMeshRect, CreateMeshTriangle}\n\
+@seealso{FEMEquationQuad, FEMEquationCubic, FEMEquationComplex, FEMEquationQuadComplex, FEMEquationCubicComplex, BVP2D, BVP2Dsym, BVP2eig, IBVP2D, I2BVP2D, CreateMeshRect, CreateMeshTriangle}\n\
 @c END_CUT_TEXINFO\n\
 @end deftypefn")
 
@@ -207,7 +204,7 @@ return values:\n\
     if (args(4).double_value() !=0){convectionFlag=true;}
   }
   else {  // function given by its values
-    bxV = args(3).column_vector_value();
+    byV = args(4).column_vector_value();
     convectionFlag=true;
   }
 
@@ -312,7 +309,6 @@ return values:\n\
 	bMat(ii,jj) = M1(ii,jj)*bV(k3+ii)*area/3.0;
       }
     }
-  
 
     if (isotropic ==1){
       // factor* M'*M
@@ -352,7 +348,6 @@ return values:\n\
 
       elMat -= SignArea*convMat*M1;
     }
-
     // now element matrix and vector are generated
     // insert elements in  global matrix and vector
     dofs(0) = (int)n2d((int)elem(k,0)-1);
@@ -390,6 +385,7 @@ return values:\n\
   } //endfor k (elements)
   
   // insert the edge contributions
+  // test if there could be any contribution from edges
   if ((gN1scalar==false)||(gN1Value!=0.0)||(gN2scalar==false)||(gN2Value!=0.0)){
     double factp = (1.0+1.0/sqrt(3.0))/2.0;
     double factn = (1.0-1.0/sqrt(3.0))/2.0;

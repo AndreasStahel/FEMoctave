@@ -1,4 +1,4 @@
-## Copyright (C) 2020 Andreas Stahel
+## Copyright (C) 2020-2025 Andreas Stahel
 ## 
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -16,10 +16,10 @@
 
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2020-03-30
+## Created: 2025-01-08
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}[@var{Eval},@var{Evec},@var{errorbound}] = BVP2Deig(@var{Mesh},@var{a},@var{b0},@var{w},@var{gN2},@var{nVec},@var{tol})
+## @deftypefn{function file}{}[@var{Eval},@var{Evec},@var{errorbound}] = BVP2Deig(@var{Mesh},@var{a},@var{b0},@var{w},@var{gN2},@var{nVec},@var{tol},@var{options})
 ##
 ##determine the smallest eigenvalues @var{Eval} and eigenfunctions @var{Evec} for the BVP
 ##
@@ -42,7 +42,15 @@
 ## It can be given as row vector or as string with the function name or
 ## as nx3 matrix with the values at the Gauss points.
 ##@item@var{nVec} number of smallest eigenvalues to be computed
-##@item@var{tol} optional tolerance for the eigenvalue iteration, default 1e-5
+##@item @var{options} additional options, given as pairs name/value.
+##@itemize
+##@item@var{tol} tolerance for the eigenvalue iteration, default 1e-5
+##@item@var{"TYPE"} select real or complex coefficients
+##@itemize
+##@item @var{"real"}: all coefficients are real (default)
+##@item @var{"complex"}: some coefficients might be complex
+##@end itemize
+##@end itemize
 ##@end itemize
 ##
 ##return values:
@@ -60,8 +68,8 @@
 ## @c END_CUT_TEXINFO
 ## @end deftypefn
 
-function [la,resVec,errorbound] = BVP2Deig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,tol)
-%  [la,ev] = BVP2Deig(Mesh,a,b0,w,gN2,nVec,tol)
+function [la,resVec,errorbound] = BVP2Deig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,varargin)
+%  [la,ev] = BVP2Deig(Mesh,a,b0,w,gN2,nVec,options)
 %
 %  determine the smallest eigenvalues la and eigenfunctions ev for the BVP
 %
@@ -69,39 +77,109 @@ function [la,resVec,errorbound] = BVP2Deig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,t
 %                      u = 0       on Dirichlet boundary
 %           n*(a*grad u) = gN2*u   on Neumann boundary
 %
-%  la      = FEMEig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,tol)
-%  [la,ev] = FEMEig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,tol)
+%  la      = FEMEig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,tol,options)
+%  [la,ev] = FEMEig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,tol,options)
 %
 % nodes elem, edges contains information about the mesh
 %         see ReadMesh() for the description of the format
 % a, b0, w, gN2 are function files for the coefficient functions
 %         may also be given as vectors or scalar values
 % nVec    is the number of eigenvalues to be computed
-% tol     is the tolerance for error of the eigenvalues
+% tol    
 %         if not given tol = 1e-5 is used as default
+% options additional options, given as pairs name/value.
+%    * TOL  tolerance for error of the eigenvalues, default 1e-5
+%    * TYPE select real or complex coefficients
+%      * "REAL": all coefficients are real (default)
+%      * "COMPLEX": some coefficients might be complex
 %
 % la  is the vector containing the eigenvalues
 % ev  is the matrix with the eigenvectors as columns
 %
 %see also ????
 
-if ((nargin<6)|(nargin>7)) 
+if ((nargin<6))
   help("BVP2Deig");
   print_usage()
 endif
 
-if (nargin==6) tol = 1e-5;endif
+Type = 'REAL'; %% default value
+tol  = 1e-5  ; %% default value
+if (~isempty(varargin))
+  for cc = 1:2:length(varargin)
+    switch toupper(varargin{cc})
+      case {'TYPE'}
+	Type = toupper(varargin{cc+1});
+      case {'TOL'}
+	tol = varargin{cc+1};
+      otherwise
+	error('Invalid optional argument, %s. Possible values: TOL, TYPE',varargin{cc});
+    endswitch % switch
+  endfor % for
+endif % if isempty
+
+if ((strcmp(Type,'REAL')==0)&&(strcmp(Type,'COMPLEX')==0))
+  error('wrong TYPE, possible values are REAL or COMPLEX')
+endif
 
 switch Mesh.type
   case 'linear'  %% first order elements
-    [aMat,~] = FEMEquation(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
-    [wMat,~] = FEMEquation(Mesh,0    ,wFunc,0,0,0,0,0,0);
+    switch Type
+     case 'REAL'
+       if exist("FEMEquation.oct")==3
+	 [aMat,~] = FEMEquation(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquation(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       else
+	 [aMat,~] = FEMEquationM(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquationM(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       endif
+     case 'COMPLEX'
+       if exist("FEMEquationComplex.oct")==3
+	 [aMat,~] = FEMEquationComplex(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquationComplex(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       else
+	 [aMat,~] = FEMEquationM(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquationM(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       endif
+    endswitch
   case 'quadratic' %% second order elements
-    [aMat,~] = FEMEquationQuad(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
-    [wMat,~] = FEMEquationQuad(Mesh,0    ,wFunc,0,0,0,0,0,0);
+    switch Type
+     case 'REAL'
+       if exist("FEMEquationQuad.oct")==3
+	 [aMat,~] = FEMEquationQuad(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquationQuad(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       else
+	 [aMat,~] = FEMEquationQuadM(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquationQuadM(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       endif
+     case 'COMPLEX'
+       if exist("FEMEquationQuadComplex.oct")==3
+	 [aMat,~] = FEMEquationQuadComplex(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquationQuadComplex(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       else
+	 [aMat,~] = FEMEquationQuadM(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquationQuadM(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       endif
+    endswitch
   case 'cubic' %% third order elements
-    [aMat,~] = FEMEquationCubic(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
-    [wMat,~] = FEMEquationCubic(Mesh,0    ,wFunc,0,0,0,0,0,0);
+    switch Type
+     case 'REAL'
+       if exist("FEMEquationCubic.oct")==3
+	 [aMat,~] = FEMEquationCubic(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquationCubic(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       else
+	 [aMat,~] = FEMEquationCubicM(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquationCubicM(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       endif
+     case 'COMPLEX'
+       if exist("FEMEquationCubicComplex.oct")==3
+	 [aMat,~] = FEMEquationCubicComplex(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquationCubicComplex(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       else
+	 [aMat,~] = FEMEquationCubicM(Mesh,aFunc,bFunc,0,0,0,0,0,gN2Func);
+	 [wMat,~] = FEMEquationCubicM(Mesh,0    ,wFunc,0,0,0,0,0,0);
+       endif
+    endswitch
 endswitch
 
 if (nargout==1)

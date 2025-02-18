@@ -6,16 +6,12 @@ function u = FEMSolve(FEMmesh,A,b,gD)
 %
 % nodes contains information about the mesh
 %         see ReadMesh() for the description of the format
-% A   is the matrix of the system to be solved.
-%     It is stored as a full matrix
-% b   is the RHS of the system to be solved.
-% n2d is the renumbering of the nodes to the DOF of the system
-%     n2d(k)=0  indicates that node k is a Dirichlet node
-%     n2d(k)=nn indicates that the value of the solution at node k 
-%               is given by u(nn)
+% A    is the matrix of the system to be solved.
+%      It is stored as a full matrix
+% b    is the RHS of the system to be solved.
 % 'gD' is the function describing the Dirichlet boundary condition
 %
-% u   is the vector with the values of the solution
+% u    is the vector with the values of the solution
 %
 %see also ReadMesh, ShowMesh, FEMEquation, ShowSolution, FEMValue
 
@@ -25,11 +21,7 @@ if (nargin!=4)
 endif
 
 %% solve the system of linear equations
-  ug = -A\b;
-  %% test the the LU factors
-  %% [L,U,P,Q] = lu(A);  %% P*A*Q = L*U
-  %% ug2 = -Q*(U\(L\(P*b)));  
-  %% difference = norm(ug-ug2)
+ug = -A\b;
 n  = size(FEMmesh.node2DOF,1);
 u  = zeros(n,1);
 

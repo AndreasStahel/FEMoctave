@@ -22,7 +22,7 @@ function [u,t] = I2BVP2D(Mesh,m,d,a,b0,bx,by,f,gD,gN1,gN2,u0,v0,t0,tend,steps,va
 ## -*- texinfo -*-
 ## @deftypefn{function file}{}[@var{u},@var{t}] = I2BVP2D(@var{Mesh},@var{m},@var{d},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{gN1},@var{gN2},@var{u0},@var{v0},@var{t0},@var{tend},@var{steps},@var{options})
 ##
-##   Solve an initial boundary value problem
+##   Solve a second order initial boundary value problem
 ##
 ##@verbatim
 ## m*d^2/dt^2 u + 2*d*d/dt u - div(a*grad u-u*(bx,by)) + b0*u = f  in domain
@@ -48,10 +48,19 @@ function [u,t] = I2BVP2D(Mesh,m,d,a,b0,bx,by,f,gD,gN1,gN2,u0,v0,t0,tend,steps,va
 ##@item If @var{steps} = [n,nint], then n*nint steps are taken and (n+1) results returned.
 ##@end itemize
 ##@item @var{options} additional options, given as pairs name/value.
-##Currently only the stepping algorithm can be selected as @var{"solver"} and the possible values
+##@itemize
+##@item The stepping algorithm can be selected as @var{"solver"}. The possible values
 ##@itemize
 ##@item @var{"implicit"} the standard implicit solver (default)
 ##@item @var{"explicit"} the standard explicit solver
+##@end itemize
+##@item Complex coefficients can be selected by @var{type}.
+##The possible values are
+##@itemize
+##@item @var{"real"}: all coefficients are real (default)
+##@item @var{"complex"}: some coefficients might be complex
+##@end itemize
+## If only the coefficients @var{m} and @var{d} are complex, there is no need to ask for complex coefficients.
 ##@end itemize
 ##@end itemize
 ##
@@ -70,30 +79,76 @@ function [u,t] = I2BVP2D(Mesh,m,d,a,b0,bx,by,f,gD,gN1,gN2,u0,v0,t0,tend,steps,va
 ## @end deftypefn
 
 solver = 'IMPLICIT';  %% default value is IMPLICIT
-
+Type   = 'REAL';      %% default value for TYPE
 if (~isempty(varargin))
   for cc = 1:2:length(varargin)
-    switch tolower(varargin{cc})
-      case {'solver'}
+    switch toupper(varargin{cc})
+      case {'TYPE'}
+	Type = toupper(varargin{cc+1});
+      case {'SOLVER'}
 	solver = toupper(varargin{cc+1});
       otherwise
-	error('Invalid optional argument, %s',varargin{cc}.name);
+	error('Invalid optional argument, %s. Possible values: SOLVER, TYPE',varargin{cc});
     endswitch % switch
   endfor % for
-endif % if
+endif % if isempty
+
+if ((strcmp(Type,'REAL')==0)&&(strcmp(Type,'COMPLEX')==0))
+  error('wrong TYPE, possible values are REAL or COMPLEX')
+endif
 
 if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
 else
-  u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,0);  %% solve BVP
+  u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,0,'type',TYPE);  %% solve BVP
 endif
+
 switch Mesh.type
-case 'linear'
-  A   = FEMEquation(Mesh,a,b0,bx,by,0, 0, 0,gN2);  %% compute with compiled code
-case 'quadratic'
-  A   = FEMEquationQuad(Mesh,a,b0,bx,by,0, 0, 0,gN2);
-case 'cubic'
-  A   = FEMEquationCubic(Mesh,a,b0,bx,by,0, 0, 0,gN2);
+  case 'linear'    %% linear elements
+  switch Type
+    case 'REAL'
+      if exist("FEMEquation.oct")==3
+	A = FEMEquation(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+    case 'COMPLEX'
+      if exist("FEMEquationComplex.oct")==3
+	A = FEMEquationComplex(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+  endswitch
+case 'quadratic' %% quadratic elements
+  switch Type
+    case 'REAL'
+      if exist("FEMEquationQuad.oct")==3
+	A = FEMEquationQuad(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationQuadM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+    case 'COMPLEX'
+      if exist("FEMEquationQuadComplex.oct")==3
+	A = FEMEquationQuadComplex(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationQuadM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+  endswitch
+case 'cubic'     %% cubic elements
+  switch Type
+    case 'REAL'
+      if exist("FEMEquationCubic.oct")==3
+	A = FEMEquationCubic(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationCubicM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+    case 'COMPLEX'
+      if exist("FEMEquationCubicComplex.oct")==3
+	A = FEMEquationCubicComplex(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      else
+	A = FEMEquationCubicM(Mesh,a,b0,bx,by,0, 0, 0,gN2);;
+      endif
+  endswitch
 endswitch
 
 Wf  = FEMInterpolWeight(Mesh,1);  %% weight matrix, leading to W*f
