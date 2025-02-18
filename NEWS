@@ -1,15 +1,39 @@
 TODO for next release:
 * ???
 
+FEMoctave 2.1.6, 20.02.2025
+---------------------------
+* equations with complex coefficients can be solved
+* new Schroedinger examples
+* scattering examples
+
+New Files
+- src/FEMEquation.cc FEMEquationComplex.cc
+      FEMEquationQuad.cc FEMEquationQuadComplex.cc
+      FEMEquationCubic.cc FEMEquationCubicComplex.cc
+      Makefile
+- inst/BVP1DNL.m
+       BVP2D.m
+       BVP2Deig.m
+- doc/Demos/AdditionalConstraintHeat.m
+            AdditionalConstraintPlate.m
+	    EigenvaluesComplex.m
+- doc/Examples/Schroedinger/HydrogenEigen.m
+                            HydrogenCylinder.m
+			    SchroedingerHarmonic.m
+			    SphericalHarmonics.m
+- doc/Examples/Scattering/Scattering.m
+                          ScatteringNoHole.m
+
 FEMoctave 2.1.5, 15.05.2024
--------------------------------
+---------------------------
 * MeshAddConstraint.m is added to apply additional constraints
 * dummy texinfo strings added to most of the demo files and examples
   should get rid of many warnings during installation
 * the documentation in FEMdoc.pdf is updated
 
 FEMoctave 2.1.4, 28.11.2023
--------------------------------
+---------------------------
 * solver for nonlinear initial boundary value problem in one dimension added
 * dynamic elasticity solvers added
 * eigenvalue solvers added for elasticity

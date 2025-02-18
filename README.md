@@ -24,13 +24,15 @@ In August 2023 the algorithm for nonlinear, static 1D problems is improved and m
 
 In October 2023 elementary Hertz contact problems provided
 
+In February 2025 equations with complex coefficients can be solved
+
 ## 2. PURPOSE
 The main goal is to provide a tool using Octave only to teach the method of finite elements, short FEM.
 The mathematics of the algorithms are spelled out and implemented in Octave
 
 ## 3. INSTALLATION INSTRUCTIONS
 To use all features of FEMoctave you have to install triangle.
-Find instructions on how to install on a Linux system in FEMdoc.pdf.
+Find instructions on how to intstall on a Linux system in FEMdoc.pdf.
 Find the source code of Triangle and instructions at
 https://www.cs.cmu.edu/~quake/triangle.html
 

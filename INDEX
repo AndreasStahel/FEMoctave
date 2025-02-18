@@ -28,7 +28,6 @@ Manipulating meshes
   MeshQuad2Linear.m
   MeshCubic2Linear.m
   Delaunay2Mesh.m
-  MeshAddConstraint.m
   FEMtrimesh.m
   FEMtrisurf.m
   FEMtricontour.m
@@ -51,6 +50,12 @@ Evaluation of elasticity
   EvaluateEnergyDensity.m
   EvaluateEnergyDensityAxi.m
 Creating equations
+  FEMEquation.cc	 
+  FEMEquationQuad.cc	 
+  FEMEquationCubic.cc	 
+  FEMEquationComplex.cc	 
+  FEMEquationQuadComplex.cc	 
+  FEMEquationCubicComplex.cc	 
   FEMEquationM.m
   FEMEquationQuadM.m
   FEMEquationCubicM.m
@@ -117,6 +122,10 @@ Example m-files
   MovingString.m
   Reflection.m
   SchroedingerHarmonic.m
+  SchroedingerBouncingBall.m
+  SphericalHarmonics.m
+  HydrogenCylinder.m
+  HydrogenEigen.m
   BeamStretch.m
   BendingBeam1D.m
   Keller.m
@@ -132,3 +141,6 @@ Example m-files
   HertzSphereDirect.m
   RingVibration.m
   TuningFork.m
+  Scattering.m
+  ScatteringNoHole.m
+  EigenvaluesComplex.m
