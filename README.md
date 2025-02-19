@@ -24,7 +24,7 @@ In August 2023 the algorithm for nonlinear, static 1D problems is improved and m
 
 In October 2023 elementary Hertz contact problems provided
 
-In February 2025 equations with complex coefficients can be solved
+In February 2025 equations with non isotropic or with complex coefficients can be solved
 
 ## 2. PURPOSE
 The main goal is to provide a tool using Octave only to teach the method of finite elements, short FEM.
@@ -43,7 +43,7 @@ In section 3 of FEMdoc.pdf short demos are shown, one of each type.
 The subdirectory doc/Demos contains the codes.
 
 In section 9 of FEMdoc.pdf many examples are given.
-The subdirectory doc/Examples contains the codes.
+The subdirectories doc/Examples contain the codes.
 
 With best regards
 

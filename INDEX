@@ -144,3 +144,4 @@ Example m-files
   Scattering.m
   ScatteringNoHole.m
   EigenvaluesComplex.m
+  Brachistochrone.m

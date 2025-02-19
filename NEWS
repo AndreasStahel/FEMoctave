@@ -3,9 +3,11 @@ TODO for next release:
 
 FEMoctave 2.1.6, 20.02.2025
 ---------------------------
+* non isotropic situations can be examined
 * equations with complex coefficients can be solved
 * new Schroedinger examples
 * scattering examples
+* brachistochrone example
 
 New Files
 - src/FEMEquation.cc FEMEquationComplex.cc
@@ -24,6 +26,7 @@ New Files
 			    SphericalHarmonics.m
 - doc/Examples/Scattering/Scattering.m
                           ScatteringNoHole.m
+- doc/Examples/Brachistochrone/Brachistochrone.m
 
 FEMoctave 2.1.5, 15.05.2024
 ---------------------------
