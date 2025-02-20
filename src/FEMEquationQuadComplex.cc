@@ -16,7 +16,7 @@
 
 
 // Author: Andreas Stahel <andreas.stahel@gmx.com>
-// Created: 2020-03-30
+// Created: 2025-02-20
 
 #include <iostream>
 #include <fstream>
@@ -245,7 +245,7 @@ if (args(5).is_string()) {  // function given as string
  
 //  string gDFunc  = args(6).string_value();
 string gDFunc;
-complex gDValue(0.0,0.0);;
+Complex gDValue(0.0,0.0);;
 bool gDscalar  = true;
 if (args(6).is_string()) {  // function given as string
   gDFunc   = args(6).string_value();
@@ -257,7 +257,7 @@ if (args(6).is_string()) {  // function given as string
 
 //  string gN1Func  = args(7).string_value();
 string gN1Func;
-complex gN1Value(0.0,0.0);
+Complex gN1Value(0.0,0.0);
 bool gN1scalar  = true;
 if (args(7).is_string()) {  // function given as string
   gN1Func   = args(7).string_value();
@@ -267,7 +267,7 @@ if (args(7).is_string()) {  // function given as string
 
 //  string gN2Func  = args(8).string_value();
 string gN2Func;
-complex gN2Value(0.0,0.0);
+Complex gN2Value(0.0,0.0);
 bool gN2scalar  = true;
 if (args(8).is_string()) {  // function given as string
   gN2Func   = args(8).string_value();
@@ -283,9 +283,9 @@ int ptrDOF = 0;
 // interpolation matrix for second order elements
 double l1  = (12.0-2.0*sqrt(15.0))/21.0;
 double l2  = (12.0+2.0*sqrt(15.0))/21.0;
-complex w1 = (155.0-sqrt(15.0))/2400.0;
-complex w2 = (155.0+sqrt(15.0))/2400.0;
-complex w3 = 0.1125;
+Complex w1 = (155.0-sqrt(15.0))/2400.0;
+Complex w2 = (155.0+sqrt(15.0))/2400.0;
+Complex w3 = 0.1125;
 
 ComplexColumnVector w(7);  // weights of Gauss points
 w(0)=w1; w(1)=w1; w(2)=w1; w(3)=w2; w(4)=w2; w(5)=w2; w(6)=w3;
@@ -491,9 +491,9 @@ for(int k=0;k<elemTot;k++){
 
 /*
 // test for complex comparison
- complex c00(0.0,0.0);
- complex c01(0.0,1.5);
- complex c10(1.5,0.0);
+ Complex c00(0.0,0.0);
+ Complex c01(0.0,1.5);
+ Complex c10(1.5,0.0);
  cout<<"c00 = "<<c00<<", c01 = "<<c01<<", c10 = "<<c10<<"\n";
  cout<<"abs(c00) = "<<abs(c00)<<", abs(c01) = "<<abs(c01)<<", abs(c10) = "<<abs(c10)<<"\n";  
  if (c00!=0.0){cout<<"c00!=0.0\n";};

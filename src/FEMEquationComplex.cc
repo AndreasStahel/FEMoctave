@@ -16,7 +16,7 @@
 
 
 // Author: Andreas Stahel <andreas.stahel@gmx.com>
-// Created: 2020-03-30
+// Created: 2025-02-20
 
 #include <iostream>
 #include <fstream>
@@ -234,7 +234,7 @@ if (args(5).is_string()) {  // function given as string
  
 //  string gDFunc  = args(6).string_value();
 string gDFunc;
-complex gDValue(0.0,0.0);;
+Complex gDValue(0.0,0.0);;
 bool gDscalar  = true;
 if (args(6).is_string()) {  // function given as string
   gDFunc   = args(6).string_value();
@@ -245,7 +245,7 @@ if (args(6).is_string()) {  // function given as string
 
 //  string gN1Func  = args(7).string_value();
 string gN1Func;
-complex gN1Value(0.0,0.0);
+Complex gN1Value(0.0,0.0);
 bool gN1scalar  = true;
 if (args(7).is_string()) {  // function given as string
   gN1Func   = args(7).string_value();
@@ -255,7 +255,7 @@ if (args(7).is_string()) {  // function given as string
 
 //  string gN2Func  = args(8).string_value();
 string gN2Func;
-complex gN2Value(0.0,0.0);
+Complex gN2Value(0.0,0.0);
 bool gN2scalar  = true;
 if (args(8).is_string()) {  // function given as string
   gN2Func   = args(8).string_value();
