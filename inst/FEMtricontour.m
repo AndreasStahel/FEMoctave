@@ -53,7 +53,7 @@ function FEMtricontour (mesh,u,v)
     endif
     else
       if sum((v>min(u)).*(v<max(u)))==0
-	DrawContour = 0;
+	        DrawContour = 0;
       endif
     endif
 
@@ -62,20 +62,20 @@ function FEMtricontour (mesh,u,v)
       case 'linear'  % linear elements
 	triN = tri;
       case 'quadratic'  % quadratic elements
-	triN = [tri(:,1),tri(:,6),tri(:,5);
-		tri(:,6),tri(:,2),tri(:,4);
-		tri(:,5),tri(:,4),tri(:,3);
-		tri(:,4),tri(:,5),tri(:,6)];
+	 triN = [tri(:,1),tri(:,6),tri(:,5);
+		        tri(:,6),tri(:,2),tri(:,4);
+		        tri(:,5),tri(:,4),tri(:,3);
+		        tri(:,4),tri(:,5),tri(:,6)];
       case 'cubic'  %% cubic elements
 	triN = [tri(:,1), tri(:,8), tri(:,7);
-		tri(:,8), tri(:,10),tri(:,7);
-		tri(:,8), tri(:,9), tri(:,10);
-		tri(:,9), tri(:,4), tri(:,10);
-		tri(:,9), tri(:,2), tri(:,4);
-		tri(:,7), tri(:,10),tri(:,6);
-		tri(:,10),tri(:,5), tri(:,6);
-		tri(:,10),tri(:,4), tri(:,5);
-		tri(:,6), tri(:,5), tri(:,3)];
+		       tri(:,8), tri(:,10),tri(:,7);
+		       tri(:,8), tri(:,9), tri(:,10);
+		       tri(:,9), tri(:,4), tri(:,10);
+		       tri(:,9), tri(:,2), tri(:,4);
+		       tri(:,7), tri(:,10),tri(:,6);
+		       tri(:,10),tri(:,5), tri(:,6);
+		       tri(:,10),tri(:,4), tri(:,5);
+		       tri(:,6), tri(:,5), tri(:,3)];
     endswitch
 
     if nargin == 2
