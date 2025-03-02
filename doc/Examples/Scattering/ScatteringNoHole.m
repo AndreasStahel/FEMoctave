@@ -1,4 +1,5 @@
-clear *
+%% a second scattering example
+
 global k len a
 k = 2*pi; d = 0.5; len = 4; a = d/3;
 xy = [len d/2 -2; len -d/2 -2; -len -d/2 -2; -len d/2 -2];

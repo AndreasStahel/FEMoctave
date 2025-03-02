@@ -1,3 +1,4 @@
+%% evaluate energies for the hydrogen atom in cylindrical coordinates
 global R
 R = 35; N = 50; alpha = linspace(-pi/2,pi/2,N)';
 Rshow = 15;

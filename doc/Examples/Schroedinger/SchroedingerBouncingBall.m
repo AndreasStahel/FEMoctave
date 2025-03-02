@@ -1,4 +1,4 @@
-pkg load femoctave
+%% solve the dynamic Schroedinger equation for a bouncing ball
 Lm = -10; Lp = +10; BCleft = 0; BCright = 0; w = 1; a = 1; b = 0; d = 1; f = 0;
 V0 = 21; Width = 1 ; speed = -4;
 c = @(x) 15*x;

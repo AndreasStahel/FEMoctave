@@ -1,3 +1,4 @@
+%% a scattering example
 global k len
 k = 2*pi; d = 0.5; len = 3; a = d/10;
 xy = [len d/2 -2; len -d/2 -2; -len -d/2 -2; -len d/2 -2];

@@ -1,3 +1,4 @@
+%% find a few brachistochrone curves
 L = 10; u_left = 0; u_right = 1; Interval = linspace(0,L,51);
 
 v0 = 2.0;

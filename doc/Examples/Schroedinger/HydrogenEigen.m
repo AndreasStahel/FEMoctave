@@ -1,3 +1,4 @@
+%% find eigenvalues of the hydrogen atom
 n = 6; %% number of eigenvalues
 
 L = 200;
