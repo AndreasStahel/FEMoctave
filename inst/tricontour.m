@@ -39,6 +39,11 @@ function h = tricontour (tri, x, y, z, levels, varargin)
     print_usage ();
   endif
 
+  HoldStatus = ishold();
+  if HoldStatus==0;
+    clf
+  endif
+
   if isscalar(levels);
     dom = [min(z),max(z)];
     dom = mean(dom)+0.999*(dom-mean(dom));
@@ -94,7 +99,8 @@ function h = tricontour (tri, x, y, z, levels, varargin)
   else
     h = patch('XData',pData(:,1),'YData',pData(:,2),'CData',cData,'EdgeColor','flat',varargin{:});
   endif
-  
+
+  hold = HoldStatus;
   
 %!demo
 %! rand ('state', 2)
