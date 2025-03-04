@@ -7,5 +7,5 @@ figure(1); plot(r,u); xlabel( 'radius r'); ylabel('velocity u')
 u_exact = G/(4*mu)*((R1^2-r.^2)+(R2^2-R1^2)*ln(r/R1)/ln(R2/R1));
 figure(2); plot(r,u-u_exact); xlabel( 'radius r'); ylabel('u-u_{exact}')
 
-Flow = trapz(r,2*pi*r.*u)
+Flow = FEM1DIntegrate(r,2*pi*r.*u)
 
