@@ -1,3 +1,4 @@
+%% Poisseuille flow in an annulus, 2D solution
 G = 1; mu = 1; R1 = 1; R2 = 2;
 angles = linspace(0,2*pi,201)'; angles = angles(1:end-1);
 xy = [R2*cos(angles),R2*sin(angles),-ones(size(angles))];

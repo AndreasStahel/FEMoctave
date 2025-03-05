@@ -1,3 +1,4 @@
+%% Poisseuille flow in an annulus
 G = 1; mu = 1; R1 = 1; R2 = 2;
 Interval = linspace(R1,R2,21)';
 [r,u] = BVP1D(Interval,@(r)r,0,0,1,@(r)G/mu*r,0,0);
