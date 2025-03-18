@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HydrogenCylindrical.m
+##
+## This is a demo file inside the `doc/Examples/Schroedinger/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% evaluate energies for the hydrogen atom in cylindrical coordinates
 global R
 R = 35; N = 50; alpha = linspace(-pi/2,pi/2,N)';

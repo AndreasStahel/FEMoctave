@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Scattering.m
+##
+## This is a demo file inside the `doc/Examples/Scattering/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% a scattering example
 global k len
 k = 2*pi; d = 0.5; len = 3; a = d/10;

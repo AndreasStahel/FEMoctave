@@ -1,5 +1,5 @@
 ## -*- texinfo -*-
-## @deftypefn  {} {} WaveAnimation.m
+## @deftypefn  {} {} HydrogenWaveAnimation.m
 ##
 ## This is a demo file inside the `doc/Examples/WaveAnimation/` directory@*
 ## Find the description in the documentation FEMdoc.pdf

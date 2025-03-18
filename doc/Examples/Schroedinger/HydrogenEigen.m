@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HydrogenEigen.m
+##
+## This is a demo file inside the `doc/Examples/Schroedinger/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% find eigenvalues of the hydrogen atom
 n = 6; %% number of eigenvalues
 

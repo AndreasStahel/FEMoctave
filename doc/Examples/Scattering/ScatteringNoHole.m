@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} ScatteringNoHole.m
+##
+## This is a demo file inside the `doc/Examples/Scattering/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% a second scattering example
 
 global k len a

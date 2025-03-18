@@ -1,3 +1,10 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HertzSphere.m
+##
+## This is a demo file inside the `doc/Examples/HertzContact/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
 PHASE = 1  %% 1: setup and computation
            %% 2: visualization of the result
            %% 3: parametric study for small and large penetration depth D

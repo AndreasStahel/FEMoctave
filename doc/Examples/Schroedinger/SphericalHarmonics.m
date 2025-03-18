@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} SphericalHarmonics.m
+##
+## This is a demo file inside the `doc/Examples/Schroedinger/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% find the spherical harmonics as eigenvalues
 Nphi = 50; Ntheta = 50;
 phi = linspace(0,2*pi,Nphi)'; theta = linspace(0,pi,Ntheta)';
