@@ -162,7 +162,7 @@ else  %% f is a function handle or cell array of function handles
       f_values = f(x);
     endif %% iscell(f)
   else
-    f_NL = 1;  %% f(x,u) of f(x,u,u')
+    f_NL = 1;  %% f(x,u) or f(x,u,u')
     if nargin(f{1})==2
       f_values = f{1}(x,u_values);
     else
