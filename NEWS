@@ -1,6 +1,15 @@
 TODO for next release:
 * ???
 
+FEMoctave 2.1.8, 22.03.2025
+---------------------------
+* a few doc strings modified
+
+New Files
+- inst/FEM1DIntegrate.m
+       FEMtricontour.m
+       tricontour.m
+
 FEMoctave 2.1.7, 20.02.2025
 ---------------------------
 * patched some C++ code, i.e. data type  "Complex" instead of "complex"

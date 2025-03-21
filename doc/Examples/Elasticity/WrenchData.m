@@ -5,7 +5,7 @@
 ## Find the description in the documentation FEMdoc.pdf
 ##
 ## @end deftypefn
-# Created by Octave 7.3.0, Mon Dec 05 12:29:55 2022 CET <sha1@karman>
+
 # name: x
 # type: matrix
 # rows: 30
