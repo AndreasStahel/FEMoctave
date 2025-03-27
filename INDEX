@@ -35,6 +35,7 @@ Manipulating meshes
   FEMEvaluateGP.m
   FEMgriddata.m
   FEMIntgerate.m
+  FEM1DIntgerate.m
   tricontour.m
 Evaluation of elasticity
   EvaluateStress.m
