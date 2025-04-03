@@ -1,7 +1,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {} {} Liouville.m
 ##
-## This is a demo file inside the `doc/Demos/` directory@*
+## This is a example file inside the `doc/Examples/Nonlinear2D/` directory@*
 ## Find the description in the documentation FEMdoc.pdf
 ##
 ## @end deftypefn
