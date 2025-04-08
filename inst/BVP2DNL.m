@@ -18,7 +18,7 @@
 ## Created: 2023-08-21
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}[@var{u},@var{inform}] = BVP2DNL(@var{mesh},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{GN1},@var{gN2},@var{options})
+## @deftypefn{function file}{}[@var{u},@var{inform}] = BVP2DNL(@var{mesh},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{GN1},@var{gN2},@var{u0},@var{options})
 ##
 ##   solve a semilinear 2D boundary value problem
 ##
@@ -190,7 +190,7 @@ do   %% until error small enough, or inform.iter > MaxIter
 %    disp(sprintf('iteration %i, RMS(correction) = %e, RMS(phi) = %e',inform.iter,AbsError/sqrt_n,norm(phi)/sqrt_n))
     disp(sprintf('iteration %i, RMS(correction) = %e',inform.iter,AbsError/sqrt_n))
   endif  %% strcmp
- 
+
 until or(inform.iter>=MaxIter,AbsError/sqrt_n<tol(2),AbsError<tol(1)*norm(u_values))
 endif %%nargin(f{1})>1
 
@@ -198,7 +198,7 @@ u = u_values;  %% assign the return value u
 
 inform.AbsError = AbsError/sqrt_n;
 if (inform.iter >= MaxIter)
-  disp('BVP1DNL did not converge')
+  disp('BVP2DNL did not converge')
   inform.info = -1;
 endif
 endfunction
