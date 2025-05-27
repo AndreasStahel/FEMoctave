@@ -36,7 +36,7 @@
 ##@item @var{a} constant, vector or function handle to evaluate a(x)
 ##@item @var{b} constant, vector or function handle to evaluate b(x)
 ##@item @var{c} constant, vector or function handle to evaluate c(x)
-##@item @var{w} constant, vector or function handle to evaluate d(x)
+##@item @var{w} constant, vector or function handle to evaluate w(x)
 ##@item @var{BCleft} and @var{BCright} the two boundary conditions
 ##@itemize
 ##@item for a Dirichlet condition specify a single value @var{g_D=0}
