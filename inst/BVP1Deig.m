@@ -96,7 +96,6 @@ elseif (length(BCleft)==1)&&(length(BCright)>1) %% DN: Dirichlet on the left, Ne
   eVec = [zeros(1,nVec);eVec];
 else  %% NN: Neumann on both endpoints
   A(1,1) += BCleft(2); A(end,end) -= BCright(2);
-  pi
   if (nargout>=3)
     if (nargout==4)
       [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol);
