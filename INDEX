@@ -103,6 +103,8 @@ Example m-files
   SingularDisc.m
   PotentialFlow.m
   PotentialFlowCircular.m
+  PotentialFlowPolar.m
+  PotentialFlowCartesian.m
   Capacitance.m
   capacitance.poly capacitance.1.ele  capacitance.1.node  capacitance.1.poly  
   MinimalSurface.m
@@ -146,3 +148,7 @@ Example m-files
   ScatteringNoHole.m
   EigenvaluesComplex.m
   Brachistochrone.m
+  Liouville.m
+  Bratu.m
+  Bratu2D.m
+  BratuParametric.m

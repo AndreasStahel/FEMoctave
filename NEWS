@@ -1,6 +1,23 @@
 TODO for next release:
 * ???
 
+FEMoctave 2.1.9, ??.??.2025
+---------------------------
+* solver for semilinear 2D problems added
+
+New Files
+- inst/BVP2DNL.m
+       GenerateWeight2D.m
+
+- doc/Demos/DemoBVP2DNL.m
+      Examples/Nonlinear2D/Liouville.m
+                           Bratu.m
+                           Bratu2D.m
+                           BratuParametric.m
+      Examples/PotentialFlow/PotentialFlowPolar.m
+                             PotentialFlowCartesian.m
+
+
 FEMoctave 2.1.8, 22.03.2025
 ---------------------------
 * a few doc strings modified
