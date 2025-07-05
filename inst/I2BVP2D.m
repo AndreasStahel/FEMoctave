@@ -202,7 +202,7 @@ switch solver
     Mleft    = W+dt*D+dt^2/4*A;  %% matrix for u(t+dt)
     Mmiddle  = 2*W - dt^2/2*A;   %% matrix for u(t)
     Mright   = -Mleft + 2*dt*D;  %% matrix for u(t-dt)
-    [L,U,P,Q] = lu(Mleft);  %% P*A*Q = L*U
+    [L,U,P,Q,R] = lu(Mleft);  %% P*R\A*Q = L*U
     t = t0;
     u = zeros(length(u0),steps(1)+1);
     
@@ -220,7 +220,7 @@ switch solver
 
     %%    u_new(ind_free) = W\( (W-dt*D)*dt*v0(ind_free) + W*u_curr + dt^2/2*(Wf*fVec-A*u_curr));
     if d==0  %% no damping term
-      u_new(ind_free) = Q*(U\(L\(P*( dt*(W+dt^2/4*A)*v0(ind_free) + (W-dt^2/4*A)*u_curr + dt^2/2*Wf*fVec))));
+      u_new(ind_free) = Q*(U\(L\(P*(R\( dt*(W+dt^2/4*A)*v0(ind_free) + (W-dt^2/4*A)*u_curr + dt^2/2*Wf*fVec)))));
     else
       u_new(ind_free) = (W+dt^2/4*A)\( dt*(W-dt*D+dt^2/4*A)*v0(ind_free) + (W-dt^2/4*A)*u_curr + dt^2/2*Wf*fVec);
     endif
@@ -230,7 +230,7 @@ switch solver
 	if f_dep_t
 	  fVec = feval(f,Mesh.nodes,t);
 	endif %% f_dep_t
-	u_temp = Q*(U\(L\(P*(Mmiddle*u_new(ind_free) + Mright*u_curr + dt^2*(Wf*fVec)))));
+	u_temp = Q*(U\(L\(P*(R\(Mmiddle*u_new(ind_free) + Mright*u_curr + dt^2*(Wf*fVec))))));
 	u_curr = u_new(ind_free);
 	u_new(ind_free) = u_temp;
 	t+= dt;
@@ -242,7 +242,7 @@ switch solver
     Mleft    = +W + dt/2*D;  %% matrix for u(t+dt)
     Mmiddle  = 2*W - dt^2*A;   %% matrix for u(t)
     Mright   = -W + dt/2*D;  %% matrix for u(t-dt)
-    [L,U,P,Q] = lu(Mleft);  %% P*A*Q = L*U
+    [L,U,P,Q,R] = lu(Mleft);  %% P*R\A*Q = L*U
 
     lambda = eigs(A,W,1);  %% check for stability
     if(dt>2/sqrt(lambda))
@@ -265,7 +265,7 @@ switch solver
 	if f_dep_t
 	  fVec = feval(f,Mesh.nodes,t);
 	endif %% f_dep_t
-	u_temp = Q*(U\(L\(P*(Mmiddle*u_new(ind_free) + Mright*u_curr + dt^2*(Wf*fVec)))));
+	u_temp = Q*(U\(L\(P*(R\(Mmiddle*u_new(ind_free) + Mright*u_curr + dt^2*(Wf*fVec))))));
 	u_curr = u_new(ind_free);
 	u_new(ind_free) = u_temp;
 	t+= dt;
