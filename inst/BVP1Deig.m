@@ -20,9 +20,9 @@
 
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}[@var{x},@var{Eval},@var{Evec},@var{errorbound}] = BVP1Deig(@var{interval},@var{a},@var{b},@var{c},@var{w},@var{BCleft},@var{BCright},@var{nVec},@var{tol})
+## @deftypefn{function file}{}[@var{x},@var{Eval},@var{Evec},@var{errorbound}] = BVP1Deig(@var{interval},@var{a},@var{b},@var{c},@var{w},@var{BCleft},@var{BCright},@var{nVec},@var{options})
 ##
-##determine the smallest eigenvalues @var{Eval} and eigenfunctions @var{Evec} for the BVP
+##determine eigenvalues @var{Eval} and eigenfunctions @var{Evec} for the BVP
 ##
 ##      -(a(x)*u'(x))' + b(x)*u'(x) + c(x)*u(x) = eVal*w(x)*u(x)
 ##
@@ -42,8 +42,20 @@
 ##@item for a Dirichlet condition specify a single value @var{g_D=0}
 ##@item for a Neumann condition specify the values @var{[g_N1,g_N2]=[0,g_N2]}
 ##@end itemize
-##@item @var{nVec} the number of smallest eigenvalues to be computed
+##@item @var{nVec} the number of eigenvalues to be computed
+##@item @var{options} additional options, given as pairs name/value.
+##@itemize
 ##@item@var{tol} tolerance for the eigenvalue iteration, default 1e-5
+##@item@var{"MODE"} select the eigenvalues
+##@itemize
+##@item @var{"sm"}: smallest magnitude, default
+##@item @var{"sa"}: smallest algebraic
+##@item @var{"lm"}: largest magnitude
+##@item @var{sigma}: closest to scalar sigma
+##@item see "help eigs" for more options
+##@end itemize
+##@end itemize
+
 ##@end itemize
 ##
 ##return values
@@ -56,9 +68,23 @@
 ##
 ## @end deftypefn
 
-function  [x,eVal,eVec,errorbound] = BVP1Deig(interval,a,b,c,w,BCleft,BCright,nVec,tol)
+function  [x,eVal,eVec,errorbound] = BVP1Deig(interval,a,b,c,w,BCleft,BCright,nVec,tol,varargin)
 
-if (nargin==8) tol = 1e-5;endif
+tol  = 1e-5 ; %% default value
+Mode = 'sm' ; %% default value
+if (~isempty(varargin))
+  for cc = 1:2:length(varargin)
+    switch toupper(varargin{cc})
+      case {'TOL'}
+	tol = varargin{cc+1};
+      case {'MODE'}
+	Mode = varargin{cc+1};
+      otherwise
+	error('Invalid optional argument, %s. Possible values: TOL, TYPE',varargin{cc});
+    endswitch % switch
+  endfor % for
+endif % if isempty
+
 
 [A,M,x] = GenerateFEM1D(interval,a,b,c,w);
 

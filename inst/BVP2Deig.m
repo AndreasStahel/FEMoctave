@@ -19,9 +19,9 @@
 ## Created: 2025-01-08
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}[@var{Eval},@var{Evec},@var{errorbound}] = BVP2Deig(@var{Mesh},@var{a},@var{b0},@var{w},@var{gN2},@var{nVec},@var{tol},@var{options})
+## @deftypefn{function file}{}[@var{Eval},@var{Evec},@var{errorbound}] = BVP2Deig(@var{Mesh},@var{a},@var{b0},@var{w},@var{gN2},@var{nVec},@var{options})
 ##
-##determine the smallest eigenvalues @var{Eval} and eigenfunctions @var{Evec} for the BVP
+##determine eigenvalues @var{Eval} and eigenfunctions @var{Evec} for the BVP
 ##
 ##@verbatim
 ##     -div(a*grad u) + b0*u = Eval*w*u  in domain
@@ -50,6 +50,14 @@
 ##@item @var{"real"}: all coefficients are real (default)
 ##@item @var{"complex"}: some coefficients might be complex
 ##@end itemize
+##@item@var{"MODE"} select the eigenvalues
+##@itemize
+##@item @var{"sm"}: smallest magnitude, default
+##@item @var{"sa"}: smallest algebraic
+##@item @var{"lm"}: largest magnitude
+##@item @var{sigma}: closest to scalar sigma
+##@item see "help eigs" for more options
+##@end itemize
 ##@end itemize
 ##@end itemize
 ##
@@ -69,34 +77,6 @@
 ## @end deftypefn
 
 function [la,resVec,errorbound] = BVP2Deig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,varargin)
-%  [la,ev] = BVP2Deig(Mesh,a,b0,w,gN2,nVec,options)
-%
-%  determine the smallest eigenvalues la and eigenfunctions ev for the BVP
-%
-%  -div(a*grad u) + b0*u = la*w*u  in domain
-%                      u = 0       on Dirichlet boundary
-%           n*(a*grad u) = gN2*u   on Neumann boundary
-%
-%  la      = FEMEig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,tol,options)
-%  [la,ev] = FEMEig(Mesh,aFunc,bFunc,wFunc,gN2Func,nVec,tol,options)
-%
-% nodes elem, edges contains information about the mesh
-%         see ReadMesh() for the description of the format
-% a, b0, w, gN2 are function files for the coefficient functions
-%         may also be given as vectors or scalar values
-% nVec    is the number of eigenvalues to be computed
-% tol    
-%         if not given tol = 1e-5 is used as default
-% options additional options, given as pairs name/value.
-%    * TOL  tolerance for error of the eigenvalues, default 1e-5
-%    * TYPE select real or complex coefficients
-%      * "REAL": all coefficients are real (default)
-%      * "COMPLEX": some coefficients might be complex
-%
-% la  is the vector containing the eigenvalues
-% ev  is the matrix with the eigenvectors as columns
-%
-%see also ????
 
 if ((nargin<6))
   help("BVP2Deig");
@@ -105,6 +85,7 @@ endif
 
 Type = 'REAL'; %% default value
 tol  = 1e-5  ; %% default value
+Mode = 'sm'  ; %% default value
 if (~isempty(varargin))
   for cc = 1:2:length(varargin)
     switch toupper(varargin{cc})
@@ -112,6 +93,8 @@ if (~isempty(varargin))
 	Type = toupper(varargin{cc+1});
       case {'TOL'}
 	tol = varargin{cc+1};
+      case {'MODE'}
+	Mode = varargin{cc+1};
       otherwise
 	error('Invalid optional argument, %s. Possible values: TOL, TYPE',varargin{cc});
     endswitch % switch
@@ -183,14 +166,14 @@ switch Mesh.type
 endswitch
 
 if (nargout==1)
-  la = eigSmall(aMat,wMat,nVec,tol);
+  la = eigSmall(aMat,wMat,nVec,tol,Mode);
 endif
 
 if (nargout>=2)
   if (nargout==3)
-    [la,ug,errorbound] = eigSmall(aMat,wMat,nVec,tol);
+    [la,ug,errorbound] = eigSmall(aMat,wMat,nVec,tol,Mode);
   else
-    [la,ug]            = eigSmall(aMat,wMat,nVec,tol);
+    [la,ug]            = eigSmall(aMat,wMat,nVec,tol,Mode);
   endif
   n = length(Mesh.node2DOF);
   m = size(ug)(2);
