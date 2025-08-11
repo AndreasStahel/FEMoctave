@@ -68,7 +68,7 @@
 ##
 ## @end deftypefn
 
-function  [x,eVal,eVec,errorbound] = BVP1Deig(interval,a,b,c,w,BCleft,BCright,nVec,tol,varargin)
+function  [x,eVal,eVec,errorbound] = BVP1Deig(interval,a,b,c,w,BCleft,BCright,nVec,varargin)
 
 tol  = 1e-5 ; %% default value
 Mode = 'sm' ; %% default value
@@ -80,7 +80,7 @@ if (~isempty(varargin))
       case {'MODE'}
 	Mode = varargin{cc+1};
       otherwise
-	error('Invalid optional argument, %s. Possible values: TOL, TYPE',varargin{cc});
+	error('Invalid optional argument, %s. Possible values: TOL, MODE',varargin{cc});
     endswitch % switch
   endfor % for
 endif % if isempty
@@ -92,9 +92,9 @@ if length(BCleft)*length(BCright)==1  %% DD: Dirichlet at both ends
   A = A(2:end-1,2:end-1); M = M(2:end-1,2:end-1);
   if (nargout>=2)
     if (nargout==4)
-      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol);
+      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol,Mode);
     else
-      [eVal,eVec]            = eigSmall(A,M,nVec,tol);
+      [eVal,eVec]            = eigSmall(A,M,nVec,tol,Mode);
     endif
   endif %% nargout>3
   eVec = [zeros(1,nVec);eVec;zeros(1,nVec)];
@@ -103,9 +103,9 @@ elseif (length(BCleft)>1)&&(length(BCright)==1) %% ND: Neumann on the left, Diri
     A(1,1) += BCleft(2);
     if (nargout>=3)
       if (nargout==4)
-	[eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol);
+	[eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol,Mode);
       else
-	[eVal,eVec]            = eigSmall(A,M,nVec,tol);
+	[eVal,eVec]            = eigSmall(A,M,nVec,tol,Mode);
       endif
     endif %% nargout>3
     eVec = [eVec;zeros(1,nVec)];
@@ -114,9 +114,9 @@ elseif (length(BCleft)==1)&&(length(BCright)>1) %% DN: Dirichlet on the left, Ne
   A(end,end) -= BCright(2);
   if (nargout>=3)
     if (nargout==4)
-      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol);
+      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol,Mode);
     else
-      [eVal,eVec]            = eigSmall(A,M,nVec,tol);
+      [eVal,eVec]            = eigSmall(A,M,nVec,tol,Mode);
     endif
   endif %% nargout>3
   eVec = [zeros(1,nVec);eVec];
@@ -124,9 +124,9 @@ else  %% NN: Neumann on both endpoints
   A(1,1) += BCleft(2); A(end,end) -= BCright(2);
   if (nargout>=3)
     if (nargout==4)
-      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol);
+      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol,Mode);
     else
-      [eVal,eVec]            = eigSmall(A,M,nVec,tol);
+      [eVal,eVec]            = eigSmall(A,M,nVec,tol,Mode);
     endif
   endif %% nargout>3
 endif
