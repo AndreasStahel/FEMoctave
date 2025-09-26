@@ -18,7 +18,7 @@ function [height,slope] = FoilThickness(x)
 endfunction
 [height,slope] = FoilThickness(x);
 figure(1); plot(x,[-height,height]); axis equal
-Angle = -10/180*pi;  %% angle of attack
+Angle = -15/180*pi;  %% angle of attack
 R = [cos(Angle),-sin(Angle);+sin(Angle),cos(Angle)];
 Upper = (R*[x,height]')';  Lower = (R*[x,-height]')';
 AngleNormalUpper = atan2(+1,-slope)+Angle;
@@ -57,10 +57,10 @@ function res = ArcLength(x,y);
 endfunction
 
 dsUpper = ArcLength(Upper(:,1),Upper(:,2));
-pUpper = FEMgriddata(Mesh,v.^2,Upper(:,1),Upper(:,2)).*sin(AngleNormalUpper);
+pUpper = FEMgriddata(Mesh,v.^2,Upper(:,1),Upper(:,2)).*cos(AngleNormalUpper);
 ForceUpper = trapz(dsUpper,pUpper)
 dsLower = ArcLength(Lower(:,1),Lower(:,2));
-pLower = FEMgriddata(Mesh,v.^2,Lower(:,1),Lower(:,2)).*sin(AngleNormalLower);
+pLower = FEMgriddata(Mesh,v.^2,Lower(:,1),Lower(:,2)).*cos(AngleNormalLower);
 ForceLower = trapz(dsLower,pLower)
 
 figure(5); plot(dsUpper,pUpper,dsLower,-pLower); ylabel('pressure');
