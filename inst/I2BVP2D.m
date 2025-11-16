@@ -18,68 +18,103 @@
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
 ## Created: 2020-03-30
 
-function [u,t] = I2BVP2D(Mesh,m,d,a,b0,bx,by,f,gD,gN1,gN2,u0,v0,t0,tend,steps,varargin)
-## -*- texinfo -*-
-## @deftypefn{function file}{}[@var{u},@var{t}] = I2BVP2D(@var{Mesh},@var{m},@var{d},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{gN1},@var{gN2},@var{u0},@var{v0},@var{t0},@var{tend},@var{steps},@var{options})
-##
-##   Solve a second order initial boundary value problem
-##
-##@verbatim
-## m*d^2/dt^2 u + 2*d*d/dt u - div(a*grad u-u*(bx,by)) + b0*u = f  in domain
-##                        u = gD        on Dirichlet boundary
-##  n*(a*grad u -u*(bx,by)) = gN1+gN2*u on Neumann boundary
-##                    u(t0) = u0        initial value
-##               d/dt u(t0) = v0        initial velocity
-##@end verbatim
-##
-##parameters:
-##@itemize
-##@item @var{Mesh} is the mesh describing the domain and the boundary types
-##@item @var{m},@var{d},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{gN1},@var{gN2}
-##are the coefficients and functions describing the PDE.
-##@*Any constant function can be given by its scalar value.
-##@*The functions @var{m},@var{d},@var{a},@var{b0},@var{bx},@var{by} and @var{f} may also be given as vectors with the values of the function at the Gauss points.
-##@item @var{f} may be given as a string for a function depending on (x,y) and time t or a a vector with the values at nodes or as scalar. If @var{f} is given by a scalar or vector it is independent on time.
-##@item @var{u0},@var{v0} are the initial value and velocity, can be given as a constant, function name or as vector with the values at the nodes
-##@item @var{t0}, @var{tend} are the initial and final times
-##@item @var{steps} is a vector with one or two positive integers.
-##@itemize
-##@item If @var{steps} = n, then n steps are taken and the n+1 results returned.
-##@item If @var{steps} = [n,nint], then n*nint steps are taken and (n+1) results returned.
-##@end itemize
-##@item @var{options} additional options, given as pairs name/value.
-##@itemize
-##@item The stepping algorithm can be selected as @var{"solver"}. The possible values
-##@itemize
-##@item @var{"implicit"} the standard implicit solver (default)
-##@item @var{"explicit"} the standard explicit solver
-##@end itemize
-##@item Complex coefficients can be selected by @var{type}.
-##The possible values are
-##@itemize
-##@item @var{"real"}: all coefficients are real (default)
-##@item @var{"complex"}: some coefficients might be complex
-##@end itemize
-## If only the coefficients @var{m} and @var{d} are complex, there is no need to ask for complex coefficients.
-##@end itemize
-##@end itemize
-##
-##return values
-##@itemize
-##@item @var{u} is a matrix with n+1 columns with the values of the solution at the nodes at different times @var{t}
-##@item @var{t} is the vector with the values of the times at which the solutions are returned.
-##@end itemize
-##
-## @c Will be cut out in ??? info file and replaced with the same
-## @c references explicitly there, since references to core Octave
-## @c functions are not automatically transformed from here to there.
-## @c BEGIN_CUT_TEXINFO
-## @seealso{IBVP2D, BVP2Dsym, BVP2eig, CreateMeshRect, CreateMeshTriangle}
-## @c END_CUT_TEXINFO
-## @end deftypefn
+function [u,t] = IBVP2D(Mesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps,varargin)
+  ## -*- texinfo -*-
+  ## @deftypefn{function file}{}[@var{u},@var{t}] = IBVP2D(@var{Mesh},@var{m},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{gN1},@var{gN2},@var{u0},@var{t0},@var{tend},@var{steps},@var{options})
+  ##
+  ##   Solve an initial boundary value problem
+  ##
+  ##@verbatim
+  ## m*d/dt u - div(a*grad u-u*(bx,by)) + b0*u = f         in domain
+  ##                                         u = gD        on Dirichlet boundary
+  ##                   n*(a*grad u -u*(bx,by)) = gN1+gN2*u on Neumann boundary
+  ##                                     u(t0) = u0        initial value
+  ##@end verbatim
+  ##
+  ##parameters:
+  ##@itemize
+  ##@item @var{Mesh} is the mesh describing the domain and the boundary types
+  ##@item @var{m},@var{a},@var{b0},@var{bx},@var{by},@var{f},@var{gD},@var{gN1},@var{gN2}
+  ##are the coefficients and functions describing the PDE.
+  ##@*Any constant function can be given by its scalar value.
+  ##@*The functions @var{m},@var{a},@var{b0},@var{bx},@var{by} and @var{f} may also be given as vectors with the values of the function at the Gauss points.
+  ##@item @var{f} may be given as a string for a function depending on (x,y) and time t or a a vector with the values at nodes or as scalar.
+  ##If @var{f} is given by a scalar or vector it is independent on time.
+  ##@item @var{u0} is the initial value, can be given as a constant, function name or as vector with the values at the nodes
+  ##@item @var{t0}, @var{tend} are the initial and final times
+  ##@item @var{steps} is a vector with one or two positive integers.
+  ##@itemize
+  ##@item If @var{steps} = n, then n Crank Nicolson steps are taken and the n+1 results returned.
+  ##@item If @var{steps} = [n,nint], then n*nint steps are taken and (n+1) results returned.
+  ##@end itemize
+  ##@item @var{options} additional options, given as pairs name/value.
+  ##Currently only the stepping algorithm can be selected as @var{"solver"} and the possible values
+  ##@itemize
+  ##@item @var{"CN"} the standard Crank-Nicolson (default)
+  ##@item @var{"implicit"} the standard implicit solver
+  ##@item @var{"explicit"} the standard explicit solver
+  ##@item @var{"RK"} an L-stable, implicit Runge-Kutta solver
+  ##@end itemize
+  ##@end itemize
+  ##
+  ##return values
+  ##@itemize
+  ##@item @var{u} is a matrix with n+1 columns with the values of the solution at the nodes at different times @var{t}
+  ##@item @var{t} is the vector with the values of the times at which the solutions are returned.
+  ##@end itemize
+  ##
+  ## @c Will be cut out in ??? info file and replaced with the same
+  ## @c references explicitly there, since references to core Octave
+  ## @c functions are not automatically transformed from here to there.
+  ## @c BEGIN_CUT_TEXINFO
+  ## @seealso{I2BVP2D, BVP2D, BVP2Dsym, BVP2eig, CreateMeshRect, CreateMeshTriangle}
+  ## @c END_CUT_TEXINFO
+  ## @end deftypefn
 
-solver = 'IMPLICIT';  %% default value is IMPLICIT
-Type   = 'REAL';      %% default value for TYPE
+
+%  [u,t] = IBVP2D(Mesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps,options)
+%  Solve an initial boundary value problem
+%
+%  m*d/dt u -div(a*grad u-u*(bx,by)) + b0*u = f         in domain
+%                                         u = gD        on Dirichlet boundary
+%                              n*(a*grad u) = gN1+gN2*u on Neumann boundary
+%                                     u(t0) = u0        initial value
+%
+%   [u,t] = IBVP2D(Mesh,'m','a','b0','f','gD','gN1','gN2','u0',t0,tend,steps)
+%   [u,t] = IBVP2D(Mesh,mVec,aVec,b0Vec,fVec,'gD','gN1','gN2',u0Vec,t0,tend,steps)
+%
+%      Mesh is the mesh describing the domain
+%      m,a,b0,bx,by,f,gD,gN1,gN2
+%          are the names of the functions or scalar values
+%          The functions m, a, b, bx and by may also be given as vector
+%          with the values of the function at the Gauss points
+%        f may be given as a string for a function depending on (x,y) and time t
+%          or a a vector with the values at nodes.
+%          If f is given by a scalar or vector it is independent on time t
+%       u0 the initial value can be given as a constant, function name
+%          or as vector of the values at the nodes
+%       t0 is the initial time
+%     tend is the final time
+%    steps is the number of Crank Nicolson steps to be taken
+%          if steps=[n,m], the n*m steps of equal length will be taken,
+%          and n intermediate results are returned
+%  options additional options, given as pairs name/value.
+%          Currently only the stepping algorithm can be selected as "solver"
+%          and the possible values
+%          "CN"       the standard Crank-Nicolson (default)
+%          "implicit" the standard implicit solver
+%          "explicit" the standard explicit solver
+%          "RK"       an L-stable, implicit Runge-Kutta solver
+%
+%        u is the matrix with n+1 columns, each of them containing
+%          the solution at a time
+%        t = linspace(t0,tend,steps(1)+1) are the times at which
+%          the solutions are returned
+%
+% see also BVP2D, BVP2Dsym, BVP2Deig
+
+solver = 'CN';   %% default value is Crank-Nicolson
+Type   = 'REAL'; %% default value
 if (~isempty(varargin))
   for cc = 1:2:length(varargin)
     switch toupper(varargin{cc})
@@ -97,14 +132,16 @@ if ((strcmp(Type,'REAL')==0)&&(strcmp(Type,'COMPLEX')==0))
   error('wrong TYPE, possible values are REAL or COMPLEX')
 endif
 
+
+Mesh.node2DOF = Mesh.node2DOF(:,1);  %% not an elasticity problem
+
 if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
 else
   u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,0,'type',TYPE);  %% solve BVP
 endif
-
 switch Mesh.type
-  case 'linear'    %% linear elements
+case 'linear'    %% linear elements
   switch Type
     case 'REAL'
       if exist("FEMEquation.oct")==3
@@ -151,9 +188,8 @@ case 'cubic'     %% cubic elements
   endswitch
 endswitch
 
+Wu  = FEMInterpolWeight(Mesh,m);  %% weight matrix, leading to W* (d/dt u)
 Wf  = FEMInterpolWeight(Mesh,1);  %% weight matrix, leading to W*f
-Wu  = FEMInterpolWeight(Mesh,m);  %% weight matrix, leading to W* (d^2/dt^2 u)
-D   = FEMInterpolWeight(Mesh,d);  %% weight matrix, leading to D* d/dt u
 
 if length(steps)==1
   dt = (tend-t0)/steps;
@@ -170,21 +206,13 @@ else
   u0 = u0(:);
 endif
 
-if ischar(v0)
-  v0 = feval(v0,Mesh.nodes);
-elseif isscalar(u0)
-  v0 = v0*ones(length(Mesh.nodesT),1);
-else
-  v0 = v0(:);
-endif
+ind_free = find(Mesh.node2DOF(:,1)>0);       %% which nodes lead to DOF
+ind_Dirichlet = find(Mesh.node2DOF(:,1)==0); %% Dirichlet nodes
+W = Wu(:,ind_free);
 
-ind_free      = find(Mesh.node2DOF>0);  %% which nodes lead to DOF
-ind_Dirichlet = find(Mesh.node2DOF==0); %% Dirichlet nodes
-W = Wu(:,ind_free);  D = D (:,ind_free);
-
-t = t0; f_dep_t = false;
+t = t0;  f_dep_t = false;
 if ischar(f)
-  fVec = feval(f,Mesh.nodes,t);
+  fVec = feval(f,Mesh.nodes,t+dt/2);
   f_dep_t = true;  % has to be evaluated at each timestep
 elseif isscalar(f)
   fVec = f*ones(length(Mesh.nodesT),1);
@@ -192,90 +220,95 @@ else
   fVec = f;
 endif
 
-%%lambda = eigs(A,W,1);
-%%disp(sprintf("Values:  lambda = %g, dt = %g, 2/sqrt(lambda) = %g\n",...
-%%	      lambda,dt,2/sqrt(lambda)))
-
-
 switch solver
-  case 'IMPLICIT'
-    Mleft    = W+dt*D+dt^2/4*A;  %% matrix for u(t+dt)
-    Mmiddle  = 2*W - dt^2/2*A;   %% matrix for u(t)
-    Mright   = -Mleft + 2*dt*D;  %% matrix for u(t-dt)
-    [L,U,P,Q,R] = lu(Mleft);  %% P*R\A*Q = L*U
-    t = t0;
-    u = zeros(length(u0),steps(1)+1);
-    
-    u_curr = u0-u_B;           %% current time level
-    u_curr = u_curr(ind_free); %% u(t-dt)
-    u_new  = zeros(size(u0));  %% u(t)
-    u(:,1) = u0;
+ case 'CN'
+ Mleft = W+dt/2*A;  Mright = W-dt/2*A;
+ [L,U,P,Q,R] = lu(Mleft);  %% P*(R\A)*Q = L*U
+ t = t0;
+ u = zeros(length(u0),steps(1)+1);
 
-    lambda = eigs(A,W,1);  %% check for stability of first step
-    if(dt>2/sqrt(lambda))
-      warning(sprintf(
-              'first step of implicit algorithm could be unstable, dt = %g, 2/sqrt(lambda) = %g',
-              dt,2/sqrt(lambda)))
-    endif
+ u_new = u0-u_B; u_new(ind_Dirichlet) = 0;
+ u(:,1) = u0;
+ for ii_t = 1:steps(1)
+   for ii_2 = 1:steps(2)
+     if f_dep_t
+       fVec = feval(f,Mesh.nodes,t+dt/2);
+     endif %% f_dep_t
+     u_temp = Q*(U\(L\(P*(R\(Mright*u_new(ind_free) + dt*(Wf*fVec))))));
+     u_new(ind_free) = u_temp;
+     t += dt;
+   endfor % ii_2
+   u(:,ii_t+1) = u_new + u_B;
+ endfor
 
-    %%    u_new(ind_free) = W\( (W-dt*D)*dt*v0(ind_free) + W*u_curr + dt^2/2*(Wf*fVec-A*u_curr));
-    if d==0  %% no damping term
-      u_new(ind_free) = Q*(U\(L\(P*(R\( dt*(W+dt^2/4*A)*v0(ind_free) + (W-dt^2/4*A)*u_curr + dt^2/2*Wf*fVec)))));
-    else
-      u_new(ind_free) = (W+dt^2/4*A)\( dt*(W-dt*D+dt^2/4*A)*v0(ind_free) + (W-dt^2/4*A)*u_curr + dt^2/2*Wf*fVec);
-    endif
-    
-    for ii_t = 1:steps(1)
-      for ii_2 = 1:steps(2)
-	if f_dep_t
-	  fVec = feval(f,Mesh.nodes,t);
-	endif %% f_dep_t
-	u_temp = Q*(U\(L\(P*(R\(Mmiddle*u_new(ind_free) + Mright*u_curr + dt^2*(Wf*fVec))))));
-	u_curr = u_new(ind_free);
-	u_new(ind_free) = u_temp;
-	t+= dt;
-      endfor % ii_2
-      u(:,ii_t+1) = u_new + u_B;
-    endfor
-    
-  case 'EXPLICIT'
-    Mleft    = +W + dt/2*D;  %% matrix for u(t+dt)
-    Mmiddle  = 2*W - dt^2*A;   %% matrix for u(t)
-    Mright   = -W + dt/2*D;  %% matrix for u(t-dt)
-    [L,U,P,Q,R] = lu(Mleft);  %% P*R\A*Q = L*U
+ case 'IMPLICIT'
+ [L,U,P,Q,R] = lu(W+dt*A);  %% P*R\(W+dt*A)*Q = L*U
+ t = t0;
+ u = zeros(length(u0),steps(1)+1);
 
-    lambda = eigs(A,W,1);  %% check for stability
-    if(dt>2/sqrt(lambda))
-      warning(sprintf(
-              'explicit algorithm is unstable, dt = %g, 2/sqrt(lambda) = %g',
-              dt,2/sqrt(lambda)))
-    endif
+ u_new = u0-u_B; u_new(ind_Dirichlet) = 0;
+ u(:,1) = u0;
+ for ii_t = 1:steps(1)
+   for ii_2 = 1:steps(2)
+     if f_dep_t
+       fVec = feval(f,Mesh.nodes,t+dt);
+     endif %% f_dep_t
+     u_temp = Q*(U\(L\(P*(R\(W*u_new(ind_free) + dt*(Wf*fVec))))));
+     u_new(ind_free) = u_temp;
+     t += dt;
+   endfor % ii_2
+   u(:,ii_t+1) = u_new + u_B;
+ endfor
 
-    t = t0;
-    u = zeros(length(u0),steps(1)+1);
-    
-    u_curr = u0-u_B;           %% current time level
-    u_curr = u_curr(ind_free); %% u(t-dt)
-    u_new  = zeros(size(u0));  %% u(t)
-    u(:,1) = u0;
-    
-    u_new(ind_free) = W\( (W-dt*D)*dt*v0(ind_free) + W*u_curr + dt^2/2*(Wf*fVec-A*u_curr));
-    for ii_t = 1:steps(1)
-      for ii_2 = 1:steps(2)
-	if f_dep_t
-	  fVec = feval(f,Mesh.nodes,t);
-	endif %% f_dep_t
-	u_temp = Q*(U\(L\(P*(R\(Mmiddle*u_new(ind_free) + Mright*u_curr + dt^2*(Wf*fVec))))));
-	u_curr = u_new(ind_free);
-	u_new(ind_free) = u_temp;
-	t+= dt;
-      endfor % ii_2
-      u(:,ii_t+1) = u_new + u_B;
-    endfor
-
-  otherwise
-    error('Invalid optional argument for solver: %s, valid are implicit,  explicit',solver);
+ case 'EXPLICIT'
+ lambda = eigs(A,W,1);   %% check for stability
+ if(dt>2/lambda)
+   warning(sprintf('explicit algorithm is unstable, dt=%g, 2/lambda = %g',
+		   dt,2/lambda))
+ endif
+ [L,U,P,Q,R] = lu(W);  %% P*R\W*Q = L*U
+ t = t0;
+ u = zeros(length(u0),steps(1)+1);
+ u_new = u0-u_B; u_new(ind_Dirichlet) = 0;
+ u(:,1) = u0;
+ for ii_t = 1:steps(1)
+   for ii_2 = 1:steps(2)
+     if f_dep_t
+       fVec = feval(f,Mesh.nodes,t);
+     endif %% f_dep_t
+     u_temp = dt*Q*(U\(L\(P*(R\(-A*u_new(ind_free)+Wf*fVec)))));
+     u_new(ind_free) += u_temp;
+     t += dt;
+   endfor % ii_2
+   u(:,ii_t+1) = u_new + u_B;
+ endfor
+ 
+ case 'RK'
+ theta = 1-1/sqrt(2);
+ [L,U,P,Q,R] = lu(W+theta*dt*A);  %% P*R\(W+theta*dt*A)*Q = L*U
+ t = t0;
+ u = zeros(length(u0),steps(1)+1);
+ u_new = u0-u_B; u_new(ind_Dirichlet) = 0;
+ u(:,1) = u0;
+ for ii_t = 1:steps(1);
+   for ii_2 = 1:steps(2);
+     if f_dep_t
+       fVec1 = feval(f,Mesh.nodes,t + theta*dt);
+       fVec2 = feval(f,Mesh.nodes,t + dt);
+     else
+       fVec1 = fVec; fVec2 = fVec;
+     endif
+     k      = Q*(U\(L\(P*(R\(-A*u_new(ind_free) + Wf*fVec1)))));
+     u_temp = Q*(U\(L\(P*(R\((W-(dt/sqrt(2))*A)*u_new(ind_free)...
+		          - dt^2*(0.5-theta)*A*k...
+		          + dt*Wf*((1-theta)*fVec1 + theta*fVec2))))));
+     u_new(ind_free) = u_temp;
+     t += dt;
+   endfor  %% ii_2
+   u(:,ii_t+1) = u_new + u_B;
+ endfor %% ii_t
+ otherwise
+    error('Invalid optional argument for solver: %s, valid are CN, explicit, implicit, RK',solver);
 endswitch
-
 t = linspace(t0,tend,steps(1)+1);
 endfunction
