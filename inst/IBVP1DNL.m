@@ -41,7 +41,7 @@
 ##@item @var{b} constant, vector or function handle to evaluate b(x)
 ##@item @var{c} constant, vector or function handle to evaluate c(x)
 ##@item @var{d} constant, vector or function handle to evaluate d(x)
-##@item @var{f} a structure @var{f = @{@@(x,t,u),  @@(x,t,u)@}}. The two function handles evaluate f(x,t,u) and the partial derivative f_u(x,t,u).
+##@item @var{f} the nonlinear function. For the algorithm CN this is a structure @var{f = @{@@(x,t,u),  @@(x,t,u)@}} with  the two function handles to evaluate f(x,t,u) and the partial derivative f_u(x,t,u). For the stepping algorithms CNEXP and CNPC @var{f} is a function handle to evalute f(x,t,u).
 ##@item @var{BCleft} and @var{BCright} the two boundary conditions
 ##@itemize
 ##@item for a Dirichlet condition specify a single value @var{g_D}
@@ -54,10 +54,16 @@
 ##@item If @var{steps} = n, then n steps are taken and the n+1 results returned.
 ##@item If @var{steps} = [n,nint], then n*nint steps are taken and (n+1) results returned.
 ##@end itemize
-##@item @var{options} additional options, given as pairs name/value. 
+##@item @var{options}: additional options, given as pairs name/value. 
 ##@itemize
-##@item @var{"tol"} the tolerance for the iteration at each time step to stop, given as pair @var{[tolrel,tolabs]} for the relative and absolute tolerance. The iteration stops if the absolute or relative error is smaller than the specified tolerance. RMS (root means square) values are used. If only @var{tolrel} is specified @var{TolAbs=TolRel} is used. The default values are @var{tolrel = tolabs = 1e-5}.
-##@item @var{"MaxIter"} the maximal number of iterations to be used. The default value is 10.
+##@item @var{"solver"} to select the time stepping algorithm.
+##@itemize
+##@item @var{"CN"}: the standard Crank-Nicolson solver, leading to nonlinear systems to be solved for each time step. The nonlinear function f(x,t,u) and its partial derivative are required. This is the default solver.
+##@item @var{"CNPC"}: a modified Crank-Nicolson solver with a predictor corrector step, using the nonlinear contribution f(x,t,u).
+##@item @var{"CNEXP"}: a modified Crank-Nicolson solver, using an explicit expression for the nonlinear contribution f(x,t,u).
+##@end itemize
+##@item @var{"tol"} the tolerance for the iteration at each time step with the algorithm CN.  Given as pair @var{[tolrel,tolabs]} for the relative and absolute tolerance. The iteration stops if the absolute or relative error is smaller than the specified tolerance. RMS (root means square) values are used. If only @var{tolrel} is specified @var{TolAbs=TolRel} is used. The default values are @var{tolrel = tolabs = 1e-5}.
+##@item @var{"MaxIter"} the maximal number of iterations to be used for each step of the CN algorithm. The default value is 10.
 ##@end itemize
 ##@end itemize
 ##
@@ -75,9 +81,12 @@ function  [x,u,t] = IBVP1DNL(interval,w,a,b,c,d,f,BCleft,BCright,u0,t0,tend,step
 tol = [1e-5, 1e-5];  %% default tolerance
 MaxIter = 10;        %% default maximal number of iterations
 Display = 'off';
+solver = 'CN';
 if (~isempty(varargin))
   for cc = 1:2:length(varargin)
     switch tolower(varargin{cc})
+      case 'solver'
+	solver = toupper(varargin{cc+1});
       case {'tol'}
 	tol = varargin{cc+1};
 	if length(tol)==1
@@ -114,7 +123,9 @@ else                                         %% NN: Neumann on both endpoints
   BC = 'NN';
 endif
 
-f_values = f{1}(t0,x,u0);
+if strcmp(solver,'CN')
+  f_values = f{1}(x,t0,u0);
+endif
 
 switch BC
   case 'DD';
@@ -144,69 +155,145 @@ switch BC
     %%    uB = [BCleft;uB];
     u0 = u0(2:end);
   case 'NN';
-     Mr = M;
-     if (BCleft(1)==0)&&(BCright(1)==0)  %% only solve for the homogeneous BC if necessary
-       uB = zeros(size(A,1),1);
-     else   ## solve the system
-       A(1,1) += BCleft(2); A(end,end) -= BCright(2);
-       RHS = zeros(size(x)); RHS(1) -= BCleft(1); RHS(end) += BCright(1);
-       uB = full(A\RHS);
-     endif
-endswitch
+    Mr = M;
+    if (BCleft(1)==0)&&(BCright(1)==0)  %% only solve for the homogeneous BC if necessary
+      uB = zeros(size(A,1),1);
+    else   ## solve the system
+      A(1,1) += BCleft(2); A(end,end) -= BCright(2);
+      RHS = zeros(size(x)); RHS(1) -= BCleft(1); RHS(end) += BCright(1);
+      uB = full(A\RHS);
+    endif
+endswitch% BC
 
-n_1 = steps(1);
-if length(steps)>1
-  n_2 = steps(2);
-else
-  n_2 = 1;
-endif
-dt = (tend-t0)/(n_1*n_2);
-t = zeros(n_1+1,1); t(1) = t0;  tt = t0;
-u = zeros(length(uB),n_1+1);  u(:,1) = u0;
+  n_1 = steps(1);
+  if length(steps)>1
+    n_2 = steps(2);
+  else
+    n_2 = 1;
+  endif
+  dt = (tend-t0)/(n_1*n_2);
+  t = zeros(n_1+1,1); t(1) = t0;  tt = t0;
+  u = zeros(length(uB),n_1+1);  u(:,1) = u0;
+  
+switch solver
+case 'CN'  %% standard Crank-Nicolsson with Newton solver, default solver
+  Mleft = W + dt/2*A;
+  ut = u0-uB;  %% starting value
+  for jj1 = 1:n_1;
+    for jj2 = 1:n_2
+      u_new = ut;  %% starting value for the Newton iteration
+      G = W*ut-0.5*dt*(A*ut - M*f_values);
+      iter = 0;
+      do
+	iter++;
+	%% evaluate f(x,t,u) and f_u(x,t,u)
+	switch BC  %% add the Dirichlet values at the endpoints
+	  case 'DD'
+	    utt = [BCleft;u_new+uB;BCright];
+	    fu_values = f{2}(x,tt+dt,utt);
+	    Mat_fu = M*diag(fu_values);
+	    Mat_fu = Mat_fu(:,2:end-1);	  
+	  case 'DN'
+	    utt = [BCleft;u_new+uB];
+	    fu_values = f{2}(x,tt+dt,utt);
+	    Mat_fu = M*diag(fu_values);
+	    Mat_fu = Mat_fu(:,2:end);	  
+	  case 'ND'
+	    utt = [u_new+uB;BCright];
+	    fu_values = f{2}(x,tt+dt,utt);
+	    Mat_fu = M*diag(fu_values);
+	    Mat_fu = Mat_fu(:,1:end-1);	  
+	  case 'NN'
+	    utt = u_new+uB; 
+	    fu_values = f{2}(x,tt+dt,utt);
+	    Mat_fu= M*diag(fu_values);
+	endswitch
+	f_values  = f{1}(x,tt+dt,utt);
+	phi = (Mleft-dt/2*Mat_fu)\(G-(W+dt/2*A)*u_new + dt/2*M*f_values);
+	u_new += phi;
+	AbsError = norm(phi);
+      until or(iter>=MaxIter,AbsError/sqrt(length(x))<tol(2),AbsError<tol(1)*norm(u_new))
+      ut = u_new;
+      tt += dt;
+    endfor  %% jj2
+    u(:,jj1+1) = ut+uB;  t(jj1+1) = tt;
+  endfor %% jj1
+%%% end of CN stepper
 
-%%% CN stepper
-Mleft = W + dt/2*A;
-ut = u0-uB;  %% starting value
-for jj1 = 1:n_1;
-  for jj2 = 1:n_2
-    u_new = ut;  %% starting value for the Newton iteration
-    G = W*ut-0.5*dt*(A*ut - M*f_values);
-    iter = 0;
-    do
-      iter++;
-      %% evaluate f(x,t,u) and f_u(x,t,u)
+case 'CNEXP'   %%% CNEXP stepper
+  Mleft  = W + dt/2*A;
+  Mright = W - dt/2*A;
+  ut = u0-uB;  %% starting value
+  for jj1 = 1:n_1;
+    for jj2 = 1:n_2
       switch BC  %% add the Dirichlet values at the endpoints
 	case 'DD'
-	  utt = [BCleft;u_new+uB;BCright];
-	  fu_values = f{2}(x,tt+dt,utt);
-	  Mat_fu= M*diag(fu_values);
-	  Mat_fu = Mat_fu(:,2:end-1);	  
+	  utt = [BCleft;ut+uB;BCright];
 	case 'DN'
-	  utt = [BCleft;u_new+uB];
-	  fu_values = f{2}(x,tt+dt,utt);
-	  Mat_fu= M*diag(fu_values);
-	  Mat_fu = Mat_fu(:,2:end);	  
+	  utt = [BCleft;ut+uB];
 	case 'ND'
-	  utt = [u_new+uB;BCright];
-	  fu_values = f{2}(x,tt+dt,utt);
-	  Mat_fu= M*diag(fu_values);
-	  Mat_fu = Mat_fu(:,1:end-1);	  
+	  utt = [ut+uB;BCright];
 	case 'NN'
-	  utt = u_new+uB; 
-	  fu_values = f{2}(x,tt+dt,utt);
-	  Mat_fu= M*diag(fu_values);
+	  utt = ut+uB;
       endswitch
-      f_values  = f{1}(x,tt+dt,utt);
-      phi = (Mleft-dt/2*Mat_fu)\(G-(W+dt/2*A)*u_new + dt/2*M*f_values);
-      u_new += phi;
-      AbsError = norm(phi);
-    until or(iter>=MaxIter,AbsError/sqrt(length(x))<tol(2),AbsError<tol(1)*norm(u_new))
-    ut = u_new;
-    tt += dt;
-  endfor  %% jj2
-  u(:,jj1+1) = ut+uB;  t(jj1+1) = tt;
-endfor %% jj1
-%%% end of CN stepper
+      if length(f)==2
+	f_values = f{1}(x,tt+dt/2,utt);
+      else
+	f_values = f(x,tt+dt/2,utt);
+      endif
+      ut = Mleft\(Mright*ut + dt*M*f_values);
+      tt += dt;
+    endfor  %% jj2
+    u(:,jj1+1) = ut+uB;  t(jj1+1) = tt;
+  endfor %% jj1
+%%% end of CNEXP stepper
+
+case 'CNPC'   %%% CNPC stepper
+  Mleft  = W + dt/2*A;
+  Mright = W - dt/2*A;
+  ut = u0-uB;  %% starting value
+  for jj1 = 1:n_1;
+    for jj2 = 1:n_2
+      switch BC  %% add the Dirichlet values at the endpoints
+	case 'DD'
+	  utt = [BCleft;ut+uB;BCright];
+	case 'DN'
+	  utt = [BCleft;ut+uB];
+	case 'ND'
+	  utt = [ut+uB;BCright];
+	case 'NN'
+	  utt = ut+uB; 
+      endswitch
+      if length(f)==2
+	f_values = f{1}(x,tt,utt);
+      else
+	f_values = f(x,tt,utt);
+      endif
+      ut2 = Mleft\(Mright*ut + dt*M*f_values);
+      switch BC  %% add the Dirichlet values at the endpoints
+	case 'DD'
+	  utt = [BCleft;ut2+uB;BCright];
+	case 'DN'
+	  utt = [BCleft;ut2+uB];
+	case 'ND'
+	  utt = [ut2+uB;BCright];
+	case 'NN'
+	  utt = ut2+uB; 
+      endswitch    
+      if length(f)==2
+	f_values2 = f{1}(x,tt+dt,utt);
+      else
+	f_values2 = f(x,tt+dt,utt);
+      endif
+      ut = Mleft\(Mright*ut + dt/2*M*(f_values+f_values2));
+      tt += dt;
+    endfor  %% jj2
+    u(:,jj1+1) = ut+uB;  t(jj1+1) = tt;
+  endfor %% jj1 %%% end of CNPC stepper
+otherwise
+  error('Invalid optional argument for solver, %s, valid are CN, CNPC and CNEXP',solver);
+
+endswitch%% solver
 
 switch BC  %% add the Dirichlet values at the endpoints
   case 'DD'
