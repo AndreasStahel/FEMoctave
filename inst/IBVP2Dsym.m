@@ -37,7 +37,7 @@ function [u,t] = IBVP2Dsym(Mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps,varargin)
 ##@item @var{m},@var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2}
 ##are the coefficients and functions describing the PDE.
 ##@*Any constant function can be given by its scalar value.
-##@*The functions @var{m},@var{a},@var{b0} and @var{f} may also be given as vectors with the values of the function at the Gauss points.
+##@*The functions @var{m},@var{a} and @var{b0} may also be given as vectors with the values of the function at the Gauss points.
 ##@item @var{f} may be given as a string for a function depending on (x,y) and time t or a a vector with the values at nodes or as scalar.
 ##If @var{f} is given by a scalar or vector it is independent on time.
 ##@item @var{u0} is the initial value, can be given as a constant, function name or as vector with the values at the nodes
@@ -46,21 +46,12 @@ function [u,t] = IBVP2Dsym(Mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps,varargin)
 ##@*If @var{steps} = n, then n Crank Nicolson steps are taken and the results returned.
 ##@*If @var{steps} = [n,nint], then n*nint Crank Nicolson steps are taken and (n+1) results returned.
 ##@item @var{options} additional options, given as pairs name/value.
-##@itemize
-##@item The stepping algorithm can be selected as @var{"solver"}. The possible values
+##Currently only the stepping algorithm can be selected as @var{"solver"} and the possible values
 ##@itemize
 ##@item @var{"CN"} the standard Crank-Nicolson (default)
 ##@item @var{"implicit"} the standard implicit solver
 ##@item @var{"explicit"} the standard explicit solver
 ##@item @var{"RK"} an L-stable, implicit Runge-Kutta solver
-##@end itemize
-##@item Complex coefficients can be selected by @var{type}.
-##The possible values are
-##@itemize
-##@item @var{"real"}: all coefficients are real (default)
-##@item @var{"complex"}: some coefficients might be complex
-##@end itemize
-## If only the coefficient @var{m} is complex, there is no need to ask for complex coefficients.
 ##@end itemize
 ##@end itemize
 ##
@@ -74,7 +65,7 @@ function [u,t] = IBVP2Dsym(Mesh,m,a,b0,f,gD,gN1,gN2,u0,t0,tend,steps,varargin)
 ## @c references explicitly there, since references to core Octave
 ## @c functions are not automatically transformed from here to there.
 ## @c BEGIN_CUT_TEXINFO
-## @seealso{I2BVP2D, BVP2D, BVP2Dsym, BVP2eig, CreateMeshRect, CreateMeshTriangle}
+## @seealso{I2BVP2D, IBVP2DNL, BVP2D, BVP2Dsym, BVP2eig, CreateMeshRect, CreateMeshTriangle}
 ## @c END_CUT_TEXINFO
 ## @end deftypefn
 
