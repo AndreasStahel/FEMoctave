@@ -38,7 +38,7 @@ function [u,t] = IBVP2DNL(Mesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps,vararg
   ##are the coefficients and functions describing the PDE.
   ##@*Any constant function can be given by its scalar value.
   ##@*The functions @var{m},@var{a},@var{b0},@var{bx} and @var{by} may also be given as vectors with the values of the function at the Gauss points.
-  ##@item @var{f} may be given as a string or handle for a function depending on (x,y), time t amd u or as a vector with the values at nodes or as scalar.
+  ##@item @var{f} may be given as a string or handle for a function depending on (x,y), time t and u or as a vector with the values at nodes or as scalar.
   ##If @var{f} is given by a scalar or vector it is independent on time t and u.
   ##@item @var{u0} is the initial value, can be given as a constant, function name or as vector with the values at the nodes
   ##@item @var{t0}, @var{tend} are the initial and final times
@@ -203,7 +203,7 @@ else
   dt = (tend-t0)/(steps(1)*steps(2));
 endif
 
-if ischar(u0)
+if or(ischar(u0),is_function_handle(u0))
   u0 = feval(u0,Mesh.nodes);
 elseif isscalar(u0)
   u0 = u0*ones(length(Mesh.nodesT),1);
@@ -266,7 +266,7 @@ switch solver
      u_temp = Q*(U\(L\(P*(R\(Mright*u_new(ind_free) + dt*(Wf*fVec1))))));
      u_new1(ind_free) = u_temp;
      if f_dep_t
-       fVec2 = feval(f,Mesh.nodes,t,u_new1+u_B);
+       fVec2 = feval(f,Mesh.nodes,t+dt,u_new1+u_B);
      endif %% f_dep_t
      u_temp = Q*(U\(L\(P*(R\(Mright*u_new(ind_free) + dt*(Wf*(fVec1+fVec2)/2))))));
      u_new(ind_free) = u_temp;
