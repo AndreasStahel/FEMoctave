@@ -21,7 +21,7 @@
 ## -*- texinfo -*-
 ## @deftypefn{function file}{}@var{wMat} = FEMInterpolWeight(@var{FEMmesh},@var{wFunc})
 ##@*create the matrix to determine the contribution of w*f to a IBVP or BVP
-##@*the contribution of w*f is the determined by wMat*f, where f is the vector with the values at the "free" nodes
+##@*the contribution of w*f is determined by wMat*f, where f is the vector with the values at the "free" nodes
 ##
 ##@verbatim
 ##     -div(a*grad u)+ b0*u = w*f       in domain
