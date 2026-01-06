@@ -137,13 +137,12 @@ if ((strcmp(Type,'REAL')==0)&&(strcmp(Type,'COMPLEX')==0))
   error('wrong TYPE, possible values are REAL or COMPLEX')
 endif
 
-
 Mesh.node2DOF = Mesh.node2DOF(:,1);  %% not an elasticity problem
 
 if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
 else
-  u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,0,'type',TYPE);  %% solve BVP
+  u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,gN2,'type',Type);  %% solve BVP
 endif
 switch Mesh.type
 case 'linear'    %% linear elements
@@ -216,11 +215,8 @@ ind_Dirichlet = find(Mesh.node2DOF(:,1)==0); %% Dirichlet nodes
 W = Wu(:,ind_free);
 
 t = t0;  f_dep_t = false;
-if ischar(f)
-  fVec = feval(f,Mesh.nodes,t+dt/2,u0);
-  f_dep_t = true;  % has to be evaluated at each timestep
-elseif is_function_handle(f)
-  fVec = f(Mesh.nodes,t+dt/2,u0);
+if or(ischar(f),is_function_handle(f))
+%%  fVec = feval(f,Mesh.nodes,t+dt/2,u0);
   f_dep_t = true;  % has to be evaluated at each timestep
 elseif isscalar(f)
   fVec = f*ones(length(Mesh.nodesT),1);

@@ -108,12 +108,17 @@ function [u,t] = IBVP2D(Mesh,m,a,b0,bx,by,f,gD,gN1,gN2,u0,t0,tend,steps,varargin
 %          if steps=[n,m], the n*m steps of equal length will be taken,
 %          and n intermediate results are returned
 %  options additional options, given as pairs name/value.
-%          Currently only the stepping algorithm can be selected as "solver"
-%          and the possible values
+%  "solver" to select the stepping algorithm. Th possible values are
 %          "CN"       the standard Crank-Nicolson (default)
 %          "implicit" the standard implicit solver
 %          "explicit" the standard explicit solver
 %          "RK"       an L-stable, implicit Runge-Kutta solver
+%
+%   "type" Complex coefficients can be selected
+%          "real": all coefficients are real (default)
+%          "complex": some coefficients might be complex
+%          If only the coefficient M is complex, there is no need to ask for complex coefficients.
+%
 %
 %        u is the matrix with n+1 columns, each of them containing
 %          the solution at a time
@@ -147,7 +152,7 @@ Mesh.node2DOF = Mesh.node2DOF(:,1);  %% not an elasticity problem
 if (gD==0)&&(gN1==0)  %% only solve for the homogeneous BC if necessary
   u_B = 0;
 else
-  u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,0,'type',TYPE);  %% solve BVP
+  u_B = BVP2D(Mesh,a,b0,bx,by,0,gD,gN1,gN2,'type',Type);  %% solve BVP
 endif
 switch Mesh.type
 case 'linear'    %% linear elements
@@ -220,7 +225,7 @@ ind_Dirichlet = find(Mesh.node2DOF(:,1)==0); %% Dirichlet nodes
 W = Wu(:,ind_free);
 
 t = t0;  f_dep_t = false;
-if ischar(f)
+if or(ischar(f),is_function_handle(f))
   fVec = feval(f,Mesh.nodes,t+dt/2);
   f_dep_t = true;  % has to be evaluated at each timestep
 elseif isscalar(f)
@@ -291,7 +296,7 @@ switch solver
    endfor % ii_2
    u(:,ii_t+1) = u_new + u_B;
  endfor
- 
+
  case 'RK'
  theta = 1-1/sqrt(2);
  [L,U,P,Q,R] = lu(W+theta*dt*A);  %% P*R\(W+theta*dt*A)*Q = L*U
