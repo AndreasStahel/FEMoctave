@@ -16,15 +16,15 @@ In 2022 a major update is available.
 
 In 2023 elasticity problems can be solved, plane stress, plane strain and axially symmetric setups.
 
-In April 2023 algorithms for 1D problems are available.
-
-In July 2023 a first algorithm for nonlinear, static 1D problems is available.
-
-In August 2023 the algorithm for nonlinear, static 1D problems is improved and many examples provided
-
-In October 2023 elementary Hertz contact problems provided
+In 2023 added:
+ algorithms for 1D problems
+ algorithm for nonlinear, static 1D problem
+ algorithm for nonlinear, static 1D problems is improved and many examples provided
+ elementary Hertz contact problems provided
 
 In February 2025 equations with non isotropic or with complex coefficients can be solved
+
+In late 2025 and early 2026 nonlinear solvers for 2D problems were added
 
 ## 2. PURPOSE
 The main goal is to provide a tool using Octave only to teach the method of finite elements, short FEM.
