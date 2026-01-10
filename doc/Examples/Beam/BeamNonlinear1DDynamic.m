@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} BeamNonlinear1DDynamic.m
+##
+## This is a demo file  inside the `doc/Examples/Beam/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% solve the nonlinear beam problem as dynamic problem
 L = 3; EI = 1; F2 = 2.0;
 Interval = linspace(0,L,100)';

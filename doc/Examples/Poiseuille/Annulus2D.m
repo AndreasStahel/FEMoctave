@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Annulus2D.m
+##
+## This is a demo file  inside the `doc/Examples/Poisseullie/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% Poisseuille flow in an annulus, 2D solution
 G = 1; mu = 1; R1 = 1; R2 = 2;
 angles = linspace(0,2*pi,201)'; angles = angles(1:end-1);

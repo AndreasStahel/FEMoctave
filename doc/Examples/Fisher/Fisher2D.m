@@ -1,4 +1,11 @@
-%% test the IBVP2DNL code
+## -*- texinfo -*-
+## @deftypefn  {} {} Fisher2D.m
+##
+## This is a demo file  inside the `doc/Examples/Fisher/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 clear *
 N = 25;  L = 50;
 FEMmesh = CreateMeshRect(linspace(0,L,N),linspace(0,L,N),-2,-1,-2,-1);

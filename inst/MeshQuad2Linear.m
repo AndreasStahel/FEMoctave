@@ -71,19 +71,19 @@ function MeshLin = MeshQuad2Linear(MeshQuad)
     edgesLinT(2*ii+[-1,0]) = MeshQuad.edgesT(ii);
   endfor %% update edges
 
-  MeshLin.elem   = elemLin;
-  MeshLin.elemT  = elemLinT;
-  MeshLin.elemArea  =elemLinArea;
-  MeshLin.nodes  = nodes;
-  MeshLin.nodesT = nodesT;
-  MeshLin.edges  = edgesLin;
-  MeshLin.edgesT = edgesLinT;
-  MeshLin.node2DOF =   MeshQuad.node2DOF;
-  MeshLin.nDOF =   MeshQuad.nDOF;
-  MeshLin.type = 'linear';
+  MeshLin.elem     = elemLin;
+  MeshLin.elemT    = elemLinT;
+  MeshLin.elemArea = elemLinArea;
+  MeshLin.nodes    = nodes;
+  MeshLin.nodesT   = nodesT;
+  MeshLin.edges    = edgesLin;
+  MeshLin.edgesT   = edgesLinT;
+  MeshLin.node2DOF = MeshQuad.node2DOF;
+  MeshLin.nDOF     = MeshQuad.nDOF;
+  MeshLin.type     = 'linear';
 
 
-  %% determine area of elements and the GP (Gauss integration Points)
+  %% determine the GP (Gauss integration Points)
   nElem = size(elemLin,1);
   GP = zeros(3*nElem,2);
   %% for each element

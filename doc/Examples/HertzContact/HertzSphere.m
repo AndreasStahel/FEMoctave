@@ -5,6 +5,7 @@
 ## Find the description in the documentation FEMdoc.pdf
 ##
 ## @end deftypefn
+
 PHASE = 1  %% 1: setup and computation
            %% 2: visualization of the result
            %% 3: parametric study for small and large penetration depth D

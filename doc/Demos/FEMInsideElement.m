@@ -1,4 +1,12 @@
-%  illustrate the behavior inside the elements
+## -*- texinfo -*-
+## @deftypefn  {} {} FEMInsideElement.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
+%%  illustrate the behavior inside the elements
 clear *
 MeshType = 'linear'  %% use 'linear', 'quadratic' or 'cubic'
 printing = 0;

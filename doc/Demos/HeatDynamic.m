@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HeatDynamic.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% a dynamic heat problem
 clear *
 N = 25; %%grid size 2N+1 by 2N+1

@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} BesselSuperconvergence.m
+##
+## This is a demo file  inside the `doc/Examples/BesselSuperconvergence/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% script file to test code
 clear *
 N = 10;  Triangle = 1

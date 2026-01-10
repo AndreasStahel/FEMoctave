@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HeatSemilinearLoop.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 h  = 0.1; %%typical radius of triangles
 nodes = [0 0 -1; pi 0, -1; pi pi -1; 0 pi -1];
 FEMmesh = CreateMeshTriangle("test",nodes,h^2/2);

@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} AnalyzeBoundary.m
+##
+## This is a demo file  inside the `doc/Examples/EIT/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% script to analyze the flux on the boundary
 %% assumes that EITforward.m war run before
 Angle = -90  % use 60, 120 or -90

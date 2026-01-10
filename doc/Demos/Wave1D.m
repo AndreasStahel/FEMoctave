@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Wave1D.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% test the 1D wave equation
 a = 1; b = 0; c = 0; d = 1; f = 0;
 w2 = 1; w1 = 0; ; BCleft = 0; BCright = [0,0];

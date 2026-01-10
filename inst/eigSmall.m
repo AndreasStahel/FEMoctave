@@ -10,7 +10,7 @@ function [eigval,evec,errorbound] = eigSmall(A,B,V,tol,Mode)
 %   V    is a mxn matrix, where n is the number of eigenvalues desired
 %        it contains the initial eigenvectors for the iteration
 %   tol  is the relative error, used as the stopping criterion
-%   Mode is use to select the eigenvalues
+%   Mode is used to select the eigenvalues, see "help eigs"
 %
 %   X    is a column vector with the eigenvalues
 %   EV   is a matrix whose columns represent normalized eigenvectors
@@ -24,13 +24,19 @@ switch nargin()
     B = speye(size(A,1));
     opts.tol = 1e-5;
     V = 5;
+    Mode =  'sm' ;  %% default
   case 2
     V = B;  %% second argument is the number of eigenvalues
-    B = speye(size(A,1));  % default id
+    B = speye(size(A,1));  % default identity matrix
     opts.tol = 1e-5;
+    Mode =  'sm' ;  %% default
   case 3
     opts.tol = 1e-5;
-  case {4,5}
+    Mode =  'sm' ;  %% default
+  case 4
+    opts.tol = tol;
+    Mode =  'sm' ;  %% default
+  case 5
     opts.tol = tol;
 endswitch
 

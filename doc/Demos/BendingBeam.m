@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} BendingBeam.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% bending of beam by an applied force
 L = 1; H = 0.1;
 E = 100e9; nu = 0; Force = 100;

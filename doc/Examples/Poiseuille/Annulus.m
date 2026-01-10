@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Annulus.m
+##
+## This is a demo file  inside the `doc/Examples/Poisseullie/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% Poisseuille flow in an annulus
 G = 1; mu = 1; R1 = 1; R2 = 2;
 Interval = linspace(R1,R2,21)';

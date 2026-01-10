@@ -1,3 +1,12 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} ShortestConnection.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
+
 %% test partial successive substitution with shortest connection
 interval = linspace(0,1,21)';
 a = @(x,u,du) 1./sqrt(1+du.^2);

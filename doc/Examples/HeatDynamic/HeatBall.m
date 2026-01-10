@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HeatBall.m
+##
+## This is a demo file  inside the `doc/Examples/HeatDynamic/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% solve a static heat problem in a ball, using the radius r only as variable
 R = 3; W = 0.1; N = 10;
 FEMmesh = CreateMeshRect(linspace(1,R,N+1),[-W/2,+W/2],-2,-2,-1,-1);

@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} PotentialFlow.m
+##
+## This is a demo file  inside the `doc/Examples/PotentialFlow/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% define the domain
 xy =[0 0 -2;5 0 -1;5 2 -2;3 2 -2;3 0.5 -2;2 0.5 -2;1 2 -2;0 2 -1];
 if 0  %% linear elements

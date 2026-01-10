@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} EigenvaluesDisk1D.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% examine a circle with radius R=1
 R = 1; N = 40;  interval = linspace(0,R,N)';
 f_r = @(r)r;

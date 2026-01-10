@@ -1,3 +1,12 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} ElasticWaveCorner.m
+##
+## This is a demo file  inside the `doc/Examples/ElasticWaves/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
+
 %%% speed sqrt(E/rho) for longitudinal waves
 E = 1; nu = 0; rho = 1;
 f = {0,0}; gD = {0,0}; gN = {0,0};

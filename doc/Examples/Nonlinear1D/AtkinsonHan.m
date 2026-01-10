@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} AtkinsonHan.m
+##
+## This is a demo file  inside the `doc/Examples/Nonlinear1D/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% AtkiHan09 Exercise 5.4.1 p. 241
 N = 501;
 interval = linspace(0,1,N)';

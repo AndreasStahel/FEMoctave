@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} TestNullSpace.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %%  script to illustrate the three dimensional null space
 
 Mesh = CreateMeshTriangle('test',[1 0 -22;2 0 -22;2 2 -22; 1 1 -22],0.01);

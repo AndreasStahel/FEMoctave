@@ -1,3 +1,12 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Catenary.m
+##
+## This is a demo file  inside the `doc/Examples/Nonlinear1D/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
+
 %% see AgarHodiRega19 p. 277 Problem 8.13
 m = 1; g = 9.81; T = 2; Interval = linspace(-1,1,51)';
 f = {@(x,u,du)m*g/T*sqrt(1+du.^2), @(x,u,du)0, @(x,u,du)m*g/T*du./sqrt(1+du.^2)};

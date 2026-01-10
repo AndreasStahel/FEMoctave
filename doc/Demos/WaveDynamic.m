@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} WaveDynamic.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% a dynamic wave problem
 clear *
 %% generate a circle

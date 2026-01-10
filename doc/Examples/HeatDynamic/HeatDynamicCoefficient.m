@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HeatDynamicCoefficient.m
+##
+## This is a demo file  inside the `doc/Examples/HeatDynamic/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% parameters
 h = 1.2;  l = 0.5; Nt = 60;  %% number of time steps
 FEMmesh = CreateMeshTriangle('Test',...

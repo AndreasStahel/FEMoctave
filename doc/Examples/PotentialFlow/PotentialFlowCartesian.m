@@ -1,3 +1,12 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} PotentialFlowCartesian.m
+##
+## This is a demo file  inside the `doc/Examples/PotentialFlow/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
+
 pkg load femoctave
 R0 = 1; R1 = 3.5; N = 20;
 %% create the mesh

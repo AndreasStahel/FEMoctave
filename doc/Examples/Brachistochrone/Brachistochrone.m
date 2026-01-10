@@ -1,3 +1,12 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Brachistochrone.m
+##
+## This is a demo file  inside the `doc/Examples/Brachistochrone/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
+
 %% find a few brachistochrone curves
 L = 10; u_left = 0; u_right = 1; Interval = linspace(0,L,51);
 

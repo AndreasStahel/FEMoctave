@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} SingularDisc.m
+##
+## This is a demo file  inside the `doc/Examples/SingularDisc/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% create a circle with mesh
 x_p = [0;1;1;-1;-1;0]; y_p = [ 0;0;1;1;-1;-1];
 FEMmesh = CreateMeshTriangle("circle34",[x_p,y_p,-ones(size(x_p))], 0.01);
