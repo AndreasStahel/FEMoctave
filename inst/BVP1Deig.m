@@ -20,16 +20,15 @@
 
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}[@var{x},@var{Eval},@var{Evec},@var{errorbound}] = BVP1Deig(@var{interval},@var{a},@var{b},@var{c},@var{w},@var{BCleft},@var{BCright},@var{nVec},@var{options})
+## @deftypefn{function file}{}[@var{x},@var{Eval},@var{Evec},@var{errorbound}] = BVP1Deig(@var{interval},@var{a},@var{b},@var{c},@var{w},@var{BCleft},@var{BCright},@var{nVec},@var{tol})
 ##
-##determine eigenvalues @var{Eval} and eigenfunctions @var{Evec} for the BVP
+##determine the smallest eigenvalues @var{Eval} and eigenfunctions @var{Evec} for the BVP
 ##
+##@verbatim
 ##      -(a(x)*u'(x))' + b(x)*u'(x) + c(x)*u(x) = eVal*w(x)*u(x)
-##
 ##                                           u  = 0      on Dirichlet boundary
-##
-##                                        a*u'  = g_N2*u on  Neumann boundary
-##
+##                                        a*u'  = g_N2*u on Neumann boundary
+##@end verbatim
 ##parameters:
 ##@itemize
 ##@item @var{interval} the discretized interval for the BVP
@@ -42,20 +41,8 @@
 ##@item for a Dirichlet condition specify a single value @var{g_D=0}
 ##@item for a Neumann condition specify the values @var{[g_N1,g_N2]=[0,g_N2]}
 ##@end itemize
-##@item @var{nVec} the number of eigenvalues to be computed
-##@item @var{options} additional options, given as pairs name/value.
-##@itemize
+##@item @var{nVec} the number of smallest eigenvalues to be computed
 ##@item@var{tol} tolerance for the eigenvalue iteration, default 1e-5
-##@item@var{"MODE"} select the eigenvalues
-##@itemize
-##@item @var{"sm"}: smallest magnitude, default
-##@item @var{"sa"}: smallest algebraic
-##@item @var{"lm"}: largest magnitude
-##@item @var{sigma}: closest to scalar sigma
-##@item see "help eigs" for more options
-##@end itemize
-##@end itemize
-
 ##@end itemize
 ##
 ##return values
@@ -68,23 +55,9 @@
 ##
 ## @end deftypefn
 
-function  [x,eVal,eVec,errorbound] = BVP1Deig(interval,a,b,c,w,BCleft,BCright,nVec,varargin)
+function  [x,eVal,eVec,errorbound] = BVP1Deig(interval,a,b,c,w,BCleft,BCright,nVec,tol)
 
-tol  = 1e-5 ; %% default value
-Mode = 'sm' ; %% default value
-if (~isempty(varargin))
-  for cc = 1:2:length(varargin)
-    switch toupper(varargin{cc})
-      case {'TOL'}
-	tol = varargin{cc+1};
-      case {'MODE'}
-	Mode = varargin{cc+1};
-      otherwise
-	error('Invalid optional argument, %s. Possible values: TOL, MODE',varargin{cc});
-    endswitch % switch
-  endfor % for
-endif % if isempty
-
+if (nargin==8) tol = 1e-5;endif
 
 [A,M,x] = GenerateFEM1D(interval,a,b,c,w);
 
@@ -92,9 +65,9 @@ if length(BCleft)*length(BCright)==1  %% DD: Dirichlet at both ends
   A = A(2:end-1,2:end-1); M = M(2:end-1,2:end-1);
   if (nargout>=2)
     if (nargout==4)
-      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol,Mode);
+      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol);
     else
-      [eVal,eVec]            = eigSmall(A,M,nVec,tol,Mode);
+      [eVal,eVec]            = eigSmall(A,M,nVec,tol);
     endif
   endif %% nargout>3
   eVec = [zeros(1,nVec);eVec;zeros(1,nVec)];
@@ -103,9 +76,9 @@ elseif (length(BCleft)>1)&&(length(BCright)==1) %% ND: Neumann on the left, Diri
     A(1,1) += BCleft(2);
     if (nargout>=3)
       if (nargout==4)
-	[eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol,Mode);
+	[eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol);
       else
-	[eVal,eVec]            = eigSmall(A,M,nVec,tol,Mode);
+	[eVal,eVec]            = eigSmall(A,M,nVec,tol);
       endif
     endif %% nargout>3
     eVec = [eVec;zeros(1,nVec)];
@@ -114,9 +87,9 @@ elseif (length(BCleft)==1)&&(length(BCright)>1) %% DN: Dirichlet on the left, Ne
   A(end,end) -= BCright(2);
   if (nargout>=3)
     if (nargout==4)
-      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol,Mode);
+      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol);
     else
-      [eVal,eVec]            = eigSmall(A,M,nVec,tol,Mode);
+      [eVal,eVec]            = eigSmall(A,M,nVec,tol);
     endif
   endif %% nargout>3
   eVec = [zeros(1,nVec);eVec];
@@ -124,9 +97,9 @@ else  %% NN: Neumann on both endpoints
   A(1,1) += BCleft(2); A(end,end) -= BCright(2);
   if (nargout>=3)
     if (nargout==4)
-      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol,Mode);
+      [eVal,eVec,errorbound] = eigSmall(A,M,nVec,tol);
     else
-      [eVal,eVec]            = eigSmall(A,M,nVec,tol,Mode);
+      [eVal,eVec]            = eigSmall(A,M,nVec,tol);
     endif
   endif %% nargout>3
 endif
