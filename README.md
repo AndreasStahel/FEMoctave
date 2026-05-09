@@ -24,7 +24,7 @@ In 2023 added:
 
 In February 2025 equations with non isotropic or with complex coefficients can be solved
 
-In late 2025 and early 2026 nonlinear solvers for 2D problems were added
+In late 2025 and early 2026 nonlinear solvers for static and dynamic 2D problems were added
 
 ## 2. PURPOSE
 The main goal is to provide a tool using Octave only to teach the method of finite elements, short FEM.

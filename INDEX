@@ -19,6 +19,7 @@ Solving equations
   BVP1Deig.m
   BVP1DNL.m
   IBVP1DNL.m
+  IBVP2DNL.m
 Manipulating meshes
   CreateMeshRect.m
   CreateMeshTriangle.m
@@ -96,6 +97,7 @@ Demo m-files
   Stability1D_dynamic.m
   NL_Newton.m
   ShortestConnection.m
+  HeatSemilinearLoop.m
 
 Example m-files
   WaveAnimation.m
@@ -133,7 +135,7 @@ Example m-files
   BendingBeam1D.m
   Keller.m
   Keller2.m
-  SaltLakeCity2Zuerich/SaltLakeCity2Zuerich.m
+  SaltLakeCity2Zuerich.m
   Pendulum.m
   PorousCatalyst.m
   Troesch.m
@@ -152,3 +154,7 @@ Example m-files
   Bratu.m
   Bratu2D.m
   BratuParametric.m
+  Fisher.m
+  FisherDynamic.m
+  FisherDynamicRadial.m
+  Fisher2D.m

@@ -1,22 +1,35 @@
 TODO for next release:
 * ???
 
-FEMoctave 2.1.9, ??.??.2025
+FEMoctave 2.1.9, May 09, 2026
 ---------------------------
-* solver for semilinear 2D problems added
+* solver for semilinear static 2D problems added
+* solver for semilinear dynamic parabolic problems added, 1D and 2D
+* new time stepping algorithms for 1D dynamic problems
+* use the rescaled LU factorization in IBVP2D.m and I2BVP2D.m
+* add option "mode" to eigenvalue solvers
 
 New Files
 - inst/BVP2DNL.m
        GenerateWeight2D.m
+       IBVP2D.m
+       I2BVP2D.m
+       BVP1Deig.m
+       BVP2Deig.m
+       eigSmall.m
+       IBVP1DNL.m
+       IBVP2DNL.m
 
 - doc/Demos/DemoBVP2DNL.m
+            HeatSemilinearLoop.m
       Examples/Nonlinear2D/Liouville.m
                            Bratu.m
                            Bratu2D.m
                            BratuParametric.m
       Examples/PotentialFlow/PotentialFlowPolar.m
                              PotentialFlowCartesian.m
-
+      Examples/Schroedinger/HydrogenCylindrical.m
+      Examples/Fisher/Fisher2D.m
 
 FEMoctave 2.1.8, 22.03.2025
 ---------------------------
