@@ -22,7 +22,7 @@
 ##
 ##   generate the matrices @var{A} and @var{M} to discretize the expression
 ##
-##     -d/dx (a(x) d/dx u(x)) + b(x)*d/dx u(x) + c(x)*u(x) + d(x)*f(x)
+##     -d/dx (a(x) d/dx u(x)) + b(x)*d/dx u(x) + c(x)*u(x) - d(x)*f(x)
 ##
 ##    by    A*u - M*f
 ##
@@ -36,8 +36,8 @@
 ##
 ##return values
 ##@itemize
-##@item @var{A} matrix discretizing the expressions involving u(x) 
-##@item @var{M} matrix discretizing the evalaution of d(x)*f(x)
+##@item @var{A} matrix discretizing the expressions involving u(x)
+##@item @var{M} matrix discretizing the evaluation of d(x)*f(x)
 ##@item @var{xnew} vector with the grid points
 ##@end itemize
 ##
@@ -95,7 +95,7 @@ end%function
 
 %!demo
 %! x = linspace(0,1,11);
-%! a = 1; b = 0; c = 0; d = 1;  %% solve -u"=x^2  
+%! a = 1; b = 0; c = 0; d = 1;  %% solve -u"=x^2
 %! [A,M,r] = GenerateFEM1D(x,a,b,c,d);
 %! A = A(2:end-1,2:end-1); M = M(2:end-1,:); %% Dirichlet BC on both ends
 %! f = r.^2;
