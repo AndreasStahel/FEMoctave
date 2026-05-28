@@ -1,11 +1,3 @@
-## -*- texinfo -*-
-## @deftypefn  {} {} HertzCylinder.m
-##
-## This is a demo file inside the `doc/Examples/HertzContact/` directory@*
-## Find the description in the documentation FEMdoc.pdf
-##
-## @end deftypefn
-
 PHASE = 1  %% 1: setup and computation
            %% 2: visualization of the result
            %% 3: parametric study for small penetration depth D
@@ -20,7 +12,7 @@ R = 1; D = 0.01;          %% radius of cylinder and indentation depth
 W = 0.75; H = 1;          %% width and height of the computational domain
 a0 = sqrt(D)*sqrt(2*R-D)  %% first estimate of contact point
 
-Area = 0.1^2; MeshType = 'quadratic';  %% definition of the mesh
+Area = 0.1^2; MeshType = 'cubic';  %% definition of the mesh
 Seg1.name = 'Segment';
 Seg1.border = [0,-2*a0,0;2*a0,-2*a0,0;2*a0,0,0];
 Point1.name = 'MeshSize';   Point1.where = [+a0,-a0];  Point1.area = Area/20;   %% finer mesh arounf origin
