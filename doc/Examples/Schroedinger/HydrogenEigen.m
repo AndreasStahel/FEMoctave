@@ -31,9 +31,3 @@ figure(1); plot(r,EVec*diag(Sign))
 figure(2); plot(r,log(v1))
            xlabel('r/a_0'); ylabel('ln(v_1(r)/r)'); xlim([0,30])
 
-printing = 0;
-if printing
-  figure(1); print -dpdfcrop HydrogenEigenGraph.pdf
-  figure(2); print -dpdfcrop HydrogenEigenLog_u1.pdf
-endif
-

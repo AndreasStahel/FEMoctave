@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} SineGordonBreather.m
+##
+## This is a demo file inside the `doc/Examples/SineGordon/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 omega = 0.5; L = 10; Interval = linspace(0,L,501); Tend = 4.5*pi/omega;
 
 f  = @(x,t,u)-sin(u);

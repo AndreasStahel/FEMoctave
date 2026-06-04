@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} DemoWaveNL.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 L = 10; Interval = linspace(0,L,101); Tend = 50; D = 1;
 f  = @(x,t,u)0.5*(exp(-x/L)-0.5*sin(u));
 v0 = @(x)0.1*x.*sin(pi*x/L);

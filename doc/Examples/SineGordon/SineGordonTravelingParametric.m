@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} SineGordonTravelingParametric.m
+##
+## This is a demo file inside the `doc/Examples/SineGordon/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 c = 0.2; L = 4;  Interval = linspace(0,L,1001);
 f  = {@(x,u)sin(u),@(x,u)cos(u)};
 u0 = @(x)pi+pi*sin(pi/2*x/L);
