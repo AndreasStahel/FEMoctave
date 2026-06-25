@@ -26,10 +26,13 @@
 ##@item @var{E} Young's modulus of elasticity, either as constant or as string with the function name
 ##@item @var{nu} Poisson's ratio, either as constant or as string with the function name
 ##@item @var{options} additional options, given as pairs name/value.
-##Currently only plain stress or strain be can selected as @var{"model"} and the possible values
+##@itemize
+##@item @var{"model"} to select the type of plane elasticity problem
 ##@itemize
 ##@item @var{"Pstress"} for the plain stress assumption (default)
 ##@item @var{"Pstrain"} for the plain strain assumption
+##@end itemize
+##@item @var{"thermal"} and value @var{alphaDeltaT} has to be the function to evaluate the product of @var{alpha} (coefficient of heat expansion) and @var{DeltaT} the assumed difference of the temperature. @var{alphaDeltaT} can be given as scalar, vector with the values at the Gauss points or as function or function handle. Default : @var{alpha} = 0
 ##@end itemize
 ##@end itemize
 ##
@@ -51,12 +54,14 @@
 
 function w = EvaluateEnergyDensity(Mesh,eps_xx,eps_yy,eps_xy,EFunc,nuFunc,varargin)
 
-Model = 'PSTRESS';
+Model = 'PSTRESS'; alphaDeltaT = 0;  %% default values
 if (~isempty(varargin))
   for cc = 1:2:length(varargin)
     switch tolower(varargin{cc})
       case {'model'}
         Model = toupper(varargin{cc+1});
+      case {'thermal'}
+        alphaDeltaT = varargin{cc+1};
       otherwise
         error('Invalid optional argument, %s',varargin{cc}.name);
     endswitch % switch
@@ -65,17 +70,16 @@ endif % if
 
 
 %% evaluate the material parameters at the nodes
-if ischar(EFunc)
-  EV = feval(EFunc,Mesh.nodes);
-else
-  EV = EFunc*ones(size(Mesh.nodesT,1),1);
-endif
+function resV = EvaluateFunc(F_name)
+  if     ischar(F_nam)              resV = feval(F_name,Mesh.nodes);
+  elseif is_function_handle(F_name) resV = F_name(Mesh.nodes);
+  else                              resV = F_name*ones(size(Mesh.nodesT,1),1);
+  endif
+endfunction
 
-if ischar(nuFunc)
-  nuV = feval(nuFunc,Mesh.nodes);
-else
-  nuV = nuFunc*ones(size(Mesh.nodesT,1),1);
-endif
+EV  = EvaluateFunc(EFunc);
+nuV = EvaluateFunc(nuFunc);
+alphaDeltaTV = EvaluateFunc(alphaDeltaT);
 
 switch toupper(Model)
 case 'PSTRESS'

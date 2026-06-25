@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Stahel
+## Copyright (C) 2026 Andreas Stahel
 ##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2022-10-19
+## Created: 2026-6-25
 
 
 ## -*- texinfo -*-
