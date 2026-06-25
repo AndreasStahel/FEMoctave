@@ -1,48 +1,14 @@
-function [gMat,gVec] = PStressEquationQuadM(Mesh,EFunc,nuFunc,fFunc,gDFunc,gNFunc)
-%%  [gMat,gVec] = PStressEquationQuadM(Mesh,EFunc,nuFunc,fFunc,gDFunc,gNFunc)
-%%
+function [gMat,gVec] = PStressEquationQuadM(Mesh,EV,nuV,ThermalCoeffV,f1V,f2V,gDFunc,gNFunc)
+%%  [gMat,gVec] = PStressEquationQuadM(Mesh,EV,nuV,ThermalCoeffV,f1V,f2V,gDFunc,gNFunc)%%
 %%  setup the equation for a plane stress problem with quadratic elements
 
 %% evaluate the functions
 nElem = size(Mesh.elem,1); nGP = size(Mesh.GP,1);
 nDOF = Mesh.nDOF;
 
-if ischar(EFunc)
-  EV = reshape(feval(EFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
-elseif isscalar(EFunc)
-  EV = EFunc*ones(nGP/nElem,nElem);
-else
-  EV = reshape(EFunc,nGP/nElem,nElem);
-endif
-
-if ischar(nuFunc)
-  nuV = reshape(feval(nuFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
-elseif isscalar(nuFunc)
-  nuV = nuFunc*ones(nGP/nElem,nElem);
-else
-  nuV = reshape(nuFunc,nGP/nElem,nElem);
-endif
-
 a1 = EV./(1-nuV.^2);
 a2 = nuV.*EV./(1-nuV.^2);
 a3 = EV./(1+nuV)/2;
-
-if ischar(fFunc{1})
-  f1V = reshape(feval(fFunc{1},Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
-elseif isscalar(fFunc{1})
-  f1V = fFunc{1}*ones(nGP/nElem,nElem);
-else
-  f1V = reshape(fFunc{1},nGP/nElem,nElem);
-endif
-
-if ischar(fFunc{2})
-  f2V = reshape(feval(fFunc{2},Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
-elseif isscalar(fFunc{2})
-  f2V = fFunc{2}*ones(nGP/nElem,nElem);
-else
-  f2V = reshape(fFunc{2},nGP/nElem,nElem);
-endif
-
 
 %% create memory for the sparse matrix and the RHS vector
 Si   = zeros(4*36*nElem,1); Sj = Si; Sval = Si; %% maximal number of contributions
@@ -72,8 +38,9 @@ for k = 1:nElem   %%for each element
 	  Gx'*diag(w.*a2(:,k))*Gy + Gy'*diag(w.*a3(:,k))*Gx]*area;
   mat2 = [Gy'*diag(w.*a2(:,k))*Gx + Gx'*diag(w.*a3(:,k))*Gy,...
 	  Gy'*diag(w.*a1(:,k))*Gy + Gx'*diag(w.*a3(:,k))*Gx]*area;
-  
   vec1 = area*M'*(w.*f1V(:,k));   vec2 = area*M'*(w.*f2V(:,k));
+  vec1 = vec1 + area*Gx'*(w.*ThermalCoeffV(:,k));
+  vec2 = vec2 + area*Gy'*(w.*ThermalCoeffV(:,k));
   dofs1 = Mesh.node2DOF(Mesh.elem(k,:),1);
   dofs2 = Mesh.node2DOF(Mesh.elem(k,:),2);
   for k1 = 1:6
@@ -86,18 +53,20 @@ for k = 1:nElem   %%for each element
 	  Si(ptrDOF)   = dofs1(k1);   Sj(ptrDOF) = dofs1(k2);
 	  Sval(ptrDOF) = mat1(k1,k2);  ptrDOF++;
 	else  %% k2 is a Dirichlet node for u1
-	  if   ischar(gDFunc{1}) gD1 = feval(gDFunc{1},cor(k2,:));
-	  else                   gD1 = gDFunc{1};
+	  if    ischar(gDFunc{1})              gD1 = feval(gDFunc{1},cor(k2,:));
+	  elseif is_function_handle(gDFunc{1}) gD1 = gDFunc{1}(cor(k2,:));
+	  else                                 gD1 = gDFunc{1};
 	  endif% ischchar
  	  gVec(dofs1(k1)) += mat1(k1,k2)*gD1;
 	endif %%dofs1(k2)
-	
+
 	if dofs2(k2)>0  % k2 is free node for u2
 	  Si(ptrDOF)   = dofs1(k1); Sj(ptrDOF) = nDOF(1)+dofs2(k2);
 	  Sval(ptrDOF) = mat1(k1,k2+6);  ptrDOF++;
 	else  %% k2 is a Dirichlet node for u2
-	  if   ischar(gDFunc{2}) gD2 = feval(gDFunc{2},cor(k2,:));
-	  else                   gD2 = gDFunc{2};
+	  if     ischar(gDFunc{2})             gD2 = feval(gDFunc{2},cor(k2,:));
+	  elseif is_function_handle(gDFunc{2}) gD2 = gDFunc{2}(cor(k2,:));
+	  else                                 gD2 = gDFunc{2};
 	  endif% ischchar
  	  gVec(     dofs1(k1)) += mat1(k1,k2+6)*gD2;
 	endif %%dofs1(k2)
@@ -113,8 +82,9 @@ for k = 1:nElem   %%for each element
 	  Si(ptrDOF)   = nDOF(1)+dofs2(k1); Sj(ptrDOF) = dofs1(k2);
 	  Sval(ptrDOF) = mat2(k1,k2);  ptrDOF++;
 	else  %% k2 is a Dirichlet node for u1
-	  if   ischar(gDFunc{1}) gD1 = feval(gDFunc{1},cor(k2,:));
-	  else                   gD1 = gDFunc{1};
+	  if     ischar(gDFunc{1})             gD1 = feval(gDFunc{1},cor(k2,:));
+	  elseif is_function_handle(gDFunc{1}) gD1 = gDFunc{1}(cor(k2,:));
+	  else                                 gD1 = gDFunc{1};
 	  endif% ischchar
  	  gVec(nDOF(1)+dofs2(k1)) += mat2(k1,k2)*gD1;
 	endif %%dofs1(k2)
@@ -123,8 +93,9 @@ for k = 1:nElem   %%for each element
 	  Si(ptrDOF)   = nDOF(1)+dofs2(k1); Sj(ptrDOF) = nDOF(1)+dofs2(k2);
 	  Sval(ptrDOF) = mat2(k1,k2+6);  ptrDOF++;
 	else  %% k2 is a Dirichlet node for u2
-	  if   ischar(gDFunc{2}) gD2 = feval(gDFunc{2},cor(k2,:));
-	  else                   gD2 = gDFunc{2};
+	  if     ischar(gDFunc{2})             gD2 = feval(gDFunc{2},cor(k2,:));
+	  elseif is_function_handle(gDFunc{2}) gD2 = gDFunc{2}(cor(k2,:));
+	  else                                 gD2 = gDFunc{2};
 	  endif% ischchar
  	  gVec(nDOF(1)+dofs2(k1)) += mat2(k1,k2+6)*gD2;
 	endif %%dofs1(k2)
@@ -160,8 +131,9 @@ for k = 1:size(Mesh.edges,1)
     dofs = Mesh.node2DOF(Mesh.edges(k,:),:);
     dofs1 = dofs(:,1);  dofs2 = dofs(:,2);
     if EdgeType_x == -3  % nonzero force in x-direction
-      if ischar(gNFunc{1}) g1 = feval(gNFunc{1},[p1;p2;p3]);
-      else                 g1 = gNFunc{1}*ones(3,1);
+      if     ischar(gNFunc{1})             g1 = feval(gNFunc{1},[p1;p2;p3]);
+      elseif is_function_handel(gNFunc{1}) g1 = gNFunc{1}([p1;p2;p3]);
+      else                                 g1 = gNFunc{1}*ones(3,1);
       endif
       edgeVec1 = L*Mbc*g1;
       if (dofs1(1)>0)&&(dofs1(3)>0) %% both end points free
@@ -174,8 +146,9 @@ for k = 1:size(Mesh.edges,1)
     endif  % EdgeType_x
 
     if EdgeType_y == -3  % nonzero force in y-direction
-      if ischar(gNFunc{2}) g2 = feval(gNFunc{2},[p1;p2;p3]);
-      else                 g2 = gNFunc{2}*ones(3,1);
+      if     ischar(gNFunc{2})             g2 = feval(gNFunc{2},[p1;p2;p3]);
+      elseif is_function_handle(gNFunc{2}) g2 = gNFunc{2}([p1;p2;p3]);
+      else                                 g2 = gNFunc{2}*ones(3,1);
       endif
       edgeVec2 = L*Mbc*g2;
       if (dofs2(1)>0)&&(dofs2(3)>0) %% both end points free

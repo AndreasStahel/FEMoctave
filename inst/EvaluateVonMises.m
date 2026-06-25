@@ -51,9 +51,9 @@
 
 function [vonMises] = EvaluateVonMises(sigma_x,sigma_y,tau_xy,varargin)
   if nargin == 3  %% plane stress
-    vonMises = sqrt(sigma_x.^2+sigma_y.^2 -2*sigma_x.*sigma_y + 3*tau_xy.^2);
-  else  %% plane strain
+    vonMises = sqrt(sigma_x.^2+sigma_y.^2 - sigma_x.*sigma_y + 3*tau_xy.^2);
+  else            %% plane strain
     sigma_z = varargin{1};
-    vonMises = sqrt(0.5*((sigma_x-sigma_y).^2+(sigma_y-sigma_z).^2+(sigma_z-sigma_x).^2) + 3*tau_xy.^2);
+    vonMises = sqrt(0.5)*sqrt(((sigma_x-sigma_y).^2+(sigma_y-sigma_z).^2+(sigma_z-sigma_x).^2) + 3*tau_xy.^2);
   endif
 endfunction

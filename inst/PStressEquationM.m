@@ -1,49 +1,16 @@
-function [gMat,gVec] = PStressEquationM(Mesh,EFunc,nuFunc,fFunc,gDFunc,gNFunc)
-%%  [gMat,gVec] = PStressEquationM(Mesh,EFunc,nuFunc,fFunc,gDFunc,gNFunc)
+function [gMat,gVec] = PStressEquationM(Mesh,EV,nuV,ThermalCoeffV,f1V,f2V,gDFunc,gNFunc)
+%%  [gMat,gVec] = PStressEquationM(Mesh,EV,nuV,ThermalCoeffV,f1V,f2V,gDFunc,gNFunc)
 %%
 %%  setup the equation for a plane stress problem with linear elements
 
-nElem = size(Mesh.elem,1); nGP = size(Mesh.GP,1);
+nElem = size(Mesh.elem,1); %%nGP = size(Mesh.GP,1);
 nDOF = Mesh.nDOF;
-
-if ischar(EFunc)
-  EV = reshape(feval(EFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
-elseif isscalar(EFunc)
-  EV = EFunc*ones(nGP/nElem,nElem);
-else
-  EV = reshape(EFunc,nGP/nElem,nElem);
-endif
-
-if ischar(nuFunc)
-  nuV = reshape(feval(nuFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
-elseif isscalar(nuFunc)
-  nuV = nuFunc*ones(nGP/nElem,nElem);
-else
-  nuV = reshape(nuFunc,nGP/nElem,nElem);
-endif
 
 a1 = sum(EV./(1-nuV.^2))/3;
 a2 = sum(nuV.*EV./(1-nuV.^2))/3;
 a3 = sum(EV./(1+nuV))/6;
 
-if ischar(fFunc{1})
-  f1V = reshape(feval(fFunc{1},Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
-elseif isscalar(fFunc{1})
-  f1V = fFunc{1}*ones(nGP/nElem,nElem);
-else
-  f1V = reshape(fFunc{1},nGP/nElem,nElem);
-endif
-
-if ischar(fFunc{2})
-  f2V = reshape(feval(fFunc{2},Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
-elseif isscalar(fFunc{2})
-  f2V = fFunc{2}*ones(nGP/nElem,nElem);
-else
-  f2V = reshape(fFunc{2},nGP/nElem,nElem);
-endif
-
 %% create memory for the sparse matrix and the RHS vector
-
 Si   = zeros(4*9*nElem,1); Sj = Sval = Si;  %% maximal number of contributions
 gVec = zeros(sum(nDOF),1);
 
@@ -59,6 +26,8 @@ for k = 1:nElem   %%for each element
   mat1 = area*[a1(k)*Gx'*Gx + a3(k)*Gy'*Gy , a2(k)*Gx'*Gy + a3(k)*Gy'*Gx];
   mat2 = area*[a2(k)*Gy'*Gx + a3(k)*Gx'*Gy , a1(k)*Gy'*Gy + a3(k)*Gx'*Gx];
   vec1 = area/3*M*f1V(:,k);  vec2 = area/3*M*f2V(:,k);
+  vec1 = vec1 + area/3*sum(ThermalCoeffV(:,k))*Gx';
+  vec2 = vec2 + area/3*sum(ThermalCoeffV(:,k))*Gy';
   dofs1 = Mesh.node2DOF(Mesh.elem(k,:),1);
   dofs2 = Mesh.node2DOF(Mesh.elem(k,:),2);
   for k1 = 1:3
@@ -71,8 +40,9 @@ for k = 1:nElem   %%for each element
 	  Si(ptrDOF)   = dofs1(k1);   Sj(ptrDOF) = dofs1(k2);
 	  Sval(ptrDOF) = mat1(k1,k2);  ptrDOF++;
 	else  %% k2 is a Dirichlet node for u1
-	  if   ischar(gDFunc{1}) gD1 = feval(gDFunc{1},cor(k2,:));
-	  else                   gD1 = gDFunc{1};
+	  if    ischar(gDFunc{1})              gD1 = feval(gDFunc{1},cor(k2,:));
+	  elseif is_function_handle(gDFunc{1}) gD1 = gDFunc{1}(cor(k2,:));
+	  else                                 gD1 = gDFunc{1};
 	  endif% ischchar
  	  gVec(dofs1(k1)) += mat1(k1,k2)*gD1;
 	endif %%dofs1(k2)
@@ -81,8 +51,9 @@ for k = 1:nElem   %%for each element
 	  Si(ptrDOF)   = dofs1(k1); Sj(ptrDOF) = nDOF(1)+dofs2(k2);
 	  Sval(ptrDOF) = mat1(k1,k2+3);  ptrDOF++;
 	else  %% k2 is a Dirichlet node for u2
-	  if   ischar(gDFunc{2}) gD2 = feval(gDFunc{2},cor(k2,:));
-	  else                   gD2 = gDFunc{2};
+	  if     ischar(gDFunc{2})             gD2 = feval(gDFunc{2},cor(k2,:));
+	  elseif is_function_handle(gDFunc{2}) gD2 = gDFunc{2}(cor(k2,:));
+	  else                                 gD2 = gDFunc{2};
 	  endif% ischchar
  	  gVec(     dofs1(k1)) += mat1(k1,k2+3)*gD2;
 	endif %%dofs1(k2)
@@ -98,8 +69,9 @@ for k = 1:nElem   %%for each element
 	  Si(ptrDOF)   = nDOF(1)+dofs2(k1); Sj(ptrDOF) = dofs1(k2);
 	  Sval(ptrDOF) = mat2(k1,k2);  ptrDOF++;
 	else  %% k2 is a Dirichlet node for u1
-	  if   ischar(gDFunc{1}) gD1 = feval(gDFunc{1},cor(k2,:));
-	  else                   gD1 = gDFunc{1};
+	  if     ischar(gDFunc{1})             gD1 = feval(gDFunc{1},cor(k2,:));
+	  elseif is_function_handle(gDFunc{1}) gD1 = gDFunc{1}(cor(k2,:));
+	  else                                 gD1 = gDFunc{1};
 	  endif% ischchar
  	  gVec(nDOF(1)+dofs2(k1)) += mat2(k1,k2)*gD1;
 	endif %%dofs1(k2)
@@ -108,8 +80,9 @@ for k = 1:nElem   %%for each element
 	  Si(ptrDOF)   = nDOF(1)+dofs2(k1); Sj(ptrDOF) = nDOF(1)+dofs2(k2);
 	  Sval(ptrDOF) = mat2(k1,k2+3);  ptrDOF++;
 	else  %% k2 is a Dirichlet node for u2
-	  if   ischar(gDFunc{2}) gD2 = feval(gDFunc{2},cor(k2,:));
-	  else                   gD2 = gDFunc{2};
+	  if     ischar(gDFunc{2})             gD2 = feval(gDFunc{2},cor(k2,:));
+	  elseif is_function_handle(gDFunc{2}) gD2 = gDFunc{2}(cor(k2,:));
+	  else                                 gD2 = gDFunc{2};
 	  endif% ischchar
  	  gVec(nDOF(1)+dofs2(k1)) += mat2(k1,k2+3)*gD2;
 	endif %%dofs1(k2)
