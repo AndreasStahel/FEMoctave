@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} Demo_PlaneStrainThermal.m
+##
+## This is a demo file  inside the `doc/Demos/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 E = 110e3; nu = 0.35; alpha = 1.7e-5; %% copper, length in mm
 L = 0.1;  N = 11;
 
