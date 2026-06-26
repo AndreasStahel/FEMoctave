@@ -71,7 +71,7 @@ endif % if
 
 %% evaluate the material parameters at the nodes
 function resV = EvaluateFunc(F_name)
-  if     ischar(F_nam)              resV = feval(F_name,Mesh.nodes);
+  if     ischar(F_name)              resV = feval(F_name,Mesh.nodes);
   elseif is_function_handle(F_name) resV = F_name(Mesh.nodes);
   else                              resV = F_name*ones(size(Mesh.nodesT,1),1);
   endif
@@ -83,11 +83,12 @@ alphaDeltaTV = EvaluateFunc(alphaDeltaT);
 
 switch toupper(Model)
 case 'PSTRESS'
-  w =  EV./(2*(1-nuV.^2)).*(eps_xx.^2+eps_yy.^2+2*nuV.*eps_xx.*eps_yy+2*(1-nuV).*eps_xy.^2);
+  w =  EV./(2*(1-nuV.^2)).*(eps_xx.^2+eps_yy.^2+2*nuV.*eps_xx.*eps_yy+2*(1-nuV).*eps_xy.^2)+EV.*alphaDeltaTV./(1-nuV).*(eps_xx+eps_yy);
 case 'PSTRAIN'
+  wThermal = EV.*alphaDeltaTV./(1-2*nuV).*(eps_xx+eps_yy)
   EV = EV./(1-nuV.^2);
   nuV = nuV./(1-nuV);
-  w =  EV./(2*(1-nuV.^2)).*(eps_xx.^2+eps_yy.^2+2*nuV.*eps_xx.*eps_yy+2*(1-nuV).*eps_xy.^2);
+  w =  EV./(2*(1-nuV.^2)).*(eps_xx.^2+eps_yy.^2+2*nuV.*eps_xx.*eps_yy+2*(1-nuV).*eps_xy.^2)+wThermal;
 otherwise
   error('Invalid optional argument for model: %s, valid are PSTRESS or PSTRAIN',Model);
 endswitch
