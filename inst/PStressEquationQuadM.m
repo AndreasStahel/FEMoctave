@@ -132,7 +132,7 @@ for k = 1:size(Mesh.edges,1)
     dofs1 = dofs(:,1);  dofs2 = dofs(:,2);
     if EdgeType_x == -3  % nonzero force in x-direction
       if     ischar(gNFunc{1})             g1 = feval(gNFunc{1},[p1;p2;p3]);
-      elseif is_function_handel(gNFunc{1}) g1 = gNFunc{1}([p1;p2;p3]);
+      elseif is_function_handle(gNFunc{1}) g1 = gNFunc{1}([p1;p2;p3]);
       else                                 g1 = gNFunc{1}*ones(3,1);
       endif
       edgeVec1 = L*Mbc*g1;

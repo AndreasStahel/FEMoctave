@@ -68,17 +68,16 @@ if (~isempty(varargin))
   endfor % for
 endif % if
 
-
 %% evaluate the material parameters at the nodes
 function resV = EvaluateFunc(F_name)
-  if     ischar(F_name)              resV = feval(F_name,Mesh.nodes);
+  if     ischar(F_name)             resV = feval(F_name,Mesh.nodes);
   elseif is_function_handle(F_name) resV = F_name(Mesh.nodes);
   else                              resV = F_name*ones(size(Mesh.nodesT,1),1);
   endif
 endfunction
 
-EV  = EvaluateFunc(EFunc);
-nuV = EvaluateFunc(nuFunc);
+EV           = EvaluateFunc(EFunc);
+nuV          = EvaluateFunc(nuFunc);
 alphaDeltaTV = EvaluateFunc(alphaDeltaT);
 
 switch toupper(Model)

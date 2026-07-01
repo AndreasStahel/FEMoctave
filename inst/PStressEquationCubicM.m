@@ -69,7 +69,7 @@ for k = 1:nElem   %%for each element
   mat1 = [Gx'*diag(w.*a1(:,k))*Gx + Gy'*diag(w.*a3(:,k))*Gy,...
 	  Gx'*diag(w.*a2(:,k))*Gy + Gy'*diag(w.*a3(:,k))*Gx]*area;
   mat2 = [Gy'*diag(w.*a2(:,k))*Gx + Gx'*diag(w.*a3(:,k))*Gy,...
-	  Gy'*diag(w.*a1(:,k))*Gy + Gx'*diag(w.*a3(:,k))*Gx]*area;  
+	  Gy'*diag(w.*a1(:,k))*Gy + Gx'*diag(w.*a3(:,k))*Gx]*area;
   vec1 = area*M'*(w.*f1V(:,k));   vec2 = area*M'*(w.*f2V(:,k));
   vec1 = vec1 + area*Gx'*(w.*ThermalCoeffV(:,k));
   vec2 = vec2 + area*Gy'*(w.*ThermalCoeffV(:,k));
@@ -91,7 +91,7 @@ for k = 1:nElem   %%for each element
 	  endif% ischchar
  	  gVec(dofs1(k1)) += mat1(k1,k2)*gD1;
 	endif %%dofs1(k2)
-	
+
 	if dofs2(k2)>0  % k2 is free node for u2
 	  Si(ptrDOF)   = dofs1(k1); Sj(ptrDOF) = nDOF(1)+dofs2(k2);
 	  Sval(ptrDOF) = mat1(k1,k2+10);  ptrDOF++;
@@ -120,7 +120,7 @@ for k = 1:nElem   %%for each element
 	  endif% ischchar
  	  gVec(nDOF(1)+dofs2(k1)) += mat2(k1,k2)*gD1;
 	endif %%dofs1(k2)
-	
+
 	if dofs2(k2)>0  % k2 is free node for u2
 	  Si(ptrDOF)   = nDOF(1)+dofs2(k1); Sj(ptrDOF) = nDOF(1)+dofs2(k2);
 	  Sval(ptrDOF) = mat2(k1,k2+10);  ptrDOF++;
@@ -153,7 +153,7 @@ for k = 1:size(Mesh.edges,1)
   if ((EdgeType_x==-3)||(EdgeType_y==-3))
     cor = Mesh.nodes(Mesh.edges(k,:),:); % the three nodes on the edge
     p2 =  (cor(1,:)+cor(4,:))/2; % the three Gauss points on the edge
-    p3 =  cor(4,:); 
+    p3 =  cor(4,:);
     vec_diff = sqrt(0.6)*(p3-p2);
     p1 = p2 - vec_diff;  %% the Gauss points on the edge
     p3 = p2 + vec_diff;
@@ -162,7 +162,7 @@ for k = 1:size(Mesh.edges,1)
     dofs1 = dofs(:,1);  dofs2 = dofs(:,2);
     if EdgeType_x == -3  % nonzero force in x-direction
       if     ischar(gNFunc{1})             g1 = feval(gNFunc{1},[p1;p2;p3]);
-      elseif is_function_handel(gNFunc{1}) g1 = gNFunc{1}([p1;p2;p3]);
+      elseif is_function_handle(gNFunc{1}) g1 = gNFunc{1}([p1;p2;p3]);
       else                                 g1 = gNFunc{1}*ones(3,1);
       endif
       edgeVec1 = L*Mbc*g1;
@@ -172,7 +172,7 @@ for k = 1:size(Mesh.edges,1)
 	gVec(dofs1([1,2,3]))  -= edgeVec1([1,2,3]);
       elseif (dofs1(1)==0)&&(dofs1(4)>0)   %% node 1 Dirichlet, node 4 free
 	gVec(dofs1([2,3,4]))  -= edgeVec1([2,3,4]);
-      endif    
+      endif
     endif  % EdgeType_x
 
     if EdgeType_y == -3  % nonzero force in y-direction

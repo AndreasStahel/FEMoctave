@@ -72,7 +72,7 @@ function [u1,u2] = PlaneStress(Mesh,E,nu,f,gD,gN,varargin)
     for cc = 1:2:length(varargin)
       switch tolower(varargin{cc})
 	case {'thermal'}
-          alphaDeltaT = toupper(varargin{cc+1});
+          alphaDeltaT = varargin{cc+1};
 	otherwise
           error('Invalid optional argument, %s',varargin{cc}.name);
       endswitch % switch
@@ -97,8 +97,8 @@ function [u1,u2] = PlaneStress(Mesh,E,nu,f,gD,gN,varargin)
   alphaDeltaTV  = ReadCoefficient(alphaDeltaT);
   f1V           = ReadCoefficient(f{1});
   f2V           = ReadCoefficient(f{2});
-  ThermalCoeffV = alphaDeltaTV./(1-nuV);
-  
+  ThermalCoeffV = EV.*alphaDeltaTV./(1-nuV);
+
   switch Mesh.type
     case 'linear'     %% first order elements
       [A,b] = PStressEquationM      (Mesh,EV,nuV,ThermalCoeffV,f1V,f2V,gD,gN);
@@ -119,15 +119,15 @@ function [u1,u2] = PlaneStress(Mesh,E,nu,f,gD,gN,varargin)
   u2(ind_free2) = ug([nDOF(1)+1:end]);
   ind_Dirichlet1 = find(Mesh.node2DOF(:,1)==0);
   ind_Dirichlet2 = find(Mesh.node2DOF(:,2)==0);
-  
-  if is_function_handle(gD{1}) 
+
+  if is_function_handle(gD{1})
     u1(ind_Dirichlet1)    = gD{1}(Mesh.nodes(ind_Dirichlet1,:));
   elseif ischar(gD{1})
     u1(ind_Dirichlet1)    = feval(gD{1},Mesh.nodes(ind_Dirichlet1,:));
   else u1(ind_Dirichlet1) = gD{1};
   endif
 
-  if is_function_handle(gD{2}) 
+  if is_function_handle(gD{2})
     u2(ind_Dirichlet2)    = gD{2}(Mesh.nodes(ind_Dirichlet2,:));
   elseif ischar(gD{2})
     u2(ind_Dirichlet2)    = feval(gD{2},Mesh.nodes(ind_Dirichlet2,:));

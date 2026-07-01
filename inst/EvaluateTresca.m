@@ -56,7 +56,7 @@ function sigma_T = EvaluateTresca(sigma_x,sigma_y,tau_xy,varargin)
   sigma_1 = Sum + Discr; sigma_2 = Sum - Discr;
   if nargin == 3  %% plane stress
     sigma_T = max([abs(2*Discr),abs(sigma_1),abs(sigma_2)],[],2);
-  else  %% plane stress
+  else            %% plane stress
     sigma_3 = varargin{1};
     sigma_T = max([abs(sigma_1-sigma_2),abs(sigma_1-sigma_3),abs(sigma_2-sigma_3)],[],2);
   endif

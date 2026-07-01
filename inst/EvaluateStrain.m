@@ -15,15 +15,16 @@
 ## <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}[@var{eps_xx},@var{eps_yy},@var{eps_xy}] = EvaluateStrain(@var{Mesh},@var{u1},@var{u2})
+## @deftypefn{function file}{}[@var{eps_xx},@var{eps_yy},@var{eps_xy}] = EvaluateStrain(@var{Mesh},@var{u1},@var{u2},@var{xy})
 ##
-##   evaluate the normal and shearing strains at the nodes
+##   evaluate the normal and shearing strains at the nodes or at arbitary points
 ##
 ##parameters:
 ##@itemize
 ##@item @var{Mesh} is the mesh describing the domain
-##@item @var{u1} vector with the values of the x-displacement at the nodes
-##@item @var{u2} vector with the values of the x-displacement's at the nodes
+##@item @var{u1} vector with the values of the x-displacements at the nodes
+##@item @var{u2} vector with the values of the y-displacements at the nodes
+##@item @var{xy} (optional) coodinates of points at which strain is evaluated
 ##@end itemize
 ##
 ##return values:
@@ -42,10 +43,20 @@
 ## @end deftypefn
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2022-10-23
+## Created: 2026-06-28
 
-function [eps_xx,eps_yy,eps_xy] = EvaluateStrain(Mesh,u1,u2)
-  [eps_xx, eps_xy1] = FEMEvaluateGradient(Mesh,u1);
-  [eps_xy2,eps_yy]  = FEMEvaluateGradient(Mesh,u2);
-  eps_xy = (eps_xy1+eps_xy2)/2;
+function [eps_xx,eps_yy,eps_xy] = EvaluateStrain(Mesh,u1,u2,xy)
+  if or(nargin<3,nargin>4)
+    print_usage()
+  endif
+  
+  if nargin==3
+    [eps_xx, eps_xy1] = FEMEvaluateGradient(Mesh,u1);
+    [eps_xy2,eps_yy]  = FEMEvaluateGradient(Mesh,u2);
+    eps_xy = (eps_xy1+eps_xy2)/2;
+  else
+    [~,eps_xx,  eps_xy1] = FEMgriddata(Mesh,u1,xy(:,1),xy(:,2));
+    [~,eps_xy2, eps_yy]  = FEMgriddata(Mesh,u2,xy(:,1),xy(:,2));
+    eps_xy = (eps_xy1+eps_xy2)/2;
+  endif  
 endfunction

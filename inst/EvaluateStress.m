@@ -17,7 +17,7 @@
 ## -*- texinfo -*-
 ## @deftypefn{function file}{}[@var{sigma_x},@var{sigma_y},@var{tau_xy},@var{sigma_z}] = EvaluateStress(@var{Mesh},@var{u1},@var{u2},@var{E},@var{nu},@var{options})
 ##
-##   evaluate the normal and shearing stresses at the nodes, using Hooke's law for plane stress or plane strain setups
+##   evaluate the normal and shearing stresses at the nodes or along a curve, using Hooke's law for plane stress or plane strain setups
 ##
 ##@itemize
 ##@item[@var{sigma_x},@var{sigma_y},@var{tau_xy}] = EvaluateStress(@var{Mesh},@var{u1},@var{u2},@var{E},@var{nu},@var{options})
@@ -34,9 +34,10 @@
 ##@item @var{E} Young's modulus of elasticity, either as constant or as string with the function name or a function handle
 ##@item @var{nu} Young's modulus of elasticity, either as constant or as string with the function name or a function handle
 ##@item @var{options} additional options, given as pairs name/value.
-##Currently only one option is possible
+##Currently two options are possible
 ##@itemize
 ##@item@var{"thermal"} and value @var{alphaDeltaT} has to be the function to evaluate the product of @var{alpha} (coefficient of heat expansion) and @var{DeltaT} the assumed difference of the temperature
+##@item{"curve"} and the value is a n*2 matrix with the coordinates of the points at which the stresses are evaluated
 ##@end itemize
 ##@end itemize
 ##
@@ -62,55 +63,58 @@
 function [sigma_x,sigma_y,tau_xy,sigma_z] = EvaluateStress(Mesh,u1,u2,EFunc,nuFunc,varargin)
 
   alphaDeltaT = 0;  %% default value
+  curve = false;
   if (~isempty(varargin))
     for cc = 1:2:length(varargin)
       switch tolower(varargin{cc})
 	case {'thermal'}
-          alphaDeltaT = toupper(varargin{cc+1});
-	otherwise
+          alphaDeltaT = varargin{cc+1};
+	case {'curve'}
+	  xy = varargin{cc+1};
+	  curve = true;
+       	otherwise
           error('Invalid optional argument, %s',varargin{cc}.name);
       endswitch % switch
     endfor % for
   endif % if
 
-  %% evaluate the strains
-  [eps_xx, eps_xy1] = FEMEvaluateGradient(Mesh,u1);
-  [eps_xy2,eps_yy]  = FEMEvaluateGradient(Mesh,u2);
-  eps_xy = (eps_xy1+eps_xy2)/2;
-
-  %% evaluate the material parameters at the nodes
-  if ischar(EFunc)                  EV = feval(EFunc,Mesh.nodes);
-  elseif is_function_handle(EFunc)  EV = EFunc(Mesh.nodes);
-  else                              EV = EFunc*ones(size(Mesh.nodesT,1),1);
+  if curve==false    %% evaluate the strains at the nodes
+    xy = Mesh.nodes;
+    [eps_xx,eps_yy,eps_xy] = EvaluateStrain(Mesh,u1,u2);
+  else               %% evaluate the strains along the curve
+    [eps_xx,eps_yy,eps_xy] = EvaluateStrain(Mesh,u1,u2,xy);
+  endif
+  
+  %% evaluate the material parameters at the nodes or along curve
+  if     ischar(EFunc)              EV = feval(EFunc,xy);
+  elseif is_function_handle(EFunc)  EV = EFunc(xy);
+  else                              EV = EFunc*ones(size(xy,1),1);
   endif
 
-  if ischar(nuFunc)                  nuV = feval(nuFunc,Mesh.nodes);
-  elseif  is_function_handle(nuFunc) nuV = feval(nuFunc,Mesh.nodes);
-  else                               nuV = nuFunc*ones(size(Mesh.nodesT,1),1);
+  if      ischar(nuFunc)             nuV = feval(nuFunc,xy);
+  elseif  is_function_handle(nuFunc) nuV = feval(nuFunc,xy);
+  else                               nuV = nuFunc*ones(size(xy,1),1);
   endif
 
-  if ischar(alphaDeltaT)
-    alphaDeltaTV = feval(alphaDeltaT,Mesh.nodes);
-  elseif is_function_handle(alphaDeltaT)
-    alphaDeltaTV = alphaDeltaT(Mesh.nodes);
-  else
-    alphaDeltaTV = alphaDeltaT*ones(size(Mesh.nodesT,1),1);
+  if ischar(alphaDeltaT)                 alphaDeltaTV = feval(alphaDeltaT,xy);
+  elseif is_function_handle(alphaDeltaT) alphaDeltaTV = alphaDeltaT(xy);
+  else                    alphaDeltaTV = alphaDeltaT*ones(size(xy,1),1);
   endif
 
   if nargout == 3 %% plane stress
     %% use Hooke's law
-    sigma_x = EV./(1-nuV.^2).*(eps_xx+nuV.*eps_yy)-EV.*alphaDeltaTV./(1-nuV);
-    sigma_y = EV./(1-nuV.^2).*(nuV.*eps_xx+eps_yy)-EV.*alphaDeltaTV./(1-nuV);
+    sigma_x = EV./(1-nuV.^2).*(eps_xx+nuV.*eps_yy) - EV.*alphaDeltaTV./(1-nuV);
+    sigma_y = EV./(1-nuV.^2).*(nuV.*eps_xx+eps_yy) - EV.*alphaDeltaTV./(1-nuV);
     tau_xy  = EV./(1+nuV).*eps_xy;
   endif
   if nargout == 4 %% plane strain
     %% use Hooke's law
-    Coeff = EV./((1+nuV).*(1-2*nuV));
-    sigma_x = Coeff.*((1-nuV).*eps_xx + nuV.*eps_yy)-EV.*alphaDeltaTV./(1-2*nuV);
-    sigma_y = Coeff.*(nuV.*eps_xx + (1-nuV).*eps_yy)-EV.*alphaDeltaTV./(1-2*nuV);
-    tau_xy  = Coeff.*(1-2*nuV).*eps_xy;
-    sigma_z = Coeff.*nuV.*(eps_xx + eps_yy)-EV.*alphaDeltaTV./(1-2*nuV);
+    Coeff  = EV./((1+nuV).*(1-2*nuV));
+    sigma_x= Coeff.*((1-nuV).*eps_xx+nuV.*eps_yy) - EV.*alphaDeltaTV./(1-2*nuV);
+    sigma_y= Coeff.*(nuV.*eps_xx+(1-nuV).*eps_yy) - EV.*alphaDeltaTV./(1-2*nuV);
+    tau_xy = Coeff.*(1-2*nuV).*eps_xy;
+    sigma_z= Coeff.*nuV.*(eps_xx + eps_yy)-EV.*alphaDeltaTV./(1-2*nuV);
   endif
 
-  
+
 endfunction
