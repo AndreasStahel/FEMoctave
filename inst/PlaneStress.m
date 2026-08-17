@@ -44,7 +44,7 @@
 ##@item @var{options} additional options, given as pairs name/value.
 ##Currently only one option is possible
 ##@itemize
-##@item@var{"thermal"} and value @var{alphaDeltaT} has to be the function to evaluate the product of @var{alpha} (coefficient of heat expansion) and @var{DeltaT} the assumed difference of the temperature. @var{alphaDeltaT} can be given as scalar, vector with the values at the Gauss points or as function or function handle.
+##@item @var{"thermal"} and value @var{alphaDeltaT} has to be the function to evaluate the product of @var{alpha} (coefficient of heat expansion) and @var{DeltaT} the assumed difference of the temperature. @var{alphaDeltaT} can be given as scalar, vector with the values at the Gauss points or as function or function handle.
 ##@end itemize
 ##@end itemize
 ##

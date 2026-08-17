@@ -20,6 +20,9 @@ Solving equations
   BVP1DNL.m
   IBVP1DNL.m
   IBVP2DNL.m
+  I2BVP2D.m
+  I2BVP1DNL.m
+
 Manipulating meshes
   CreateMeshRect.m
   CreateMeshTriangle.m
@@ -98,6 +101,8 @@ Demo m-files
   NL_Newton.m
   ShortestConnection.m
   HeatSemilinearLoop.m
+  Demo_PlaneStressThermal.m
+  Demo_PlaneStrainThermal.m
 
 Example m-files
   WaveAnimation.m
@@ -158,3 +163,11 @@ Example m-files
   FisherDynamic.m
   FisherDynamicRadial.m
   Fisher2D.m
+  SineGordonBreather.m
+  SineGordonTravelingParametric.m 
+  HeliumGroundState.m
+  HeliumGroundStateTriangle.m
+  PlateThermalExpansion.m
+  SwanbomHole.m
+  SwanbomLoaded.m
+  Bimetallic.m

@@ -1,6 +1,30 @@
 TODO for next release:
 * ???
 
+FEMoctave 2.1.10, ??
+---------------------------
+* solver for semilinear wave problems
+* example for Sine-Gordon equation
+* example to determine the ground state of a helium atom
+* for plane stress and plane strain problems thermal expansion can be taken into account
+* examples for thermal loads for elasticity
+
+New files
+- inst/I2BVP2D.m
+       I2BVP1DNL.m
+
+-doc/Demos/DemoWaveNL.m
+           Demo_PlaneStressThermal.m
+           Demo_PlaneStrainThermal.m
+    Examples/SineGordon/SineGordonBreather.m
+                         SineGordonTravelingParametric.m 
+             /Schroedinger/HeliumGroundState.m
+                           HeliumGroundStateTriangle.m
+             /Elasticity/PlateThermalExpansion.m
+                         SwanbomHole.m
+                         SwanbomLoaded.m
+                         Bimetallic.m
+
 FEMoctave 2.1.9, May 09, 2026
 ---------------------------
 * solver for semilinear static 2D problems added

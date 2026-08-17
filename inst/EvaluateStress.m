@@ -32,12 +32,12 @@
 ##@item @var{u1} vector with the values of the x-displacements at the nodes
 ##@item @var{u2} vector with the values of the y-displacements at the nodes
 ##@item @var{E} Young's modulus of elasticity, either as constant or as string with the function name or a function handle
-##@item @var{nu} Young's modulus of elasticity, either as constant or as string with the function name or a function handle
+##@item @var{nu} Poisson's ratio, either as constant or as string with the function name or a function handle
 ##@item @var{options} additional options, given as pairs name/value.
 ##Currently two options are possible
 ##@itemize
-##@item@var{"thermal"} and value @var{alphaDeltaT} has to be the function to evaluate the product of @var{alpha} (coefficient of heat expansion) and @var{DeltaT} the assumed difference of the temperature
-##@item{"curve"} and the value is a n*2 matrix with the coordinates of the points at which the stresses are evaluated
+##@item @var{"thermal"} and value @var{alphaDeltaT} has to be the function to evaluate the product of @var{alpha} (coefficient of heat expansion) and @var{DeltaT} the assumed difference of the temperature
+##@item @var{"curve"} and the value is a n by 2 matrix with the n coordinates of the points at which the stresses are evaluated
 ##@end itemize
 ##@end itemize
 ##
@@ -98,7 +98,7 @@ function [sigma_x,sigma_y,tau_xy,sigma_z] = EvaluateStress(Mesh,u1,u2,EFunc,nuFu
 
   if ischar(alphaDeltaT)                 alphaDeltaTV = feval(alphaDeltaT,xy);
   elseif is_function_handle(alphaDeltaT) alphaDeltaTV = alphaDeltaT(xy);
-  else                    alphaDeltaTV = alphaDeltaT*ones(size(xy,1),1);
+  else                          alphaDeltaTV = alphaDeltaT*ones(size(xy,1),1);
   endif
 
   if nargout == 3 %% plane stress
@@ -115,6 +115,5 @@ function [sigma_x,sigma_y,tau_xy,sigma_z] = EvaluateStress(Mesh,u1,u2,EFunc,nuFu
     tau_xy = Coeff.*(1-2*nuV).*eps_xy;
     sigma_z= Coeff.*nuV.*(eps_xx + eps_yy)-EV.*alphaDeltaTV./(1-2*nuV);
   endif
-
 
 endfunction

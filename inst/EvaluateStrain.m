@@ -19,6 +19,15 @@
 ##
 ##   evaluate the normal and shearing strains at the nodes or at arbitary points
 ##
+##
+## calling the function:
+##@itemize
+##@item with three arguments the values at the nodes are evaluated,
+## i.e. [@var{eps_xx},@var{eps_yy},@var{eps_xy}] = EvaluateStrain(@var{Mesh},@var{u1},@var{u2})
+##@item with four arguments the values at the points @var{xy} are evaluated,
+## i.e. [@var{eps_xx},@var{eps_yy},@var{eps_xy}] = EvaluateStrain(@var{Mesh},@var{u1},@var{u2},@var{xy})
+##@end itemize
+##
 ##parameters:
 ##@itemize
 ##@item @var{Mesh} is the mesh describing the domain
@@ -49,14 +58,14 @@ function [eps_xx,eps_yy,eps_xy] = EvaluateStrain(Mesh,u1,u2,xy)
   if or(nargin<3,nargin>4)
     print_usage()
   endif
-  
-  if nargin==3
+
+  if nargin==3  %% evaluate at the nodes
     [eps_xx, eps_xy1] = FEMEvaluateGradient(Mesh,u1);
     [eps_xy2,eps_yy]  = FEMEvaluateGradient(Mesh,u2);
     eps_xy = (eps_xy1+eps_xy2)/2;
-  else
+  else          %% evaluate at the specified points
     [~,eps_xx,  eps_xy1] = FEMgriddata(Mesh,u1,xy(:,1),xy(:,2));
     [~,eps_xy2, eps_yy]  = FEMgriddata(Mesh,u2,xy(:,1),xy(:,2));
     eps_xy = (eps_xy1+eps_xy2)/2;
-  endif  
+  endif
 endfunction

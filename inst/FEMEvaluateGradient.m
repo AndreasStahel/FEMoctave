@@ -1,4 +1,4 @@
-## Copyright (C) 2020 Andreas Stahel
+## Copyright (C) 2026 Andreas Stahel
 ##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@
 ## @end deftypefn
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2022-09-19
+## Created: 2026-08-08
 
 function [ux,uy] = FEMEvaluateGradient(Mesh,u)
 % [ux,uy] = FEMEvaluateGradient(Mesh,u)
@@ -57,10 +57,10 @@ function [ux,uy] = FEMEvaluateGradient(Mesh,u)
 %   the values of the gradient are determined on each element
 %   at the nodes the average of the gradients of the elements is used
 
-n_u = length(u);
-n_elem = size(Mesh.elemT,1);
-ux = zeros(n_u,1); uy = ux; ux_count = ux; % allocate the memory
-v1 = Mesh.nodes(Mesh.elem(:,1),:);
+n_u = length(u);                %% number of nodes
+n_elem = size(Mesh.elemT,1);    %% number of elements
+ux = zeros(n_u,1); uy = ux; ux_count = ux; %% allocate the memory
+v1 = Mesh.nodes(Mesh.elem(:,1),:);         %% the vectors forming the triangles
 v2 = Mesh.nodes(Mesh.elem(:,2),:)-v1;
 v3 = Mesh.nodes(Mesh.elem(:,3),:)-v1;
 
@@ -117,25 +117,25 @@ switch Mesh.type
     uy = uy./ux_count;
   case 'cubic'  %% cubic elements
     Nxi = [-11   -2   -2   -2   -2    1   -2   -2    1    1
-	           2   11    2    2   -1    2    2   -1    2   -1
-        	   0    0    0    0    0    0    0    0    0    0
-	           0    0   -9    9    6   -6   -3    0    0    3
-	           0    0   18    0    6    6    0    0    0    0
-	           0    0  -18    0   -6   -6    0    0    0    0
-	           0    0    9    3    6   -6   -9    0    0   -3
-	          18    9    0    6    3    0    6   -3   -6   -3
-	          -9  -18    0   -6    0   -3   -6    6    3    3
-	           0    0    0  -12  -12   12   12    0    0    0]/2;
+	   2   11    2    2   -1    2    2   -1    2   -1
+           0    0    0    0    0    0    0    0    0    0
+	   0    0   -9    9    6   -6   -3    0    0    3
+	   0    0   18    0    6    6    0    0    0    0
+	   0    0  -18    0   -6   -6    0    0    0    0
+	   0    0    9    3    6   -6   -9    0    0   -3
+	   18    9    0    6    3    0    6   -3   -6   -3
+	   -9  -18    0   -6    0   -3   -6    6    3    3
+	   0    0    0  -12  -12   12   12    0    0    0]/2;
     Nnu = [-11   -2   -2   -2   -2    1   -2   -2    1    1
-	           0    0    0    0    0    0    0    0    0    0
-	           2    2   11   -1    2    2   -1    2    2   -1
-	           0   18    0    6    0    0    0    0    6    0
-        	   0   -9    0    6    9    0    0   -3   -6    3
-       	    -9    0  -18    0   -6    3    6   -6   -3    3
-	          18    0    9    3    6   -6   -3    6    0   -3
-        	   0    9    0    6    3    0    0   -9   -6   -3
-        	   0  -18    0   -6    0    0    0    0   -6    0
-        	   0    0    0  -12  -12    0    0   12   12    0]/2;
+	   0    0    0    0    0    0    0    0    0    0
+	   2    2   11   -1    2    2   -1    2    2   -1
+	   0   18    0    6    0    0    0    0    6    0
+           0   -9    0    6    9    0    0   -3   -6    3
+       	   -9    0  -18    0   -6    3    6   -6   -3    3
+	   18    0    9    3    6   -6   -3    6    0   -3
+           0    9    0    6    3    0    0   -9   -6   -3
+           0  -18    0   -6    0    0    0    0   -6    0
+           0    0    0  -12  -12    0    0   12   12    0]/2;
     detinv = 0.5./Mesh.elemArea;
     v2 .*= detinv; v3 .*= detinv;  %% divide by the determinant of T
     uxs = bsxfun(@times,+v3(:,2),u(Mesh.elem)*Nxi)-bsxfun(@times,v2(:,2),u(Mesh.elem)*Nnu);
