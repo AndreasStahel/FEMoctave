@@ -2,7 +2,7 @@ function [gMat,gVec] = PStressEquationM(Mesh,EV,nuV,ThermalCoeffV,f1V,f2V,gDFunc
 %%  [gMat,gVec] = PStressEquationM(Mesh,EV,nuV,ThermalCoeffV,f1V,f2V,gDFunc,gNFunc)
 %%
 %%  setup the equation for a plane stress problem with linear elements
-
+  
 nElem = size(Mesh.elem,1); %%nGP = size(Mesh.GP,1);
 nDOF = Mesh.nDOF;
 
@@ -17,7 +17,8 @@ gVec = zeros(sum(nDOF),1);
 M = [4 1 1; 1 4 1; 1 1 4]/6;  %% interpolation matrix, is symmetric
 % insert the element matrices and vectors into the global matrix
 ptrDOF = 1;  %% counter for the DOF we are working on
-for k = 1:nElem   %%for each element
+nDOF1 = nDOF(1);  %% number of DOF for u1
+for k = 1:nElem   %% for each element
   cor = Mesh.nodes(Mesh.elem(k,:),:);  % coordinates of the nodes
  %% compute element stiffness matrix and vector
   area = Mesh.elemArea(k);  % area = 0.5*det(T)
@@ -29,65 +30,68 @@ for k = 1:nElem   %%for each element
   vec1 = vec1 + area/3*sum(ThermalCoeffV(:,k))*Gx';
   vec2 = vec2 + area/3*sum(ThermalCoeffV(:,k))*Gy';
   dofs1 = Mesh.node2DOF(Mesh.elem(k,:),1);
-  dofs2 = Mesh.node2DOF(Mesh.elem(k,:),2);
+  dofs2 = Mesh.node2DOF(Mesh.elem(k,:),2) + nDOF(1);
+  
   for k1 = 1:3
     %%%%%%%%%%% k1 is free for u1  %%%%%%%%%%%%%%%%
-    if dofs1(k1)>0 % k1 is free node for u1
-      gVec(dofs1(k1))      -= vec1(k1);
+    if dofs1(k1)>0 % k1 is free node for u1, construct contribution to equation
+      gVec(dofs1(k1))  -= vec1(k1);
       for k2 = 1:3
- 	%% gMat(dofs(k1),dofs(k2)) = gMat(dofs(k1),dofs(k2)) + mat(k1,k2);
-	if dofs1(k2)>0  % k2 is free node for u1
-	  Si(ptrDOF)   = dofs1(k1);   Sj(ptrDOF) = dofs1(k2);
+ 	if dofs1(k2)>0  % k2 is free node for u1
+          %% gMat(dofs1(k1),dofs1(k2)) +=  mat1(k1,k2)
+	  Si(ptrDOF)   = dofs1(k1);    Sj(ptrDOF) = dofs1(k2);
 	  Sval(ptrDOF) = mat1(k1,k2);  ptrDOF++;
 	else  %% k2 is a Dirichlet node for u1
-	  if    ischar(gDFunc{1})              gD1 = feval(gDFunc{1},cor(k2,:));
+	  if     ischar(gDFunc{1})             gD1 = feval(gDFunc{1},cor(k2,:));
 	  elseif is_function_handle(gDFunc{1}) gD1 = gDFunc{1}(cor(k2,:));
 	  else                                 gD1 = gDFunc{1};
 	  endif% ischchar
  	  gVec(dofs1(k1)) += mat1(k1,k2)*gD1;
 	endif %%dofs1(k2)
 	
-	if dofs2(k2)>0  % k2 is free node for u2
-	  Si(ptrDOF)   = dofs1(k1); Sj(ptrDOF) = nDOF(1)+dofs2(k2);
+	if dofs2(k2)>nDOF1  % k2 is free node for u2
+ 	  %% gMat(dofs1(k1),dofs2(k2)) += mat1(k1,k2+3);
+       %% Si(ptrDOF)   = dofs1(k1); Sj(ptrDOF) =  dofs2(k2); 
+	  Si(ptrDOF)   = dofs1(k1);      Sj(ptrDOF) = dofs2(k2);
 	  Sval(ptrDOF) = mat1(k1,k2+3);  ptrDOF++;
 	else  %% k2 is a Dirichlet node for u2
 	  if     ischar(gDFunc{2})             gD2 = feval(gDFunc{2},cor(k2,:));
 	  elseif is_function_handle(gDFunc{2}) gD2 = gDFunc{2}(cor(k2,:));
 	  else                                 gD2 = gDFunc{2};
 	  endif% ischchar
- 	  gVec(     dofs1(k1)) += mat1(k1,k2+3)*gD2;
+ 	  gVec(dofs1(k1)) += mat1(k1,k2+3)*gD2;
 	endif %%dofs1(k2)
       endfor  %% k2 = 1:3
-    endif %% dofs1(k1)>0
-
+    endif %% dofs1(k1)>0    
+    
     %%%%%%%%%%% k1 is free for u2  %%%%%%%%%%%%%%%%
-    if dofs2(k1)>0 % k1 is free node for u2
-      gVec(nDOF(1)+dofs2(k1))      -= vec2(k1);
+    if dofs2(k1)>nDOF1 % k1 is free node for u2
+      gVec(dofs2(k1))  -= vec2(k1);
       for k2 = 1:3
- 	%% gMat(dofs(k1),dofs(k2)) = gMat(dofs(k1),dofs(k2)) + mat(k1,k2);
-	if dofs1(k2)>0  % k2 is free node for u1
-	  Si(ptrDOF)   = nDOF(1)+dofs2(k1); Sj(ptrDOF) = dofs1(k2);
+ 	%% gMat(dofs(k1),dofs(k2)) += mat2(k1,k2);
+	if dofs1(k2)>0  %% k2 is free node for u1
+	  Si(ptrDOF)   = dofs2(k1);    Sj(ptrDOF) = dofs1(k2);
 	  Sval(ptrDOF) = mat2(k1,k2);  ptrDOF++;
-	else  %% k2 is a Dirichlet node for u1
+	else            %% k2 is a Dirichlet node for u1
 	  if     ischar(gDFunc{1})             gD1 = feval(gDFunc{1},cor(k2,:));
 	  elseif is_function_handle(gDFunc{1}) gD1 = gDFunc{1}(cor(k2,:));
 	  else                                 gD1 = gDFunc{1};
 	  endif% ischchar
- 	  gVec(nDOF(1)+dofs2(k1)) += mat2(k1,k2)*gD1;
+ 	  gVec(dofs2(k1)) += mat2(k1,k2)*gD1;
 	endif %%dofs1(k2)
 	
-	if dofs2(k2)>0  % k2 is free node for u2
-	  Si(ptrDOF)   = nDOF(1)+dofs2(k1); Sj(ptrDOF) = nDOF(1)+dofs2(k2);
+	if dofs2(k2)>nDOF1  %% k2 is free node for u2
+	  Si(ptrDOF)   = dofs2(k1);      Sj(ptrDOF) = dofs2(k2);
 	  Sval(ptrDOF) = mat2(k1,k2+3);  ptrDOF++;
-	else  %% k2 is a Dirichlet node for u2
+	else                %% k2 is a Dirichlet node for u2
 	  if     ischar(gDFunc{2})             gD2 = feval(gDFunc{2},cor(k2,:));
 	  elseif is_function_handle(gDFunc{2}) gD2 = gDFunc{2}(cor(k2,:));
 	  else                                 gD2 = gDFunc{2};
 	  endif% ischchar
- 	  gVec(nDOF(1)+dofs2(k1)) += mat2(k1,k2+3)*gD2;
+ 	  gVec(dofs2(k1)) += mat2(k1,k2+3)*gD2;
 	endif %%dofs1(k2)
       endfor %% k2 = 1:3
-    endif %% dofs2(k1)>0
+    endif %% dofs2(k1)>nDOF1
   endfor %% k1 = 1:3
 
 endfor % k (elements)
@@ -111,18 +115,18 @@ for k = 1:size(Mesh.edges,1)
     p2 = (cor(1,:)+cor(2,:))/2 + (cor(2,:)-cor(1,:))/(2*sqrt(3));
     L = norm(cor(2,:)-cor(1,:))/2;
     dofs = Mesh.node2DOF(Mesh.edges(k,:),:);
-    dofs1 = dofs(:,1);  dofs2 = dofs(:,2);
+    dofs1 = dofs(:,1);  dofs2 = dofs(:,2) + nDOF1;
     if EdgeType_x == -3  % nonzero force in x-direction
       if ischar(gNFunc{1}) g1 = feval(gNFunc{1},[p1;p2]);
       else                 g1 = gNFunc{1}*ones(2,1);
       endif
       edgeVec1 = L*edgeMat*g1;
       if (dofs1(1)>0)&&(dofs1(2)>0) %% both points free
-	gVec(dofs1)         -= edgeVec1;
+	gVec(dofs1)    -= edgeVec1;
       elseif (dofs1(1)>0)&&(dofs1(2)==0)   %% node 1 free, node 2 Dirichlet
-	gVec(dofs1(1))      -= edgeVec1(1);
+	gVec(dofs1(1)) -= edgeVec1(1);
       elseif (dofs1(1)==0)&&(dofs1(2)>0)   %% node 1 Dirichlet, node 2 free
-	gVec(dofs1(2))      -= edgeVec1(2);
+	gVec(dofs1(2)) -= edgeVec1(2);
       endif    
     endif  % EdgeType_x
     if EdgeType_y == -3  % nonzero force in y-direction
@@ -130,12 +134,12 @@ for k = 1:size(Mesh.edges,1)
       else                 g2 = gNFunc{2}*ones(2,1);
       endif
       edgeVec2 = L*edgeMat*g2;
-      if (dofs2(1)>0)&&(dofs2(2)>0) %% both points free
-	gVec(nDOF(1)+dofs2)    -= edgeVec2;
-      elseif (dofs2(1)>0)&&(dofs2(2)==0)   %% node 1 free, node 2 Dirichlet
-	gVec(nDOF(1)+dofs2(1)) -= edgeVec2(1);
-      elseif (dofs2(1)==0)&&(dofs2(2)>0)   %% node 1 Dirichlet, node 2 free
-	gVec(nDOF(1)+dofs2(2)) -= edgeVec2(2);
+      if (dofs2(1)>nDOF1)&&(dofs2(2)>nDOF1) %% both points free
+	gVec(dofs2)    -= edgeVec2;
+      elseif (dofs2(1)>nDOF1)&&(dofs2(2)==nDOF1)%% node 1 free, node 2 Dirichlet
+	gVec(dofs2(1)) -= edgeVec2(1);
+      elseif (dofs2(1)==nDOF1)&&(dofs2(2)>nDOF1)%% node 1 Dirichlet, node 2 free
+	gVec(dofs2(2)) -= edgeVec2(2);
       endif
     endif  % EdgeType_y
   endif % Neumann edge with nonzero force
