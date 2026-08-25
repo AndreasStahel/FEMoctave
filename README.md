@@ -26,6 +26,8 @@ In February 2025 equations with non isotropic or with complex coefficients can b
 
 In late 2025 and early 2026 nonlinear solvers for static and dynamic 2D problems were added
 
+In 2026 solvers for semilinear IBVPs were added. For static plane stress and plane strain problems thermal expansion can be taken into account.
+
 ## 2. PURPOSE
 The main goal is to provide a tool using Octave only to teach the method of finite elements, short FEM.
 The mathematics of the algorithms are spelled out and implemented in Octave
