@@ -1,4 +1,11 @@
-pkg load femoctave
+## -*- texinfo -*-
+## @deftypefn  {} {} PlateThermalExpansion.m
+##
+## This is a demo file  inside the `doc/Examples/Elasticity/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% set the parameters
 E = 110e3; nu = 0.35; alpha = 1.7e-5; DeltaT = 6; %% copper, length in mm
 L = 1;  N = 11; R = L/2;
@@ -37,14 +44,4 @@ x = Rc*cos(phi); y = Rc*sin(phi);
 sigma_nc = sigma_xc.*cos(phi).^2 + 2*tau_xyc.*cos(phi).*sin(phi) + sigma_yc.*sin(phi).^2;
 figure(9); plot(phiD,sigma_xc,phiD,sigma_yc,phiD,sigma_nc); xlabel('angle'); ylabel('\sigma')
            legend('\sigma_x','\sigma_y','\sigma_n','location','northeast'); xlim([0,360])
-
-printing = 0
-if printing
-  figure(1); print -dpng CopperThermalMesh.png
-  figure(2); print -dpng CopperThermal_u1.png
-  figure(3); print -dpng CopperThermal_u2.png
-  figure(4); print -dpng CopperThermal_epsxx.png
-  figure(5); print -dpng CopperThermal_epsyy.png
-  figure(9); print -dpdfcrop CopperThermal_sigma.pdf
-endif
 
