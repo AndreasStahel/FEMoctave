@@ -1,38 +1,33 @@
 function [gMat,gVec] = FEMEquationCubicM(Mesh,aFunc,b0Func,bxFunc,byFunc,fFunc,gDFunc,gN1Func,gN2Func)
 %[...] = FEMEquationCubicM (...)
 %  sets up the system of linear equations for a numerical solution of a PDE
-%  using a triangular mesh with elements of order 3
 %
-%  [A,b] = FEMEquationCubicM(Mesh,'a','b0','bx','by','f','gD','gN1','gN2')
+%  [A,b] = FEMEquationCubicM(Mesh,'a','b','bx','by','f','gD','gN1','gN2')
 %    Mesh is the mesh describing the domain\n\
 %         see ReadMesh() for the description of the format
-%   'a','b0','bx',by','f','gD','gN1','gN2' are the functions and coefficients
+%   'a','b','bx','by','f','gD','gN1','gN2' are the functions and coefficients 
 %         for the boundary value problem. They can be given as a scalar value
-%         or as a string with the function name
-%         The coefficient 'a' can also be a symmetric matrix a=[axx,axy;axy,ayy]
-%         given by the row vector [axx,ayy,axy].
-%         It can be given as row vector or as string with the function name or
-%         as nx3 matrix with the values at the Gauss points.
+%         or as a sting with the function name 
 %
-%  -div(a*grad u-u*(bx,by)) + b0*u = f    in domain%
-%                          u = gD         on Dirichlet section of the boundary
-%         (a*du-u*(bx,by))*n = gN1+gN2*u  on Neumann section of the boundary
+%  -div(a*grad u-u*(bx,by)) + b0*u = f     in domain
+%                                u = gD    on Dirichlet section of the boundary
+%           n*(a*grad u -u*(bx,by) = gN1+gN2*u  on Neumann section
 %
 % A   is the matrix of the system to be solved.
 % b   is the RHS of the system to be solved.
 %
 
-%% evaluate the functions a, b0, bx, by and f
+%% evaluate the functions a b and f
 
 nElem = size(Mesh.elem,1);
 nGP   = size(Mesh.GP,1)  ;
 
-isotropic = 1; %% flag to mark that the coefficient a is a scalar
+isotropic = 1; %% flag to mar that a is a scalar
 
-if ischar(aFunc)  %% given as string
+if ischar(aFunc)
   aV = feval(aFunc,Mesh.GP,Mesh.GPT);
   sizeA = size(aV);
-  if sizeA(2)==3
+  if sizeA(2)>=3
     isotropic = 0;
     a11V = reshape(aV(:,1),nGP/nElem,nElem);
     a22V = reshape(aV(:,2),nGP/nElem,nElem);
@@ -40,49 +35,40 @@ if ischar(aFunc)  %% given as string
   else
     aV = reshape(aV,nGP/nElem,nElem);
   endif
-elseif isscalar(aFunc)  %% given as one scalar value
+elseif isscalar(aFunc)
   aV = aFunc*ones(nGP/nElem,nElem);
-else     %% given as values at the Gauss points
-  aSize = size(aFunc);
-  if aSize(2)==3   %% three coefficients, values at Gauss points
-    isotropic = 0;
-    if (aSize(1)==1) %% three scalar values
-      a11V = aFunc(1)*ones(nGP/nElem,nElem);
-      a22V = aFunc(2)*ones(nGP/nElem,nElem);
-      a12V = aFunc(3)*ones(nGP/nElem,nElem);
-    else            %% matrix with values at all Gauss points
-      a11V = reshape(aFunc(:,1),nGP/nElem,nElem);
-      a22V = reshape(aFunc(:,2),nGP/nElem,nElem);
-      a12V = reshape(aFunc(:,3),nGP/nElem,nElem);
-    endif
-  else           %% one coefficient, values at Gauss points
-    aV = reshape(aFunc,nGP/nElem,nElem);
-  endif
+else
+  aV = reshape(aFunc,nGP/nElem,nElem);
 endif
 
 if ischar(b0Func)
-  bV = reshape(feval(b0Func,Mesh.GP,Mesh.nodesT),nGP/nElem,nElem);
+  b0V = reshape(feval(b0Func,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
 elseif isscalar(b0Func)
-  bV = b0Func*ones(nGP/nElem,nElem);
+  b0V = b0Func*ones(nGP/nElem,nElem);
 else
-  bV = reshape(b0Func,nGP/nElem,nElem);
+  b0V = reshape(b0Func,nGP/nElem,nElem);
 endif
 
-if ischar(bxFunc)
-  bxV = reshape(feval(bxFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
-elseif isscalar(bxFunc)
-  bxV = bxFunc*ones(nGP/nElem,nElem);
+ConvectionFlag = 1;
+if ((bxFunc==0)&&(byFunc==0))
+  ConvectionFlag = 0;
 else
-  bxV = reshape(bxFunc,nGP/nElem,nElem);
-endif
-
-if ischar(byFunc)
-  byV = reshape(feval(byFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
-elseif isscalar(byFunc)
-  byV = byFunc*ones(nGP/nElem,nElem);
-else
-  byV = reshape(byFunc,nGP/nElem,nElem);
-endif
+  if ischar(bxFunc)
+    bxV = reshape(feval(bxFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
+  elseif isscalar(bxFunc)
+    bxV = bxFunc*ones(nGP/nElem,nElem);
+  else
+    bxV = reshape(bxFunc,nGP/nElem,nElem);
+  endif
+  
+  if ischar(byFunc)
+    byV = reshape(feval(byFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
+  elseif isscalar(byFunc)
+    byV = byFunc*ones(nGP/nElem,nElem);
+  else
+    byV = reshape(byFunc,nGP/nElem,nElem);
+  endif
+endif  %% Convection
 
 if ischar(fFunc)
   fV = reshape(feval(fFunc,Mesh.GP,Mesh.nodesT),nGP/nElem,nElem);
@@ -146,7 +132,7 @@ for k = 1:nElem   %%for each element
   area = Mesh.elemArea(k);  % area = 0.5*det(T)
   G = [cor(3,2)-cor(2,2),cor(1,2)-cor(3,2),cor(2,2)-cor(1,2);...
        cor(2,1)-cor(3,1),cor(3,1)-cor(1,1),cor(1,1)-cor(2,1)];
-  B = M'*diag(w.*bV(:,k))*M;
+  B = M'*diag(w.*b0V(:,k))*M;
   MtempX = -G(1,2)*Mxi-G(1,3)*Mnu;
   MtempY = -G(2,2)*Mxi-G(2,3)*Mnu;
   if isotropic
@@ -159,9 +145,12 @@ for k = 1:nElem   %%for each element
     A12 = MtempY'*diag(w.*a12V(:,k))*MtempX;
     mat = 0.5/area*(A11+A22+2*A12) + 2*area*B;
   endif
-  Abxy = ((G(1,2)*Mxi + G(1,3)*Mnu)'*diag(w.*bxV(:,k))...
-         +(G(2,2)*Mxi + G(2,3)*Mnu)'*diag(w.*byV(:,k)) )*M;
-  mat = mat + Abxy;
+  if ConvectionFlag
+    %% integration u*b*nabla*phi */ 
+    Ab1 = MtempX'*diag(w.*bxV(:,k))*M;
+    Ab2 = MtempY'*diag(w.*byV(:,k))*M;
+    mat -= Ab1 + Ab2;
+  endif %% ConvectionFlag
   vec = -2*area*M'*(w.*fV(:,k));
   dofs = Mesh.node2DOF(Mesh.elem(k,:));
   for k1 = 1:10
@@ -200,12 +189,12 @@ for k = 1:size(Mesh.edges,1)
   if Mesh.edgesT(k)<-1  % it is a Neumann edge
     cor = Mesh.nodes(Mesh.edges(k,:),:); % the four nodes on the edge
     p2 =  (cor(1,:)+cor(4,:))/2; % the three Gauss points on the edge
-    p3 =  cor(4,:);
+    p3 =  cor(4,:); 
     L = norm(p3-p2)/9;  % length of edge, divided by 18
     vec_diff = sqrt(0.6)*(p3-p2);
     p1 = p2 + vec_diff;  %% the Gauss points on the edge
     p3 = p2 - vec_diff;
-
+    
     if gN1Func == 0
       edgeVec = zeros(4,1);
     else
