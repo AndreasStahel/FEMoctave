@@ -70,16 +70,22 @@ indNan = find(isnan(ind_elem));  %% points outside of mesh
 indOK  = find(~isnan(ind_elem));
 ind_elem = ind_elem(indOK);
 xint = xint(indOK); yint = yint(indOK);
-Mesh.elem = Mesh.elem(ind_elem,:);
-v1 = Mesh.nodes(Mesh.elem(:,1),:);
-v2 = Mesh.nodes(Mesh.elem(:,2),:)-v1;
-v3 = Mesh.nodes(Mesh.elem(:,3),:)-v1;
-xint -= v1(:,1); yint -= v1(:,2);
-Det = (v2(:,1).*v3(:,2)- v2(:,2).*v3(:,1));
-xi  = (v3(:,2).*xint   - v3(:,1).*yint)./Det;
-nu  = (v2(:,1).*yint   - v2(:,2).*xint)./Det;
+if ~strcmp(Mesh.type,'Hermite')  %% not required for Hermite elements
+  Mesh.elem = Mesh.elem(ind_elem,:);
+  v1 = Mesh.nodes(Mesh.elem(:,1),:);
+  v2 = Mesh.nodes(Mesh.elem(:,2),:)-v1;
+  v3 = Mesh.nodes(Mesh.elem(:,3),:)-v1;
+  xint -= v1(:,1); yint -= v1(:,2);
+  Det = (v2(:,1).*v3(:,2)- v2(:,2).*v3(:,1));
+  xi  = (v3(:,2).*xint   - v3(:,1).*yint)./Det;
+  nu  = (v2(:,1).*yint   - v2(:,2).*xint)./Det;
+endif
 
 ui = nan(nc*nr,1);       %% default value is NaN
+if nargout > 1  %% determine the gradients too
+  uxi = ui; uyi = ui;
+endif  %% gradient too
+
 switch Mesh.type
 case 'linear'  %% linear elements
   if NumbPoints ==1
@@ -118,12 +124,33 @@ case 'cubic'
      -9/2*xi+18*xi.^2+9/2*xi.*nu-27/2*xi.^3-27/2*xi.^2.*nu,...
      27*xi.*nu-27*xi.^2.*nu-27*xi.*nu.^2 ].*u(Mesh.elem),2);
   endif
-endswitch
+case 'Hermite'
+  elements = unique(ind_elem);
+  for jj = 1:length(elements)
+    N_elem = elements(jj);
+    ind = find(ind_elem == N_elem); %% the points in elements(jj)
+    xt = xint(ind); yt = yint(ind);
+    zeros_x = zeros(length(xt),1); ones_x = ones(length(xt),1);
+    Tri = Mesh.nodes(Mesh.elem(N_elem,1:3),:);
+    xt = xt-sum(Tri(:,1))/3; yt = yt-sum(Tri(:,2))/3;
+    b = fDOF2BF(Tri)*u(Mesh.elem(N_elem,:));  % convert DOF to basis functions
+    ut = [ones_x,xt,yt,xt.^2,xt.*yt,yt.^2,xt.^3,xt.^2.*yt,xt.*yt.^2,yt.^3]*b;
+    ui(ind) =  ut;
+    if nargout > 1  %% determine the gradients too
+      uxt = [zeros_x,ones_x,zeros_x,2*xt,yt,zeros_x,3*xt.^2,2*xt.*yt,yt.^2,zeros_x]*b;
+      uxi(ind) =  uxt;
+      uyt = [zeros_x,zeros_x,ones_x,zeros_x,xt,2*yt,zeros_x,xt.^2,2*xt.*yt,3*yt.^2]*b;
+      uyi(ind) =  uyt;
+    endif  %% gradient too
+  endfor %%elem
+  if nargout > 1  %% determine the gradients too
+    uxi = reshape(uxi,nr,nc); uyi = reshape(uyi,nr,nc);
+  endif
+endswitch  %% Mesh.type
+
 ui = reshape(ui,nr,nc);  %% return in the desired shape
 
 if nargout > 1  %% determine the gradients too
-  uxi = nan(nc*nr,1); uyi = uxi;
-
   switch Mesh.type
   case 'linear'  %% linear elements
     %% slopes in xi and nu direction
@@ -184,10 +211,12 @@ if nargout > 1  %% determine the gradients too
 		  27*xi-27*xi.^2-54*xi.*nu ].*u(Mesh.elem),2);
     endif
   endswitch
+  
   %%transform to the xy coordinates
-  uxi(indOK) = (v3(:,2).*g_xi - v2(:,2).*g_nu)./Det;
-  uyi(indOK) = (v2(:,1).*g_nu - v3(:,1).*g_xi)./Det;
-
+  if ~strcmp(Mesh.type,'Hermite')  %% not required for Hermite elements
+    uxi(indOK) = (v3(:,2).*g_xi - v2(:,2).*g_nu)./Det;
+    uyi(indOK) = (v2(:,1).*g_nu - v3(:,1).*g_xi)./Det;
+  endif
   uxi = reshape(uxi,nr,nc);  %% return in the desired shape
   uyi = reshape(uyi,nr,nc);
 endif

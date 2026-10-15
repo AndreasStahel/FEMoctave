@@ -56,6 +56,11 @@ function FEMtrisurf (mesh,u)
 	    tri(:,10),tri(:,5),tri(:,6);
 	    tri(:,10),tri(:,4),tri(:,5);
 	    tri(:,6),tri(:,5),tri(:,3)];
+  case 'hermite'
+     triN = tri(:,1:3);
+     nodes_active = unique(triN(:));
+     x = mesh.nodes(nodes_active,1); y = mesh.nodes(nodes_active,2);
+     if nargin == 2 u = u(nodes_active); endif
   endswitch
 
   if nargin == 2

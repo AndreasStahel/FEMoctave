@@ -1,4 +1,4 @@
-## Copyright (C) 2020 Andreas Stahel
+## Copyright (C) 2026 Andreas Stahel
 ##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2020-03-30
+## Created: 2026-09-24
 
 ## -*- texinfo -*-
 ## @deftypefn{function file}{}@var{u} = BVP2Dsym(@var{mesh},@var{a},@var{b0},@var{f},@var{gD},@var{gN1},@var{gN2})
@@ -88,14 +88,12 @@ function u = BVP2Dsym(Mesh,a,b0,f,gD,gN1,gN2)
       %% [A,b] = FEMEquationM(Mesh,a,b0,    f,gD,gN1,gN2); % compute with script code
     case 'quadratic' %% second order elements
       %%[A,b] = FEMEquationQuadM(Mesh,a,b0,f,gD,gN1,gN2); % compute with script
-      %%A1(find (abs(A)<eps)) = 0; %% remove almost zero elements
       [A,b] = FEMEquationQuad(Mesh,a,b0,0,0,f,gD,gN1,gN2);
-  %%A(find (abs(A)<eps)) = 0; %% remove almost zero elements
     case 'cubic' %% third order elements
       %%[As,bs] = FEMEquationCubicM(Mesh,a,b0,f,gD,gN1,gN2);  % compute with script
       [A,b] = FEMEquationCubic(Mesh,a,b0,0,0,f,gD,gN1,gN2); % compute with compiled code
-      %%Differences = [ norm(As(:)-A(:)) , norm(bs - b)]
-      %%A(find (abs(A)<eps)) = 0; %% remove almost zero elements
+    case 'Hermite'
+      [A,b] = FEMEquationHermite(Mesh,a,b0,0,0,f,gD,gN1,gN2);
   endswitch
   u = FEMSolve(Mesh,A,b,gD);  %% solve the linear system
 endfunction

@@ -1,6 +1,6 @@
 Name: FEMoctave
-Version: 2.1.10
-Date: 2026-08-25
+Version: 2.1.11
+Date: 2026-10-14
 Author: Andreas Stahel 
 Maintainer: The Octave Forge community.
 Title: FEMoctave
@@ -9,4 +9,4 @@ Depends: octave (>= 5.2.0)
 # BuildRequires:
 # SystemRequirements:
 License: GPLv3+
-# Url: external homepage
+# Url: external home page

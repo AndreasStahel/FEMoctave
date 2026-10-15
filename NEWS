@@ -1,6 +1,23 @@
 TODO for next release:
 * ???
 
+FEMoctave 2.1.11, October 14, 2026
+---------------------------------
+* Hermite elements are implemented, to be used for static elliptic boundary value problems
+* the script files can now work with convection contributions too
+
+New Files
+- inst/FEMEquationM.m
+       FEMEquationQuadM.m
+       FEMEquationCubicM.m
+       FEMEquationHermite.m
+       fDOF2BF.m
+       fBF2UGPmat.m
+
+- doc/Demos/Slit.m
+      Examples/Hermite/HermiteAccuracy_A.m
+                       HermiteAccuracy_B.m
+
 FEMoctave 2.1.10, August 28, 2026
 ---------------------------------
 * solvers for semilinear wave problems

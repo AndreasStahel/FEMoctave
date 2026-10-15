@@ -1,4 +1,4 @@
-## Copyright (C) 2025 Andreas Stahel
+## Copyright (C) 2026 Andreas Stahel
 ##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2025-01-04
+## Created: 2026-09-27
 
 
 ## -*- texinfo -*-
@@ -131,6 +131,8 @@ switch Mesh.type
 	 [A,b] = FEMEquationCubicM(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
        endif
     endswitch
+  case 'Hermite'  %% Hermite elements
+    [A,b] = FEMEquationHermite(Mesh,a,b0,bx,by,f,gD,gN1,gN2);
 endswitch
 
 u = FEMSolve(Mesh,A,b,gD);  %% solve the resulting system

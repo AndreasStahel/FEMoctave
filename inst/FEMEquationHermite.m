@@ -1,11 +1,12 @@
-function [gMat,gVec,n2d] = FEMEquationHermite(Mesh,aFunc,b0Func,bxFunc,byFunc,fFunc,gDFunc,gN1Func,gN2Func)
+function [gMat,gVec] = FEMEquationHermite(Mesh,aFunc,b0Func,bxFunc,byFunc,fFunc,gDFunc,gN1Func,gN2Func)
 %[...] = FEMEquationHermite (...)
 %  set up the system of linear equations for a numerical solution of a PDE
+%  using a triangular mesh with Hermite elements
 %
 %  [A,b,n2d] = FEMEquationHermite(Mesh,'a','b','bx','by','f','gD','gN1','gN2')
-%    Mesh is the mesh describing the domain\n\
-%         see ReadMesh() for the description of the format
-%   'a','b','f','gD','gN1','gN2' are the functions and coefficients
+%    Mesh is the mesh with Hermite elements describing the domain and bounday types\n\
+%
+%   'a','b','bx','by','f','gD','gN1','gN2' are the functions and coefficients
 %         for the boundary value problem. They can be given as a scalar value
 %         or as a sting with the function name
 %
@@ -15,10 +16,6 @@ function [gMat,gVec,n2d] = FEMEquationHermite(Mesh,aFunc,b0Func,bxFunc,byFunc,fF
 %
 % A   is the matrix of the system to be solved.
 % b   is the RHS of the system to be solved.
-% n2d is the renumbering of the nodes to the DOF of the system
-%     n2d(k)=0  indicates that node k is a Dirichlet node
-%     n2d(k)=nn indicates that the value of the solution at node k
-%               is given by u(nn)
 %
 %see also FEMEquation, FEMEquationQuad, FEMEquationCubic
 if (nargin!=9)
@@ -26,7 +23,7 @@ if (nargin!=9)
   print_usage();
 endif
 
-%% evaluate the functions a b and f
+%% evaluate the functions a, b0, bx, by and f
 
 nElem = size(Mesh.elem,1); nGP  = size(Mesh.GP,1);
 
@@ -67,7 +64,7 @@ else
   endif
 endif  %% Convection
 
-if ischar(fFunc)
+if or(ischar(fFunc),is_function_handle(fFunc))
   fV = reshape(feval(fFunc,Mesh.GP,Mesh.GPT),nGP/nElem,nElem);
 elseif isscalar(fFunc)
   fV = fFunc*ones(nGP/nElem,nElem);

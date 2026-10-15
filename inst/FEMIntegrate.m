@@ -22,8 +22,13 @@
 ##parameters:
 ##@itemize
 ##@item @var{Mesh} is the mesh describing the domain
-##@item @var{u} the function to be integrated
-##@*can be given as function name to be evaluated or as scalar value, or as a vector with the values at the nodes or the Gauss points.
+##@item @var{u} the function to be integrated, can be given as
+##@itemize
+##@item function name to be evaluated
+##@item scalar value
+##@item vector with the values at the nodes or the DOF (Hermite)
+##@item vector with the values at the Gauss points.
+##@end itemize
 ##@end itemize
 ##
 ##return value
@@ -48,7 +53,7 @@ function NumIntegral = FEMIntegrate(Mesh,u)
   switch Mesh.type
   case 'linear' % % linear elements
     if ischar(u)
-      uV = reshape(feval(u,Mesh.GP,Mesh.GPT),3,nElem);
+      uV = reshape(feval(u,Mesh.GP),3,nElem);
     elseif isscalar(u)
       uV = u*ones(3,nElem);
     elseif length(u) == size(Mesh.nodes,1) %% given at the nodes
@@ -61,7 +66,23 @@ function NumIntegral = FEMIntegrate(Mesh,u)
     w1 = (155 - sqrt(15))/2400;  w2 = (155 + sqrt(15))/2400;
     w3 = 0.1125;         w = 2*[w1,w1,w1,w2,w2,w2,w3]';
     if ischar(u)
-      uV = reshape(feval(u,Mesh.GP,Mesh.GPT),7,nElem);
+      uV = reshape(feval(u,Mesh.GP),7,nElem);
+    elseif isscalar(u)
+      uV = u*ones(7,nElem);
+    elseif length(u) == size(Mesh.nodes,1) %% given at the nodes
+      uV = reshape(FEMEvaluateGP(Mesh,u),7,nElem);
+    else
+      uV = reshape(u,7,nElem);
+    endif
+    NumIntegral = 0;
+    for ne = 1:nElem
+      NumIntegral += sum(w.*uV(:,ne))*Mesh.elemArea(ne);
+    endfor
+  case 'Hermite'  %% Hermite elements
+    w1 = (155 - sqrt(15))/2400;  w2 = (155 + sqrt(15))/2400;
+    w3 = 0.1125;         w = 2*[w1,w1,w1,w2,w2,w2,w3]';
+    if ischar(u)
+      uV = reshape(feval(u,Mesh.GP),7,nElem);
     elseif isscalar(u)
       uV = u*ones(7,nElem);
     elseif length(u) == size(Mesh.nodes,1) %% given at the nodes

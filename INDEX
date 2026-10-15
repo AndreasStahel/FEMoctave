@@ -31,6 +31,7 @@ Manipulating meshes
   MeshUpgrade.m
   MeshQuad2Linear.m
   MeshCubic2Linear.m
+  MeshHermite2Linear.m
   Delaunay2Mesh.m
   FEMtrimesh.m
   FEMtrisurf.m
@@ -75,6 +76,9 @@ Creating equations
   FEM1DEvaluateDu.m
   FEM1DGaussPoints.m
   GenerateWeight1D.m
+  FEMEquationHermite.m
+  fDOF2BF.m
+  fBF2UGPmat.m
 
 Demo m-files
   LaplaceRectangle.m
@@ -103,7 +107,8 @@ Demo m-files
   HeatSemilinearLoop.m
   Demo_PlaneStressThermal.m
   Demo_PlaneStrainThermal.m
-
+  Slit.m
+  
 Example m-files
   WaveAnimation.m
   BesselSuperconvergence.m
@@ -171,3 +176,5 @@ Example m-files
   SwanbomHole.m
   SwanbomLoaded.m
   Bimetallic.m
+  HermiteAccuracy_A.m
+  HermiteAccuracy_B.m

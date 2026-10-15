@@ -44,6 +44,7 @@
 ## Created: 2020-09-19
 
 function [uGP,graduGP] = FEMEvaluateGP(Mesh,u)
+  %% reserve the memory for the results
   uGP = zeros(length(Mesh.GP),1);
   graduGP = zeros(length(Mesh.GP),2);
 
@@ -52,7 +53,7 @@ switch Mesh.type
     Minterp = [4 1 1; 1 4 1; 1 1 4]/6;  %% interpolation matrix
     for ne = 1:length(Mesh.elemT)
       ind = Mesh.elem(ne,:)';
-      uGP(ne*3-2:ne*3)= Minterp*u(ind);
+      uGP(ne*3-2:ne*3) = Minterp*u(ind);
       if nargout >=2
 	v1   = [Mesh.nodes(ind(1),:),u(ind(1))];
 	v2   = [Mesh.nodes(ind(2),:),u(ind(2))]-v1;
@@ -78,12 +79,14 @@ switch Mesh.type
       ind = Mesh.elem(ne,:)';
       u_elem = u(ind); % values of u at the nodes
       uGP(ne*7-6:ne*7)= M*u_elem;
-      detT = 2*Mesh.elemArea(ne);  % area = 0.5*det(T)
-      cor = Mesh.nodes(ind,:);  % coordinates of the nodes
-      G = [cor(3,2)-cor(2,2),cor(1,2)-cor(3,2),cor(2,2)-cor(1,2);...
-	   cor(2,1)-cor(3,1),cor(3,1)-cor(1,1),cor(1,1)-cor(2,1)];
-      graduGP(ne*7-6:ne*7,1) = -(G(1,2)*Mxi+G(1,3)*Mnu)*u_elem/detT;
-      graduGP(ne*7-6:ne*7,2) = -(G(2,2)*Mxi+G(2,3)*Mnu)*u_elem/detT;
+      if nargout >=2
+	detT = 2*Mesh.elemArea(ne);  % area = 0.5*det(T)
+	cor = Mesh.nodes(ind,:);  % coordinates of the nodes
+	G = [cor(3,2)-cor(2,2),cor(1,2)-cor(3,2),cor(2,2)-cor(1,2);...
+	     cor(2,1)-cor(3,1),cor(3,1)-cor(1,1),cor(1,1)-cor(2,1)];
+	graduGP(ne*7-6:ne*7,1) = -(G(1,2)*Mxi+G(1,3)*Mnu)*u_elem/detT;
+	graduGP(ne*7-6:ne*7,2) = -(G(2,2)*Mxi+G(2,3)*Mnu)*u_elem/detT;
+      endif
     endfor %ne
   case 'cubic' %% cubic elements
     l1 = (12 - 2*sqrt(15))/21;   l2 = (12 + 2*sqrt(15))/21;
@@ -130,12 +133,28 @@ switch Mesh.type
       ind = Mesh.elem(ne,:)';
       u_elem = u(ind); % values of u at the nodes
       uGP(ne*7-6:ne*7)= M*u_elem;
-      detT = 2*Mesh.elemArea(ne);  % area = 0.5*det(T)
-      cor = Mesh.nodes(ind,:);  % coordinates of the nodes
-      G = [cor(3,2)-cor(2,2),cor(1,2)-cor(3,2),cor(2,2)-cor(1,2);...
-	   cor(2,1)-cor(3,1),cor(3,1)-cor(1,1),cor(1,1)-cor(2,1)];
-      graduGP(ne*7-6:ne*7,1) = -(G(1,2)*Mxi+G(1,3)*Mnu)*u_elem/detT;
-      graduGP(ne*7-6:ne*7,2) = -(G(2,2)*Mxi+G(2,3)*Mnu)*u_elem/detT;
+      if nargout >=2
+	detT = 2*Mesh.elemArea(ne);  % area = 0.5*det(T)
+	cor = Mesh.nodes(ind,:);  % coordinates of the nodes
+	G = [cor(3,2)-cor(2,2),cor(1,2)-cor(3,2),cor(2,2)-cor(1,2);...
+	     cor(2,1)-cor(3,1),cor(3,1)-cor(1,1),cor(1,1)-cor(2,1)];
+	graduGP(ne*7-6:ne*7,1) = -(G(1,2)*Mxi+G(1,3)*Mnu)*u_elem/detT;
+	graduGP(ne*7-6:ne*7,2) = -(G(2,2)*Mxi+G(2,3)*Mnu)*u_elem/detT;
+      endif
+    endfor %ne
+  case 'Hermite' %% Hermite elements
+    for ne = 1:length(Mesh.elemT)
+      ind = Mesh.elem(ne,:)';
+      Tri = Mesh.nodes(ind(1:3),:);  % coordinates of the corners
+      DOF2BF = fDOF2BF(Tri);  % the matrix to convert DOF to basis functions
+      [~,uGPmat,duxGPmat,duyGPmat] = fBF2uGPmat(Tri); % evaluate u,u_x,u_y at GP
+      u_basis = DOF2BF*u(ind);
+      indR = ne*7-6:ne*7;
+      uGP(indR)= uGPmat*u_basis;
+      if nargout >=2
+	graduGP(indR,1) = duxGPmat*u_basis; 
+	graduGP(indR,2) = duyGPmat*u_basis; 
+      endif
     endfor %ne
 endswitch
 endfunction
