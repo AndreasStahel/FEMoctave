@@ -29,7 +29,7 @@
 ##@itemize
 ##@item@var{MeshLin} the output mesh of order 1
 ##@item@var{uLin} the values of the solution at the nodes
-##@end itemize##
+##@end itemize
 ## @c Will be cut out in ??? info file and replaced with the same
 ## @c references explicitly there, since references to core Octave
 ## @c functions are not automatically transformed from here to there.

@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HermiteAccuracy_A.m
+##
+## This is a demo file inside the `doc/Examples/Hermite/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 N = 11;
 Mesh = CreateMeshRect(linspace(0,1,N),linspace(0,1,N),-1,-2,-1,-2);
 MeshHermite = MeshUpgrade(Mesh,'Hermite');

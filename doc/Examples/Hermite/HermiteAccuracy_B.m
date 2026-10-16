@@ -1,3 +1,11 @@
+## -*- texinfo -*-
+## @deftypefn  {} {} HermiteAccuracy_B.m
+##
+## This is a demo file inside the `doc/Examples/Hermite/` directory@*
+## Find the description in the documentation FEMdoc.pdf
+##
+## @end deftypefn
+
 %% solution is a bell surface on a full circle
 N = 20; R = 2;
 angles = linspace(0,2*pi,2*N)'; angles = angles(1:end-1);
