@@ -1,23 +1,23 @@
 ## Copyright (C) 2020 Andreas Stahel
-## 
+##
 ## This program is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful, but
 ## WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see
 ## <https://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn{function file}{}Mesh = CreateMeshRect(@var{x},@var{y},@var{Blow},@var{Bup},@var{Bleft},@var{Bright})
+## @deftypefn{function file}{}Mesh = CreateMeshRect(@var{x},@var{y},@var{Blow},@var{Bup},@var{Bleft},@var{Bright},@var{Option})
 ##
-##   Create a rectangular mesh nodes at (x_i,y_j)
+##   Create a mesh on a rectangle with nodes at (x_i,y_j) with linear elements
 ##
 ##parameters:
 ##@itemize
@@ -38,8 +38,18 @@
 ##@end itemize
 ##@end itemize
 ##@end itemize
+##@itemize
+##@item there is one optional argument provided as pair name/value:@*
+##@var{Diag} to select the orientation of the diagonals in the elements. Possible values are
+##@itemize
+##@item 'lr': from lower left corner to upper right corner (default)
+##@item 'rl': from upper left corner to lower right corner
+##@item 'alt': alternating orientation of diagonal
+##@item 'rand': random orientation of diagonal
+##@end itemize
+##@end itemize
 ##
-##return values
+##return values:
 ##@itemize
 ##@item @var{Mesh} is a a structure with the information about the mesh.
 ##@*The mesh consists of n_e elements, n_n nodes and n_ed edges.
@@ -55,7 +65,7 @@
 ##@item@var{Mesh.GP} n_e*3 by 2 matrix with the coordinates of the Gauss points
 ##@item@var{Mesh.GPT} n_e*3 vector of integers with the type of Gauss points
 ##@item@var{Mesh.nDOF} number of DOF, degrees of freedom
-##@item@var{Mesh.node2DOF} n_n vector or n_n by 2 matrix of integers, mapping nodes to DOF
+##@item@var{Mesh.node2DOF} n_n vector of integer, mapping nodes to DOF
 ##@end itemize
 ##@end itemize
 ##
@@ -73,12 +83,27 @@
 ## @end deftypefn
 
 ## Author: Andreas Stahel <andreas.stahel@gmx.com>
-## Created: 2022-11-02
+## Created: 2020-03-30
 
-function mesh = CreateMeshRect(x,y,Blow,Bup,Bleft,Bright)
 
-if (nargin ~=6 ) print_usage(); endif
+function mesh = CreateMeshRect(x,y,Blow,Bup,Bleft,Bright,varargin)
+
+if (nargin < 6 ) print_usage(); endif
 n = length(x);   m = length(y);
+
+Mode = "lr" ; %% default value
+if (~isempty(varargin))
+  for cc = 1:2:length(varargin)
+    switch tolower(varargin{cc})
+      case {'diag'}
+	Mode = tolower(varargin{cc+1});
+      otherwise
+	cc
+	error("Invalid optional argument, %s. Possible values: Diag, with argument 'lr', 'rl', 'alt' or 'rand'",varargin{cc});
+    endswitch % switch
+  endfor % for cc
+endif % if isempty
+
 
 scalar = (Blow>-10);  %% scalar or elasticity problem
 
@@ -88,7 +113,7 @@ if scalar
   nodesT = ones(n*m,1);
   nodesT([0:m-1]*n+1) = Bleft;  nodesT([1:m]*n    ) = Bright;
 
-  if (Bleft  == -1)  instart = 2;       else instart = 1; endif 
+  if (Bleft  == -1)  instart = 2;       else instart = 1; endif
   if (Bright == -1)  inend   = (n-1);   else inend   = n; endif
 
   nodesT(unique([instart:inend])        ) = Blow;
@@ -100,17 +125,17 @@ else %% elasticity
   Blow2  = mod(Blow, -10); Bup2    = mod(Bup,-10);
   Bleft1 = fix(Bleft/10);  Bright1 = fix(Bright/10);
   Blow1  = fix(Blow/10);   Bup1    = fix(Bup/10);
-  
+
   nodesT([0:m-1]*n+1,1) = Bleft1;
   nodesT([1:m]*n    ,1) = Bright1;
-  if (Bleft1  == -1)  instart = 2;       else instart = 1; endif 
+  if (Bleft1  == -1)  instart = 2;       else instart = 1; endif
   if (Bright1 == -1)  inend   = (n-1);   else inend   = n; endif
   nodesT(unique([instart:inend])        ,1) = Blow1;
   nodesT(unique([instart:inend])+(m-1)*n,1) = Bup1;
 
   nodesT([0:m-1]*n+1,2) = Bleft2;
   nodesT([1:m]*n    ,2) = Bright2;
-  if (Bleft2  == -1)  instart = 2;       else instart = 1; endif 
+  if (Bleft2  == -1)  instart = 2;       else instart = 1; endif
   if (Bright2 == -1)  inend   = (n-1);   else inend   = n; endif
   nodesT(unique([instart:inend])        ,2) = Blow2;
   nodesT(unique([instart:inend])+(m-1)*n,2) = Bup2;
@@ -119,15 +144,62 @@ endif
 %======================= elements =====================================
 %% all triangles have a positive orientation
 elem = zeros((n-1)*(m-1)*2,4);
+
+function res = Left2Right(row,col)
+  res = [(row-1)*n+col,row*n+col+1    ,row*n+col  ,1;
+	 (row-1)*n+col,(row-1)*n+col+1,row*n+col+1,1];
+endfunction
+%function res = Right2Left(row,col)
+%  res =[(row-1)*n+col,row*n+col    ,(row-1)*n+col+1 ,1;
+%	(row-1)*n+col+1,row*n+col+1,row*n+col ,1];
+%endfunction
+
+function res = Right2Left(row,col)
+  res =[row*n+col,(row-1)*n+col    ,(row-1)*n+col+1 ,1;
+	(row-1)*n+col+1,row*n+col+1,row*n+col ,1];
+endfunction
+
 cc = 1;
-for row = 1:m-1
-  for col = 1:n-1
-    elem(cc,:) = [(row-1)*n+col,row*n+col+1    ,row*n+col  ,1];
-    cc++;
-    elem(cc,:) = [(row-1)*n+col,(row-1)*n+col+1,row*n+col+1,1];
-    cc++;
+%Diag = "rand"  %% "lr", "rl", "alt", "rand"
+switch Mode
+case "rl"  %% diagonal from bottom right to top left
+  for row = 1:m-1
+    for col = 1:n-1
+      elem([cc,cc+1],:) = Right2Left(row,col);
+      cc = cc+2;
+    endfor
   endfor
-endfor
+case "lr" %% diagonal from bottom left to top right
+  for row = 1:m-1
+    for col = 1:n-1
+      elem([cc,cc+1],:) = Left2Right(row,col);
+      cc = cc+2;
+    endfor
+  endfor
+case "alt" %% diagonal alternating
+  for row = 1:m-1
+    for col = 1:n-1
+      if mod(row+col,2)
+	elem([cc,cc+1],:) = Left2Right(row,col);
+      else
+	elem([cc,cc+1],:) = Right2Left(row,col);
+      endif
+      cc = cc+2;
+    endfor
+  endfor
+case "rand" %% diagonal randomly alternating
+  for row = 1:m-1
+    for col = 1:n-1
+      if rand()>0.5
+	elem([cc,cc+1],:) = Left2Right(row,col);
+      else
+	elem([cc,cc+1],:) = Right2Left(row,col);
+      endif
+      cc = cc+2;
+    endfor
+  endfor
+endswitch
+
 %========================= edges ===================================
 
 edges = zeros(2*(n+m-2),3);
@@ -183,7 +255,7 @@ mesh.elemArea = elemArea;
 %%for k = 1:ln
 %%  if (mesh.nodesT(k)~=-1)
 %%    mesh.nDOF++;
-%%    mesh.node2DOF(k) = mesh.nDOF; 
+%%    mesh.node2DOF(k) = mesh.nDOF;
 %%  endif
 %%endfor
 ind = (mesh.nodesT~=-1);
