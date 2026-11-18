@@ -91,10 +91,10 @@ if (~isempty(varargin))
 endif % if ĩsempty
 
 xyGP = Mesh.GP;
-nGP = size(xyGP,1);  %% number of Gauss Points
+nGP  = size(xyGP,1);  %% number of Gauss Points
 
 function fun_values = convert2values(fun)  %% evaluate at Gauss points
-  if (length(fun)>1)&&isnumeric(fun)       %% a given as vector
+  if (length(fun)>1)&isnumeric(fun)       %% a given as vector
     fun_values = fun;
   elseif isnumeric(fun)                    %% a given as scalar
     fun_values = fun*(ones(nGP,1));
@@ -109,7 +109,7 @@ by_values = convert2values(by);
 
 if is_function_handle(u0)
   u_values = u0(Mesh.nodes); u_valuesGauss = u0(xyGP);
-elseif (length(u0)==1)&&isnumeric(u0)
+elseif (length(u0)==1)&isnumeric(u0)
   u_values = u0*ones(size(Mesh.nodes,1),1); u_valuesGauss = u0*ones(nGP,1);
 else
   u_values = u0; u_valuesGauss = FEMEvaluateGP(Mesh,u_values);
@@ -143,13 +143,13 @@ endif
 %% solve a system with the actual BC
 switch Mesh.type
   case 'linear' %% first order elements
-    [A,b] = FEMEquation    (Mesh,a_values,b0_values,bx_values,by_values,f_values,gD,gN1,gN2);
-    [A0,gD0] = FEMEquation(Mesh,a_values,b0_values,bx_values,by_values,0,gD,0,0);
+    [A,b]    = FEMEquation(Mesh,a_values,b0_values,bx_values,by_values,f_values,gD,gN1,gN2);
+    [A0,gD0] = FEMEquation(Mesh,a_values,b0_values,bx_values,by_values,0,gD,gN1,gN2);
   case 'quadratic'  %% second order elements
-    [A,b] = FEMEquationQuadM(Mesh,a_values,b0_values,bx_values,by_values,f_values,gD,gN1,gN2);
-    [A0,gD0] = FEMEquationQuadM(Mesh,a_values,b0_values,bx_values,by_values,0,gD,gN1,gN2);
+    [A,b]    = FEMEquationQuad(Mesh,a_values,b0_values,bx_values,by_values,f_values,gD,gN1,gN2);
+    [A0,gD0] = FEMEquationQuad(Mesh,a_values,b0_values,bx_values,by_values,0,gD,gN1,gN2);
   case 'cubic'  %% third order elements
-    [A,b] = FEMEquationCubic(Mesh,a_values,b0_values,bx_values,by_values,f_values,gD,gN1,gN2);
+    [A,b] =    FEMEquationCubic(Mesh,a_values,b0_values,bx_values,by_values,f_values,gD,gN1,gN2);
     [A0,gD0] = FEMEquationCubic(Mesh,a_values,b0_values,bx_values,by_values,0,gD,gN1,gN2);
 endswitch
 u_values = FEMSolve(Mesh,A,b,gD);  %% solve the resulting system
